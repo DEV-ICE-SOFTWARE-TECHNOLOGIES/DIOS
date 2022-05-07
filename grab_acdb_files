@@ -1,0 +1,18 @@
+#!/bin/bash
+# Example usage: grab_acdb_files tama AndroidDumps/sony_h9436_dump
+# grab_acdb_files lilac AndroidDumps/sony_lilac_dump
+# Downloads ACDB files from github and renames them to match our structure (without Sony_$platform pre/postfix)
+set -x
+platform_name=$1
+dump_repo=$2
+files=$(curl -s https://api.github.com/repos/$dump_repo/contents/vendor/etc/acdbdata/Sony)
+echo $files
+files=$(jq -r <<< "$files" '.[] | select(.type == "file") | [.name, .download_url]|join(";")')
+for f in $files; do
+    file=${f%%;*}
+    url=${f##*;}
+    file=${file/_Sony_$platform_name/}
+    file=${file/Sony_${platform_name}_/}
+    echo $file
+    curl $url -o acdb/$file
+done
