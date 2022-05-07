@@ -1,21 +1,24 @@
-# sodp
+# D!OS
 
-Helper scripts to be used with sodp.
+Automated Superuser Scripts to be used for building D!OS
 
-Main script is a build script to build aosp 11 for xperia devices using linux kernel 4.14 and including opengapps.
+Main Script is a build Script to build D!OS 12.1 for XPERIA Devices using Linux Kernel 4.19/5.4 and includes Google Apps...
 
-A usage description of the scripts can be displayed via:
+A usage Description of the Scripts can be displayed via:
 ```
 build.sh -h|--help
 ```
 
-Please be aware that these scripts are not appropriate for a developer aosp tree that contains
-changes but should only be used on clean trees, since the script will do things like:
-- delete files
-- git hard resets
-- git checkouts
+WARNING:
+The Script will use Superuser rights and does things like...
+- Deleting Files
+- Creating Files
+- Eating much Storage
+- Git hard resets
+- Git checkouts
+...Therefore the Script must not be used in a developers AOSP Tree with changed Files and/or local Commits. Both might get lost whe running this Scripts!
 
-For general build instructions how to setup and build aosp for xperia see:\
+For general build Instructions how to setup and build AOSP for Xperias see:\
 https://developer.sony.com/develop/open-devices/guides/aosp-build-instructions
 
 The script contains following variables that can be set from outside.
