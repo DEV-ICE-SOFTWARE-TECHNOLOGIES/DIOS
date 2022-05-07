@@ -29,21 +29,21 @@ _show_help() {
     echo "  and/or local Commits. Both might get lost when running this Scripts!"
     echo ""
     echo "Options:"
-    echo "  -b <manifest_branch>    switches the repo to the specified manifest_branch, e.g. android-10.0.0_r21"
-    echo "  -k|--keep-local         keeps the branch for the local manifests repo when switching branches"
-    echo "  -h|--help               display this help"
-    echo "  -x|--exclude-gapps      excludes opengapps from the build and implicitly removes the opengapps"
-    echo "                          repos from the source tree"
+    echo "  -b <manifest_branch>    Switches the Repo to the specified manifest_branch, e.g. android-12.1.0_r5"
+    echo "  -k|--keep-local         Keeps the branch for the local manifests Repo when switching Branches"
+    echo "  -h|--help               Display this Help"
+    echo "  -x|--exclude-gapps      Excludes GApps from the build and implicitly removes the GApps"
+    echo "                          Repos from the Source Tree"
     echo ""
     echo "Script variables:"
-    echo "  SOURCE          AOSP/SODP root folder"
-    echo "                  Default: ~/android/source"
+    echo "  SOURCE          D!OS root folder"
+    echo "                  Default: ~/dios/dios/source"
     echo "  APK_DIR         currently not used"
-    echo "                  Default: ~/android/apk"
+    echo "                  Default: ~/dios/dios/source"
     echo "  LUNCH_CHOICE    e.g. aosp_h3113-userdebug, aosp_h9436-userdebug,..."
     echo "                  Default: not set"
     echo ""
-    echo "To pass the variables to the script use env, e.g. for pioneer use following command:"
+    echo "To pass the Variables to the Script use env, e.g. for pioneer use following Command:"
     echo "  env LUNCH_CHOICE=aosp_h3113-userdebug ./$_shell_script"
 }
 
@@ -73,27 +73,28 @@ _init() {
     sudo mount --bind $USERNAME/.ccache /mnt/ccache
   fi
 
-  if [ -d dios/.repo ]; then
-    rm -r dios/.repo
+  if [ -d ~/dios/.repo ]; then
+    rm -r ~/dios/.repo/*
   fi
 
-  if [ -d dios/.bin ]; then
-    rm -r dios/.bin
+  if [ -d ~/dios/.git ]; then
+    rm -r ~/dios/.git/*
   fi
 
   repo init -u https://android.googlesource.com/platform/manifest -b android-12.1.0_r5
   cd .repo
-  git clone https://github.com/sonyxperiadev/local_manifests
+  git clone https://github.com/DEV-ICE-TECHNOLOGIES/local_manifests
   cd local_manifests
   git checkout
   cd ../..
-  repo sync -j$(nproc) && ./repo_update.sh
+  repo sync -j$(nproc) && ./repo_update.sh -j$(nproc)
 }
 
 if [ -d dios/dios/ ]; then
     _pick_pr
 else
     _init
+    _init_gapps
 fi
 
 _pick_pr() {
@@ -150,12 +151,20 @@ _clean()  {
         rm -r kernel/sony/msm-4.9
     fi
 
-    if [ -d hardware/qcom/sdm845 ]; then
-        rm -r hardware/qcom/sdm845
+    if [ -d kernel/sony/msm-5.4 ]; then
+        rm -r kernel/sony/msm-5.4
     fi
 
     if [ -d hardware/qcom/sm8150 ]; then
         rm -r hardware/qcom/sm8150
+    fi
+
+    if [ -d hardware/qcom/sm8250 ]; then
+        rm -r hardware/qcom/sm8250
+    fi
+
+    if [ -d hardware/qcom/sm8350 ]; then
+        rm -r hardware/qcom/sm8350
     fi
 
     if [ -d dios/dios/ ]; then
@@ -170,12 +179,6 @@ _clean()  {
         device/sony/$_platform \
         device/sony/common \
         device/sony/sepolicy \
-        kernel/sony/msm-4.14/common-kernel \
-        kernel/sony/msm-4.14/kernel \
-        vendor/opengapps/build \
-        vendor/opengapps/sources/all \
-        vendor/opengapps/sources/arm \
-        vendor/opengapps/sources/arm64 \
         vendor/oss/transpower
     do
         if [ -d $_path ]; then
@@ -187,35 +190,15 @@ _clean()  {
     done
 }
 
-_init_opengapps() {
+_init_gapps() {
     if $_exclude_gapps; then
         return
     fi
 
     pushd .repo/local_manifests
-        cat >dios.xml <<EOF
+        cat >gapps.xml <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
-<remove-project name="platform/packages/apps/Browser2" />
-<remove-project name="platform/packages/apps/Calendar" />
-<remove-project name="platform/packages/apps/Camera2" />
-<remove-project name="platform/packages/apps/Contacts" />
-<remove-project name="platform/packages/apps/DeskClock" />
-<remove-project name="platform/packages/apps/Dialer" />
-<remove-project name="platform/packages/apps/DocumentsUI" />
-<remove-project name="platform/packages/apps/Gallery" />
-<remove-project name="platform/packages/apps/Gallery2" />
-<remove-project name="platform/packages/apps/Launcher3" />
-<remove-project name="platform/packages/apps/Messaging" />
-<remove-project name="platform/packages/apps/Music" />
-<remove-project name="platform/packages/apps/MusicFX" />
-<remove-project name="platform/packages/apps/QuickSearchBox" />
-<remove-project name="platform/packages/apps/Stk" />
-<remove-project name="platform/packages/apps/StorageManager" />
-<remove-project name="platform/packages/apps/WallpaperPicker" />
-<remove-project name="platform/packages/apps/WallpaperPicker2" />
-<remove-project name="platform/external/chromium-webview" />
-
 <remote name="MindTheGapps" fetch="https://gitlab.com/MindTheGapps/" />
 <project path="vendor/gapps" name="vendor_gapps" remote="MindTheGapps" revision="sigma" />
 </manifest>
@@ -224,7 +207,7 @@ EOF
 }
 
 _repo_switch() {
-    repo sync -j32 --force-sync
+    repo sync -j$(nproc) --force-sync
     repo init -b $_new_branch
 
     if [ "$_keep_local" = "false" ]; then
@@ -239,25 +222,7 @@ _repo_update() {
 }
 
 _post_update() {
-    _pull_opengapps
     _customize_build
-}
-
-_pull_opengapps() {
-    if $_exclude_gapps; then
-        return
-    fi
-
-    for _path in \
-        vendor/opengapps/sources/all \
-        vendor/opengapps/sources/arm \
-        vendor/opengapps/sources/arm64
-    do
-        pushd $_path
-            git lfs pull opengapps-gitlab &
-        popd
-    done
-    wait
 }
 
 _customize_build() {
@@ -285,12 +250,12 @@ _make() {
         make installclean
     fi
 
-    make -j`nproc --all`
+    make -j$(nproc)
 }
 
 _build() {
     _clean
-    _init_opengapps
+    _init_gapps
     _repo_update
     _post_update
     _make
@@ -298,7 +263,7 @@ _build() {
 
 _switch_branch() {
     _clean
-    _init_opengapps
+    _init_gapps
     _repo_switch
 }
 
