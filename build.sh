@@ -53,19 +53,16 @@ _init() {
   sudo apt-get install openjdk-11-jdk
   sudo apt-get install bison g++-multilib git gperf libxml2-utils make zlib1g-dev zip liblz4-tool libncurses5 libssl-dev bc flex curl python-is-python3 ccache
 
-  if [ -d ~/bin ]; then
-      curl http://commondatastorage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
-      chmod a+x ~/bin/repo
-  else
-      mkdir ~/bin
-      curl http://commondatastorage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
-      chmod a+x ~/bin/repo
-  fi
+  mkdir ~/bin || true 
+  curl http://commondatastorage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+  chmod a+x ~/bin/repo
 
+  echo '' >> ~/.bashrc
   echo 'export PATH=~/bin:$PATH' >> ~/.bashrc
   echo 'export USE_CCACHE=1' >> ~/.bashrc
   echo 'export CCACHE_EXEC=/usr/bin/ccache' >> ~/.bashrc
   echo 'export CCACHE_DIR=~/.ccache' >> ~/.bashrc
+  wait
   source ~/.bashrc
   ccache -M 300G -F 0
 
@@ -74,6 +71,14 @@ _init() {
   else
     sudo mkdir /mnt/ccache
     sudo mount --bind $USERNAME/.ccache /mnt/ccache
+  fi
+
+  if [ -d dios/.repo ]; then
+    rm -r dios/.repo
+  fi
+
+  if [ -d dios/.bin ]; then
+    rm -r dios/.bin
   fi
 
   repo init -u https://android.googlesource.com/platform/manifest -b android-12.1.0_r5
