@@ -51,7 +51,7 @@ _init() {
   sudo apt-get purge openjdk-* icedtea-* icedtea6-* || true 
   sudo apt-get update
   sudo apt-get install openjdk-11-jdk
-  sudo apt-get install bison g++-multilib git gperf libxml2-utils make zlib1g-dev:i386 zip liblz4-tool libncurses5 libssl-dev bc flex curl python-in-python3 ccache
+  sudo apt-get install bison g++-multilib git gperf libxml2-utils make zlib1g-dev zip liblz4-tool libncurses5 libssl-dev bc flex curl python-is-python3 ccache
 
   if [ -d ~/bin ]; then
       curl http://commondatastorage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
