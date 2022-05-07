@@ -69,15 +69,13 @@ _init() {
   source ~/.bashrc
   ccache -M 300G -F 0
 
-  if [ -d ~/.ccache ]; then
-    sudo mount --bind /home/$USERNAME/ccache ~/.ccache
+  if [ -d /mnt/ccache ]; then
+    sudo mount --bind $USERNAME/.ccache /mnt/ccache
   else
-    sudo mkdir ~/.ccache
-    sudo mount --bind /home/$USERNAME/ccache ~/.ccache
+    sudo mkdir /mnt/ccache
+    sudo mount --bind $USERNAME/.ccache /mnt/ccache
   fi
 
-  sudo mkdir ~/.ccache
-  sudo mount --bind /home/$USERNAME/ccache ~/.ccache
   repo init -u https://android.googlesource.com/platform/manifest -b android-12.1.0_r5
   cd .repo
   git clone https://github.com/sonyxperiadev/local_manifests
