@@ -9,7 +9,7 @@ APK_DIR=${APK_DIR:-~/dios/dios/apk}
 NAME=${NAME:-~M1U5T0N3}
 EMAIL=${EMAIL:-~mariuskopp517@gmail.com}
 USERNAME=${USERNAME:-~miustone}
-LUNCH_CHOICE=
+LUNCH_CHOICE=aosp_j9210-userdebug
 # ----------------------------------------------------------------------
 
 _show_help() {
@@ -66,10 +66,18 @@ _init() {
   echo 'export USE_CCACHE=1' >> ~/.bashrc
   echo 'export CCACHE_EXEC=/usr/bin/ccache' >> ~/.bashrc
   echo 'export CCACHE_DIR=~/.ccache' >> ~/.bashrc
+  source ~/.bashrc
+  ccache -M 300G -F 0
+
+  if [ -d ~/.ccache ]; then
+    sudo mount --bind /home/$USERNAME/ccache ~/.ccache
+  else
+    sudo mkdir ~/.ccache
+    sudo mount --bind /home/$USERNAME/ccache ~/.ccache
+  fi
+
   sudo mkdir ~/.ccache
   sudo mount --bind /home/$USERNAME/ccache ~/.ccache
-  ccache -M 300G -F 0
-  source ~/.bashrc
   repo init -u https://android.googlesource.com/platform/manifest -b android-12.1.0_r5
   cd .repo
   git clone https://github.com/sonyxperiadev/local_manifests
