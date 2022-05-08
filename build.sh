@@ -92,7 +92,7 @@ _init_dios() {
 # MAIN SCRIPT
 # ----------------------------------------------------------------------
 _gapps_fork() {
-    sh ./gapps_fork.sh
+    bash ./gapps_fork.sh
     wait
     local _apk_name=$1
     local _target_dir=$2
@@ -127,9 +127,9 @@ _post_update() {
 }
 
 _customize_build() {
-    mkdir dios/dios
+    mkdir ~/dios/dios || true 
     if ! $_aosp; then
-        cat >dios/dios/dios.mk <<EOF
+        cat <<EOF > ~/dios/dios/dios.mk
 BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
 
 WITH_DEXPREOPT := true
@@ -139,7 +139,7 @@ include vendor/gapps/arm64/arm64-vendor.mk
 EOF
     fi
 
-    cat >>dios/dios/dios.mk <<EOF
+    cat <<EOF > ~/dios/dios/dios.mk
 BOARD_USE_ENFORCING_SELINUX := true
 EOF
 }
@@ -155,11 +155,11 @@ _make() {
 }
 
 _build() {
+    _customize_build
     _gapps_fork
     _init_gapps
     _repo_update
     _post_update
-    _customize_build
     _make
 }
 
