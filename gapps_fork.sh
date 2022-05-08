@@ -14,9 +14,9 @@ IMAGE_FILE=$DOWNLOAD_DIR/$IMAGE_NAME
 
 APKS="
 /system/system/priv-app/GooglePackageInstaller/GooglePackageInstaller.apk
-/system/system/priv-app/GooglePermissionControllerPrebuilt/GooglePermissionControllerPrebuilt.apk
+/system_ext/priv-app/PixelSetupWizard/PixelSetupWizard.apk
 /product/priv-app/SetupWizardPrebuilt/SetupWizardPrebuilt.apk
-/product/app/TrichromeLibrary/TrichromeLibrary.apk"
+/product/app/TrichromeLibrary-Stub/TrichromeLibrary-Stub.apk"
 
 for dir in $APK_DIR $DOWNLOAD_DIR; do
     if [ ! -d $dir ]; then
@@ -30,15 +30,15 @@ if [ ! -f $IMAGE_FILE ]; then
     popd
 fi
 
-TMP=/tmp/`basename $IMAGE_NAME .zip`
+TMP=~/dios/dios/tmp/`basename $IMAGE_NAME .zip`
 if [ -d $TMP ]; then
-    rm -r $TMP
+    sudo rm -rf $TMP
 fi
-mkdir $TMP
+mkdir -p $TMP
 
 pushd $TMP
-unzip -p $IMAGE_FILE "*/image*" >image.zip
-unzip image.zip product.img system.img
+sudo unzip -p $IMAGE_FILE "*/image*" >image.zip
+sudo unzip image.zip product.img system.img vendor.img system_ext.img
 
 simg2img product.img product.raw
 mkdir product
@@ -48,6 +48,14 @@ simg2img system.img system.raw
 mkdir system
 sudo mount -o ro system.raw system
 
+simg2img vendor.img vendor.raw
+mkdir vendor
+sudo mount -o ro vendor.raw vendor
+
+simg2img system_ext.img system_ext.raw
+mkdir system_ext
+sudo mount -o ro system_ext.raw system_ext
+
 for apk in $APKS; do
     aapt dump badging .$apk|head -3
     cp -v .$apk $APK_DIR
@@ -55,6 +63,8 @@ done
 
 sudo umount product
 sudo umount system
+sudo umount vendor
+sudo umount system_ext
 popd
 
 rm -r $TMP

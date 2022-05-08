@@ -44,30 +44,30 @@ _show_help() {
 # INITIALIZING
 # ----------------------------------------------------------------------
 _init_dios() {
-  #sudo apt-get purge openjdk-* icedtea-* icedtea6-* || true 
-  #sudo apt-get update
-  #sudo apt-get install openjdk-11-jdk
-  #sudo apt-get install bison g++-multilib git gperf libxml2-utils make zlib1g-dev zip liblz4-tool libncurses5 libssl-dev bc flex curl python-is-python3 ccache
+  sudo apt-get purge openjdk-* icedtea-* icedtea6-* || true 
+  sudo apt-get update
+  sudo apt-get install openjdk-11-jdk
+  sudo apt-get install bison g++-multilib git gperf libxml2-utils make zlib1g-dev zip liblz4-tool libncurses5 libssl-dev bc flex curl python-is-python3 ccache simg2img aapt
 
-  #mkdir ~/bin || true 
-  #curl http://commondatastorage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
-  #chmod a+x ~/bin/repo
+  mkdir ~/bin || true 
+  curl http://commondatastorage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+  chmod a+x ~/bin/repo
 
-  #echo '' >> ~/.bashrc
-  #echo 'export PATH=~/bin:$PATH' >> ~/.bashrc
-  #echo 'export USE_CCACHE=1' >> ~/.bashrc
-  #echo 'export CCACHE_EXEC=/usr/bin/ccache' >> ~/.bashrc
-  #echo 'export CCACHE_DIR=~/.ccache' >> ~/.bashrc
-  #wait
-  #source ~/.bashrc
-  #ccache -M 300G -F 0
+  echo '' >> ~/.bashrc
+  echo 'export PATH=~/bin:$PATH' >> ~/.bashrc
+  echo 'export USE_CCACHE=1' >> ~/.bashrc
+  echo 'export CCACHE_EXEC=/usr/bin/ccache' >> ~/.bashrc
+  echo 'export CCACHE_DIR=~/.ccache' >> ~/.bashrc
+  wait
+  source ~/.bashrc
+  ccache -M 300G -F 0
 
-  #if [ -d /mnt/ccache ]; then
-  #  sudo mount --bind $USERNAME/.ccache /mnt/ccache
-  #else
-  #  sudo mkdir /mnt/ccache
-  #  sudo mount --bind $USERNAME/.ccache /mnt/ccache
-  #fi
+  if [ -d /mnt/ccache ]; then
+    sudo mount --bind $USERNAME/.ccache /mnt/ccache
+  else
+    sudo mkdir /mnt/ccache
+    sudo mount --bind $USERNAME/.ccache /mnt/ccache
+  fi
 
   #if [ -d ~/dios/.repo ]; then
   #  rm -r ~/dios/.repo/*
@@ -77,13 +77,13 @@ _init_dios() {
   #  rm -r ~/dios/.git/*
   #fi
 
-  #repo init -u https://android.googlesource.com/platform/manifest -b android-12.1.0_r5
-  #cd .repo
-  #git clone https://github.com/DEV-ICE-TECHNOLOGIES/local_manifests
-  #cd local_manifests
-  #git checkout
-  #cd ../..
-  repo sync -j$(nproc) --force-sync && ./repo_update.sh -j$(nproc)
+  repo init -u https://android.googlesource.com/platform/manifest -b android-12.1.0_r5
+  cd .repo
+  git clone https://github.com/DEV-ICE-TECHNOLOGIES/local_manifests
+  cd local_manifests
+  git checkout
+  cd ../..
+  repo sync -j$(nproc) && ./repo_update.sh -j$(nproc)
 
   _start_building
 }
@@ -94,12 +94,12 @@ _init_dios() {
 _gapps_fork() {
     bash ./gapps_fork.sh
     wait
-    local _apk_name=$1
-    local _target_dir=$2
-    local _version=`aapt dump badging $APK_DIR/$_apk_name |grep versionCode=|sed "s#.*versionCode='\([[:digit:]]*\).*#\1#1"`
-    mkdir -p $_target_dir
-    rm $_target_dir/*
-    cp $APK_DIR/$_apk_name $_target_dir/$_version.apk
+    #local _apk_name=$HUH
+    #local _target_dir=$WHAT
+    #local _version=`aapt dump badging $APK_DIR/$_apk_name |grep versionCode=|sed "s#.*versionCode='\([[:digit:]]*\).*#\1#1"`
+    #mkdir -p $_target_dir
+    #rm $_target_dir/*
+    #cp $APK_DIR/$_apk_name $_target_dir/$_version.apk
 }
 
 _init_gapps() {
@@ -119,7 +119,7 @@ EOF
 }
 
 _repo_update() {
-    ./repo_update.sh -j$(nproc)
+    repo sync -j$(nproc) && ./repo_update.sh -j$(nproc)
 }
 
 _post_update() {
