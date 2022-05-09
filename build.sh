@@ -58,6 +58,7 @@ _init_dios() {
   echo 'export USE_CCACHE=1' >> ~/.bashrc
   echo 'export CCACHE_EXEC=/usr/bin/ccache' >> ~/.bashrc
   echo 'export CCACHE_DIR=~/.ccache' >> ~/.bashrc
+  echo 'export ALLOW_MISSING_DEPENDENCIES=true' >> ~/.bashrc
   wait
   source ~/.bashrc
   ccache -M 300G -F 0
@@ -151,6 +152,7 @@ _make() {
         make installclean
     fi
 
+    sudo mount --bind $USERNAME/.ccache /mnt/ccache
     make -j$(nproc)
 }
 
