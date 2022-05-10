@@ -2,113 +2,200 @@
 set -eu
 
 # ----------------------------------------------------------------------
-# Variables
+# 1. VARIABLES
 # ----------------------------------------------------------------------
+
+DOWNLOAD_DIR=~/dios/dios/pixel
+EMAIL=mariuskopp517@gmail.com
+FORK_DIR=~/dios/dios/fork
+IMAGE_NAME=redfin-sp2a.220505.002-factory-7fe11c77.zip
+IMAGE_FILE=$DOWNLOAD_DIR/$IMAGE_NAME
+TMP=~/dios/dios/tmp/$(basename $IMAGE_NAME .zip)
+PRODUCT=~/dios/dios/tmp/$(basename $IMAGE_NAME .zip)/product
+VENDOR=~/dios/dios/tmp/$(basename $IMAGE_NAME .zip)/vendor
+SYSTEM=~/dios/dios/tmp/$(basename $IMAGE_NAME .zip)/system
+SYSTEM_EXT=~/dios/dios/tmp/$(basename $IMAGE_NAME .zip)/system_ext
+NAME=M1U5T0N3
 SOURCE=~/dios
-APK_DIR=${APK_DIR:-~/dios/dios/apk}
-NAME=${NAME:-~M1U5T0N3}
-EMAIL=${EMAIL:-~mariuskopp517@gmail.com}
 USERNAME=${USERNAME:-~miustone}
-LUNCH_CHOICE=aosp_j9210-userdebug
+
+# ----------------------------------------------------------------------
+# 2. HELP
 # ----------------------------------------------------------------------
 
 _show_help() {
-    echo "Usage:"
-    echo "  $_shell_script [-a|--aosp] [-h|--help]"
     echo ""
-    echo "AUTOMATED D!OS BUILD SCRIPT"
     echo ""
-    echo "WARNING:"
-    echo "  The Script will use Superuser rights and does things like..."
-    echo "  - Deleting Files"
-    echo "  - Creating Files"
-    echo "  - Eating much Storage"
+    echo ""
+    echo "             AUTOMATED D!OS BUILD SCRIPT"
+    echo ""
+    echo ""
+    echo ""
     echo ""
     echo "OPTIONS:"
-    echo "  -a|--aosp               Build only AOSP, e.g. android-12.1.0_r5"
-    echo "  -h|--help               Displays this Help"
+    echo "   -a|--aosp               BUILDS ONLY VANILLA AOSP"
+    echo "   -h|--help               SHOWS THIS HELP SCREEN"
     echo ""
-    echo "SCRIPT VARIABLES:"
-    echo "  SOURCE          Default: ~/dios"
     echo ""
-    echo "  APK_DIR         Default: ~/dios/dios/apk"
+    echo "USAGE EXAMPLE FOR XPERIA 5 D!OS:"
+    echo "   env LUNCH_CHOICE=aosp_j9210-userdebug bash ./$_shell_script"
     echo ""
-    echo "  LUNCH_CHOICE    E.g. aosp_h3113-userdebug, aosp_h9436-userdebug,..."
-    echo "                  Default: not set"
     echo ""
-    echo "To pass the Variables to the Script use env, e.g. for pioneer use following Command:"
-    echo "  env LUNCH_CHOICE=aosp_h3113-userdebug ./$_shell_script"
+    echo "USAGE EXAMPLE FOR XPERIA 5 AOSP:"
+    echo "   env LUNCH_CHOICE=aosp_j9210-userdebug bash ./$_shell_script -a"
+    echo ""
 }
 
 # ----------------------------------------------------------------------
-# INITIALIZING
+# 3. INITIALIZING
 # ----------------------------------------------------------------------
+
 _init_dios() {
-  sudo apt-get purge openjdk-* icedtea-* icedtea6-* || true 
-  sudo apt-get update
-  sudo apt-get install openjdk-11-jdk
-  sudo apt-get install bison g++-multilib git gperf libxml2-utils make zlib1g-dev zip liblz4-tool libncurses5 libssl-dev bc flex curl python-is-python3 ccache simg2img aapt
+    sudo apt-get purge openjdk-* icedtea-* icedtea6-* || true
+    sudo apt-get update
+    sudo apt-get install openjdk-11-jdk
+    sudo apt-get install bison g++-multilib git gperf libxml2-utils make zlib1g-dev zip liblz4-tool libncurses5 libssl-dev bc flex curl python-is-python3 ccache simg2img aapt
 
-  mkdir ~/bin || true 
-  curl http://commondatastorage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
-  chmod a+x ~/bin/repo
+    mkdir ~/bin || true
+    curl http://commondatastorage.googleapis.com/git-repo-downloads/repo >~/bin/repo
+    chmod a+x ~/bin/repo
 
-  echo '' >> ~/.bashrc
-  echo 'export PATH=~/bin:$PATH' >> ~/.bashrc
-  echo 'export USE_CCACHE=1' >> ~/.bashrc
-  echo 'export CCACHE_EXEC=/usr/bin/ccache' >> ~/.bashrc
-  echo 'export CCACHE_DIR=~/.ccache' >> ~/.bashrc
-  echo 'export ALLOW_MISSING_DEPENDENCIES=true' >> ~/.bashrc
-  wait
-  source ~/.bashrc
-  ccache -M 300G -F 0
-
-  if [ -d /mnt/ccache ]; then
-    sudo mount --bind $USERNAME/.ccache /mnt/ccache
-  else
-    sudo mkdir /mnt/ccache
-    sudo mount --bind $USERNAME/.ccache /mnt/ccache
-  fi
-
-  #if [ -d ~/dios/.repo ]; then
-  #  rm -r ~/dios/.repo/*
-  #fi
-
-  #if [ -d ~/dios/.git ]; then
-  #  rm -r ~/dios/.git/*
-  #fi
-
-  repo init -u https://android.googlesource.com/platform/manifest -b android-12.1.0_r5
-  cd .repo
-  git clone https://github.com/DEV-ICE-TECHNOLOGIES/local_manifests
-  cd local_manifests
-  git checkout
-  cd ../..
-  repo sync -j$(nproc) && ./repo_update.sh -j$(nproc)
-
-  _start_building
-}
-
-# ----------------------------------------------------------------------
-# MAIN SCRIPT
-# ----------------------------------------------------------------------
-_gapps_fork() {
-    bash ./gapps_fork.sh
+    echo '' >>~/.bashrc
+    echo 'export PATH=~/bin:$PATH' >>~/.bashrc
+    echo 'export USE_CCACHE=1' >>~/.bashrc
+    echo 'export CCACHE_EXEC=/usr/bin/ccache' >>~/.bashrc
+    echo 'export CCACHE_DIR=~/.ccache' >>~/.bashrc
+    echo 'export ALLOW_MISSING_DEPENDENCIES=true' >>~/.bashrc
     wait
-    #local _apk_name=$HUH
-    #local _target_dir=$WHAT
-    #local _version=`aapt dump badging $APK_DIR/$_apk_name |grep versionCode=|sed "s#.*versionCode='\([[:digit:]]*\).*#\1#1"`
-    #mkdir -p $_target_dir
-    #rm $_target_dir/*
-    #cp $APK_DIR/$_apk_name $_target_dir/$_version.apk
+    source ~/.bashrc
+    ccache -M 300G -F 0
+
+    if [ ! -d /mnt/ccache ]; then
+        sudo mkdir /mnt/ccache
+    fi
+
+    repo init -u https://android.googlesource.com/platform/manifest -b android-12.1.0_r5
+    cd .repo
+    git clone https://github.com/DEV-ICE-TECHNOLOGIES/local_manifests
+    cd local_manifests
+    git checkout
+    cd ../..
+    mkdir ~/dios/dios || true
+    repo sync -j$(nproc) && ./repo_update.sh -j$(nproc)
+    echo ""
+    echo "PREPARED! RESTART THE SCRIPT TO START BUILDING..."
+    exit
 }
+
+# ----------------------------------------------------------------------
+# 4. POST-UPDATE OPTIONS
+# ----------------------------------------------------------------------
+
+_post_update() {
+    if $_aosp; then
+        echo ""
+        echo "AOSP BUILD FLAGS..."
+        cat <<EOF >~/dios/dios/dios.mk
+BOARD_USE_ENFORCING_SELINUX := true
+EOF
+    else
+        echo ""
+        echo "DIOS BUILD FLAGS..."
+        cat <<EOF >~/dios/dios/dios.mk
+BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
+
+WITH_DEXPREOPT := true
+
+include vendor/gapps/arm64/arm64-vendor.mk
+EOF
+    fi
+}
+
+# ----------------------------------------------------------------------
+# 5. REPO SYNC AND UPDATE
+# ----------------------------------------------------------------------
+
+_repo_update() {
+    echo ""
+    echo "REPO SYNC AND REPO UPDATE..."
+    echo ""
+    repo sync -j$(nproc) && ./repo_update.sh -j$(nproc)
+}
+
+# ----------------------------------------------------------------------
+# 6. PIXEL CONTENT
+# ----------------------------------------------------------------------
+
+_pixel_fork() {
+    if ! $_aosp; then
+        echo ""
+        echo "FORKING PIXEL FIRMWARE..."
+        echo ""
+        for dir in $FORK_DIR $DOWNLOAD_DIR; do
+            if [ ! -d $dir ]; then
+                mkdir $dir
+            fi
+        done
+
+        if [ ! -f $IMAGE_FILE ]; then
+            pushd $DOWNLOAD_DIR
+            wget https://dl.google.com/dl/android/aosp/$IMAGE_NAME
+            popd
+        fi
+
+        if [ -d $TMP ]; then
+            sudo rm -rf $TMP
+        fi
+        mkdir -p $TMP
+
+        pushd $TMP
+        sudo unzip -p $IMAGE_FILE "*/image*" >image.zip
+        sudo unzip image.zip product.img system.img vendor.img system_ext.img
+
+        simg2img product.img product.raw
+        mkdir product
+        sudo mount -o ro product.raw product
+
+        simg2img system.img system.raw
+        mkdir system
+        sudo mount -o ro system.raw system
+
+        simg2img vendor.img vendor.raw
+        mkdir vendor
+        sudo mount -o ro vendor.raw vendor
+
+        simg2img system_ext.img system_ext.raw
+        mkdir system_ext
+        sudo mount -o ro system_ext.raw system_ext
+
+        cp -arv $PRODUCT $FORK_DIR || true
+        cp -arv $SYSTEM $FORK_DIR || true
+        cp -arv $VENDOR $FORK_DIR || true
+        cp -arv $SYSTEM_EXT $FORK_DIR || true
+
+        wait
+
+        sudo umount product
+        sudo umount system
+        sudo umount vendor
+        sudo umount system_ext
+        popd
+
+        rm -rfv $TMP
+
+    fi
+}
+
+# ----------------------------------------------------------------------
+# 7. BASIC GAPPS
+# ----------------------------------------------------------------------
 
 _init_gapps() {
     if $_aosp; then
         return
-    fi
+    else
 
-    pushd .repo/local_manifests
+        pushd .repo/local_manifests
         cat >gapps.xml <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
@@ -116,98 +203,142 @@ _init_gapps() {
 <project path="vendor/gapps" name="vendor_gapps" remote="MindTheGapps" revision="sigma" />
 </manifest>
 EOF
-    popd
-}
-
-_repo_update() {
-    repo sync -j$(nproc) && ./repo_update.sh -j$(nproc)
-}
-
-_post_update() {
-    _customize_build
-}
-
-_customize_build() {
-    mkdir ~/dios/dios || true 
-    if ! $_aosp; then
-        cat <<EOF > ~/dios/dios/dios.mk
-BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
-
-WITH_DEXPREOPT := true
-
-include vendor/gapps/arm64/arm64-vendor.mk
-
-EOF
+        popd
     fi
-
-    cat <<EOF > ~/dios/dios/dios.mk
-BOARD_USE_ENFORCING_SELINUX := true
-EOF
 }
+
+# ----------------------------------------------------------------------
+# 8. MAKE OPTIONS
+# ----------------------------------------------------------------------
 
 _make() {
-    if [ -n "$_aosp" ]; then
+    if $_aosp; then
+        echo ""
+        echo "CLEANING /out"
         make clean
+        echo ""
+        echo "START BUILDING AOSP"
+        sudo mount --bind $USERNAME/.ccache /mnt/ccache
+        make -j$(nproc)
     else
+        echo ""
+        echo "OPTIMIZING /out"
         make installclean
+        echo ""
+        echo "START BUILDING DIOS"
+        sudo mount --bind $USERNAME/.ccache /mnt/ccache
+        make -j$(nproc)
+    fi
+}
+
+_send() {
+    read -p "FLASHING TO A 2019 XPERIA?" -n 1 -r
+    echo # (optional) move to a new line
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        sudo ./fastboot flash vbmeta_a vbmeta.img
+        sudo ./fastboot flash vbmeta_b vbmeta.img
+        sudo ./fastboot flash dtbo_a dtbo.img
+        sudo ./fastboot flash dtbo_b dtbo.img
+        sudo ./fastboot flash boot_a boot.img
+        sudo ./fastboot flash boot_b boot.img
+        sudo ./fastboot flash vendor_a vendor.img
+        sudo ./fastboot flash vendor_b vendor.img
+        sudo ./fastboot flash system_a system.img
+        sudo ./fastboot flash system_b system.img
+        sudo ./fastboot flash userdata userdata.img
+        sleep 5
+        sudo ./fastboot reboot
     fi
 
-    sudo mount --bind $USERNAME/.ccache /mnt/ccache
-    make -j$(nproc)
+    read -p "FLASHING TO A 2020 XPERIA?" -n 1 -r
+    echo # (optional) move to a new line
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        sudo ./fastboot flash vbmeta_a vbmeta.img
+        sudo ./fastboot flash vbmeta_b vbmeta.img
+        sudo ./fastboot flash dtbo_a dtbo.img
+        sudo ./fastboot flash dtbo_b dtbo.img
+        sudo ./fastboot flash boot_a boot.img
+        sudo ./fastboot flash boot_b boot.img
+        sudo ./fastboot flash vendor_a vendor.img
+        sudo ./fastboot flash vendor_b vendor.img
+        sudo ./fastboot flash system_a system.img
+        sudo ./fastboot flash system_b system.img
+        sudo ./fastboot flash userdata userdata.img
+        sleep 5
+        sudo ./fastboot reboot
+    fi
+
+    read -p "FLASHING TO A 2021 XPERIA?" -n 1 -r
+    echo # (optional) move to a new line
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        sudo ./fastboot flash vbmeta_a vbmeta.img
+        sudo ./fastboot flash vbmeta_b vbmeta.img
+        sudo ./fastboot flash dtbo_a dtbo.img
+        sudo ./fastboot flash dtbo_b dtbo.img
+        sudo ./fastboot flash boot_a boot.img
+        sudo ./fastboot flash boot_b boot.img
+        sudo ./fastboot flash vendor_a vendor.img
+        sudo ./fastboot flash vendor_b vendor.img
+        sudo ./fastboot flash system_a system.img
+        sudo ./fastboot flash system_b system.img
+        sudo ./fastboot flash userdata userdata.img
+        sleep 5
+        sudo ./fastboot reboot
+    fi
 }
 
+# ----------------------------------------------------------------------
+# 9. BUILD STEPS
+# ----------------------------------------------------------------------
+
 _build() {
-    _customize_build
-    _gapps_fork
-    _init_gapps
-    _repo_update
     _post_update
+    _repo_update
+    _pixel_fork
+    _init_gapps
     _make
+    _send
 }
+
+# ----------------------------------------------------------------------
+# 10. SETTING OPTIONS
+# ----------------------------------------------------------------------
 
 declare _shell_script=${0##*/}
 declare _aosp="false"
 
-while (( "$#" )); do
+while (("$#")); do
     case $1 in
-        -a|--aosp)
-            _aosp="true"
-            shift
-            ;;
-        -h|--help)
-            _show_help
-            exit 0
-            ;;
-        *)
-            echo "Unknown parameter: $1 for help use $_shell_script -h"
-            exit 1
-            ;;
+    -a | --aosp)
+        _aosp="true"
+        shift
+        ;;
+    -h | --help)
+        _show_help
+        exit 0
+        ;;
+    *)
+        echo "OPTION: $1 FAILED! USE: $_shell_script -h FOR HELP..."
+        exit 1
+        ;;
     esac
 done
 
 # ----------------------------------------------------------------------
-# START BUILDING
+# XX. BUILD OR INIT
 # ----------------------------------------------------------------------
 
-_start_building() {
-
-cd $SOURCE
-
-set +u # prevent following android calls from failing because of unset variables
-. build/envsetup.sh
-lunch $LUNCH_CHOICE
-declare _device=`get_build_var PRODUCT_DEVICE 2>/dev/null`
-declare _platform=`get_build_var PRODUCT_PLATFORM 2>/dev/null`
-set -u
-
-_build
-}
-
-# ----------------------------------------------------------------------
-# READY?
-# ----------------------------------------------------------------------
 if [ -d ~/dios/dios ]; then
-    _start_building
+    cd $SOURCE
+
+    set +u
+    . build/envsetup.sh
+    lunch $LUNCH_CHOICE
+    declare _device=$(get_build_var PRODUCT_DEVICE 2>/dev/null)
+    declare _platform=$(get_build_var PRODUCT_PLATFORM 2>/dev/null)
+    set -u
+
+    _build
 else
     _init_dios
 fi
