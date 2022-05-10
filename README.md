@@ -1,10 +1,10 @@
 # D!OS
 
-Automated Superuser Scripts to be used for building D!OS
+Automated Superuser Script to be used for building D!OS (or AOSP)
 
-Main Script is a build Script to build D!OS 12.1 for XPERIA Devices using Linux Kernel 4.19/5.4 and includes Google Apps...
+Welcome to the Android Revolution...
 
-A usage Description of the Scripts can be displayed via:
+A usage Description of the Script can be displayed via:
 ```
 build.sh -h|--help
 ```
@@ -13,40 +13,53 @@ WARNING:
 The Script will use Superuser rights and does things like...
 - Deleting Files
 - Creating Files
+- Downloading Files
+- Mounting Images
+- Creating Folders
+- Removing Folders
 - Eating much Storage
-- Git hard resets
-- Git checkouts
-...Therefore the Script must not be used in a developers AOSP Tree with changed Files and/or local Commits. Both might get lost whe running this Scripts!
+- Flashing Your Xperia
+- Git Updates and Repo Syncs
+...Therefore the Script must not be used in a developers AOSP Tree with changed Files and/or local Commits. Both might get lost when running this Script!
 
-For general build Instructions how to setup and build AOSP for Xperias see:\
-https://developer.sony.com/develop/open-devices/guides/aosp-build-instructions
 
-The script contains following variables that can be set from outside.
-The value after the colon is the default value.
+The Script contains the following Variables that can be set from outside.
+The Value after the Colon is the default Value...
 ```
-SOURCE=${SOURCE:-~/android/source}
 LUNCH_CHOICE=
 ```
 
-To build bahamut following script call has to be done:
+To build Bahamut following Script call has to be done:
 ```
-env LUNCH_CHOICE=aosp_j9210-userdebug ./build.sh
-```
-
-To switch to a different branch before building, call the script as follows:
-```
-./build.sh -b android-11.0.0_rXX
+env LUNCH_CHOICE=aosp_j9210-userdebug bash ./build.sh
 ```
 
-To switch to the 2020-10-05 branch while keeping the `.repo/local_manifests/` on the current
-branch (e.g. android-11.0.0_r4) and building aosp 11 use:
+To build AOSP for whatever Reason:
 ```
-./build.sh -b android-11.0.0_r4 -k
+env LUNCH_CHOICE=aosp_j9210-userdebug bash ./build.sh -a
 ```
 
-Please be aware that switching the aosp branch and keeping the local manifests branch is **not**
-officially supported by the sodp (Sony Open Device Project).
 
 An overview of available branches can be found here:\
 https://source.android.com/setup/start/build-numbers
 
+HOW TO SET IT UP:
+
+- Open a Terminal and type:
+```
+cd
+```
+Make the Main Folder for the whole Process:
+```
+mkdir ~/dios
+```
+Download this Repo as Zip File or clone with GitHub Desktop and place the build.sh
+into the ~/dios Folder. Run the Script from there with Your Device Flags which You
+can find in /home/yourusername/dios/device/sony/ after the first Init run.
+
+### MAKE SURE
+To set up:
+- EMAIL=YOURACTUAL@EMAIL.XXX
+- IMAGE_NAME=GRABFROMGOOGLE
+- NAME=YOURREAL NAME
+- USERNAME=${USERNAME:-~YOURUSERNAME}
