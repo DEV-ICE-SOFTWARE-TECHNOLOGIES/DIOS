@@ -227,7 +227,7 @@ _pixel_fork() {
 
         cp -r $PRODUCT $FORK_DIR || true
         #cp -apr $SYSTEM $FORK_DIR || true
-        #cp -av $SYSTEM_EXT $FORK_DIR || true
+        cp -r $SYSTEM_EXT $FORK_DIR || true
         #cp -apr $VENDOR $FORK_DIR || true
         rm -rf $FORK_DIR/product/etc/build.prop || true
         rm -rf $FORK_DIR/product/etc/init || true
@@ -235,17 +235,24 @@ _pixel_fork() {
         rm -rf $FORK_DIR/product/etc/selinux || true
         rm -rf $FORK_DIR/product/etc/vintf || true
         rm -rf $FORK_DIR/product/overlay/GoogleConfigOverlay.apk || true
-        rm -rf $FORK_DIR/product/overlay/PixelConfigOverlayCommon.apk || true
         rm -rf $FORK_DIR/product/overlay/GoogleConfigOverlay.apk || true
+        rm -rf $FORK_DIR/product/overlay/PixelConfigOverlayCommon.apk || true
+        rm -rf $FORK_DIR/product/priv-app/PrebuiltGmsCore || true
         rm -rf $FORK_DIR/product/priv-app/SetupWizardPrebuilt || true
         rm -rf $FORK_DIR/system_ext/bin || true
-        rm -rf $FORK_DIR/system_ext/framework || true
         rm -rf $FORK_DIR/system_ext/etc/build.prop || true
         rm -rf $FORK_DIR/system_ext/etc/init || true
         rm -rf $FORK_DIR/system_ext/etc/perf || true
+        rm -rf $FORK_DIR/system_ext/etc/permissions/com.qti.dpmframework.xml || true
+        rm -rf $FORK_DIR/system_ext/etc/permissions/com.qti.media.secureprocessor.xml || true
+        rm -rf $FORK_DIR/system_ext/etc/permissions/com.qualcomm.qcrilmsgtunnel.xml|| true
+        rm -rf $FORK_DIR/system_ext/etc/permissions/com.qualcomm.qti.imscmservice-V2.0-java.xml || true
+        rm -rf $FORK_DIR/system_ext/etc/permissions/com.qualcomm.qti.imscmservice-V2.1-java.xml || true
+        rm -rf $FORK_DIR/system_ext/etc/permissions/com.qualcomm.qti.imscmservice-V2.2-java.xml || true
         rm -rf $FORK_DIR/system_ext/etc/security || true
         rm -rf $FORK_DIR/system_ext/etc/selinux || true
         rm -rf $FORK_DIR/system_ext/etc/vintf || true
+        rm -rf $FORK_DIR/system_ext/framework || true
         rm -rf $FORK_DIR/system_ext/lib || true
         rm -rf $FORK_DIR/system_ext/lib64 || true
         rm -rf $FORK_DIR/system_ext/lost+found || true
