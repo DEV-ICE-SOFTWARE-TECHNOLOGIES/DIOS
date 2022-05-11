@@ -40,6 +40,8 @@ _show_help() {
     echo ""
     echo "OPTIONS:"
     echo "   -a|--aosp               BUILDS ONLY VANILLA AOSP"
+    echo "   -c|--clean              NEEDED FOR UPDATES"
+    echo "   -u|--update             DO THIS AFTER SCRIPT UPDATES"
     echo "   -h|--help               SHOWS THIS HELP SCREEN"
     echo ""
     echo ""
@@ -152,14 +154,28 @@ EOF
 # ----------------------------------------------------------------------
 
 _repo_update() {
-    echo ""
-    echo "REPO SYNC AND REPO UPDATE..."
-    echo ""
-    repo sync -j$(nproc) && ./repo_update.sh -j$(nproc)
+    if $_update; then
+        echo ""
+        echo "REPO SYNC AND REPO UPDATE..."
+        echo ""
+        repo sync -j$(nproc) && ./repo_update.sh -j$(nproc)
+    fi
 }
 
 # ----------------------------------------------------------------------
-# 6. PIXEL CONTENT
+# 6. CLEANING OUTPUT
+# ----------------------------------------------------------------------
+
+_cleaning() {
+    if $_clean; then
+        echo ""
+        echo "CLEANING /out"
+        make installclean -j$(nproc)
+    fi
+}
+
+# ----------------------------------------------------------------------
+# 7. PIXEL CONTENT
 # ----------------------------------------------------------------------
 
 _pixel_fork() {
@@ -206,10 +222,10 @@ _pixel_fork() {
 
         wait
 
-        cp -apr $PRODUCT $FORK_DIR || true
-        cp -apr $SYSTEM $FORK_DIR || true
+        #cp -apr $PRODUCT $FORK_DIR || true
+        #cp -apr $SYSTEM $FORK_DIR || true
         cp -apr $SYSTEM_EXT $FORK_DIR || true
-        cp -apr $VENDOR $FORK_DIR || true
+        #cp -apr $VENDOR $FORK_DIR || true
         rm -rf $FORK_DIR/product/etc/init || true
         rm -rf $FORK_DIR/product/etc/security || true
         rm -rf $FORK_DIR/product/etc/selinux || true
@@ -230,6 +246,13 @@ _pixel_fork() {
         rm -rf $FORK_DIR/vendor/etc/selinux || true
         rm -rf $FORK_DIR/vendor/etc/vintf || true
         rm -rf $FORK_DIR/product/overlay || true
+        rm -rf $FORK_DIR/product/etc/build.prop || true
+        rm -rf $FORK_DIR/system/system/etc/build.prop || true
+        rm -rf $FORK_DIR/system_ext/etc/build.prop || true
+        rm -rf $FORK_DIR/system_ext/lib || true
+        rm -rf $FORK_DIR/system_ext/lib64 || true
+        rm -rf $FORK_DIR/system_ext/app || true
+        rm -rf $FORK_DIR/system_ext/priv-app || true
 
         wait
 
@@ -244,7 +267,7 @@ _pixel_fork() {
 }
 
 # ----------------------------------------------------------------------
-# 7. BASIC GAPPS
+# 8. BASIC GAPPS
 # ----------------------------------------------------------------------
 
 _init_gapps() {
@@ -265,34 +288,32 @@ EOF
 }
 
 # ----------------------------------------------------------------------
-# 8. MAKE OPTIONS
+# 9. MAKE OPTIONS
 # ----------------------------------------------------------------------
 
 _make() {
     if $_aosp; then
         echo ""
-        echo "CLEANING /out"
-        make clean
-        echo ""
         echo "START BUILDING AOSP"
         sudo mount --bind $USERNAME/.ccache /mnt/ccache
         make -j$(nproc)
     else
-        #echo ""
-        #echo "OPTIMIZING /out"
-        #make installclean
         wait
         echo ""
         echo "START BUILDING DIOS"
         sudo mount --bind $USERNAME/.ccache /mnt/ccache
         make -j$(nproc)
-        rm -rf ~/dios/device/sony/common/rootdir/dios || true
+        rm -rf ~/dios/device/sony/common/rootdir/dios/fork || true
     fi
 }
 
-_send() {
+# ----------------------------------------------------------------------
+# 10. FLASHING OUTPUT
+# ----------------------------------------------------------------------
+
+_flash() {
     read -p "FLASHING TO A 2019 XPERIA?" -n 1 -r
-    echo # (optional) move to a new line
+    echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         sudo ./fastboot flash vbmeta_a $OUT_MAIN/vbmeta.img
         sudo ./fastboot flash vbmeta_b $OUT_MAIN/vbmeta.img
@@ -311,7 +332,7 @@ _send() {
     fi
 
     read -p "FLASHING TO A 2020 XPERIA?" -n 1 -r
-    echo # (optional) move to a new line
+    echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         sudo ./fastboot flash vbmeta_a vbmeta.img
         sudo ./fastboot flash vbmeta_b vbmeta.img
@@ -330,7 +351,7 @@ _send() {
     fi
 
     read -p "FLASHING TO A 2021 XPERIA?" -n 1 -r
-    echo # (optional) move to a new line
+    echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         sudo ./fastboot flash vbmeta_a vbmeta.img
         sudo ./fastboot flash vbmeta_b vbmeta.img
@@ -350,7 +371,7 @@ _send() {
 }
 
 # ----------------------------------------------------------------------
-# 9. BUILD STEPS
+# 11. BUILD STEPS
 # ----------------------------------------------------------------------
 
 _build() {
@@ -358,21 +379,32 @@ _build() {
     _repo_update
     _pixel_fork
     _init_gapps
+    _cleaning
     _make
-    _send
+    _flash
 }
 
 # ----------------------------------------------------------------------
-# 10. SETTING OPTIONS
+# 12. SETTING OPTIONS
 # ----------------------------------------------------------------------
 
 declare _shell_script=${0##*/}
 declare _aosp="false"
+declare _clean="false"
+declare _update="false"
 
 while (("$#")); do
     case $1 in
     -a | --aosp)
         _aosp="true"
+        shift
+        ;;
+    -c | --clean)
+        _clean="true"
+        shift
+        ;;
+    -u | --update)
+        _update="true"
         shift
         ;;
     -h | --help)
@@ -387,7 +419,7 @@ while (("$#")); do
 done
 
 # ----------------------------------------------------------------------
-# XX. BUILD OR INIT
+# 0. BUILD OR INIT
 # ----------------------------------------------------------------------
 
 if [ -d ~/dios/device/sony/common/rootdir/dios ]; then
@@ -400,12 +432,6 @@ if [ -d ~/dios/device/sony/common/rootdir/dios ]; then
     declare _platform=$(get_build_var PRODUCT_PLATFORM 2>/dev/null)
     set -u
 
-#
-# Check here for the D!OS Build Script Update File
-# This will be an external File which gets pushed with Script Updates
-# We do a "make installclean" "_make_installclean" if its a newer Version to apply Changes
-# We avoid this usually to don't interrupt the Pixel Firmware Injection on a "make"
-#
     _build
 else
     _init_dios
