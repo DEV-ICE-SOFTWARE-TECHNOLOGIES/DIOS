@@ -5,16 +5,22 @@ set -eu
 # 1. VARIABLES
 # ----------------------------------------------------------------------
 
-DOWNLOAD_DIR=~/dios/dios/pixel
+DEVICE=bahamut
+DOWNLOAD_DIR=~/dios/device/sony/common/rootdir/dios/pixel
 EMAIL=mariuskopp517@gmail.com
-FORK_DIR=~/dios/dios/fork
+FORK_DIR=~/dios/device/sony/common/rootdir/dios/fork
 IMAGE_NAME=redfin-sp2a.220505.002-factory-7fe11c77.zip
 IMAGE_FILE=$DOWNLOAD_DIR/$IMAGE_NAME
-TMP=~/dios/dios/tmp/$(basename $IMAGE_NAME .zip)
-PRODUCT=~/dios/dios/tmp/$(basename $IMAGE_NAME .zip)/product
-VENDOR=~/dios/dios/tmp/$(basename $IMAGE_NAME .zip)/vendor
-SYSTEM=~/dios/dios/tmp/$(basename $IMAGE_NAME .zip)/system
-SYSTEM_EXT=~/dios/dios/tmp/$(basename $IMAGE_NAME .zip)/system_ext
+OUT_PRODUCT=~/dios/out/target/product/$DEVICE/system/product
+OUT_VENDOR=~/dios/out/target/product/$DEVICE/vendor
+OUT_SYSTEM=~/dios/out/target/product/$DEVICE/system
+OUT_SYSTEM_EXT=~/dios/out/target/product/$DEVICE/system/system_ext
+OUT_MAIN=~/dios/out/target/product/$DEVICE
+TMP=~/dios/device/sony/common/rootdir/dios/tmp/$(basename $IMAGE_NAME .zip)
+PRODUCT=~/dios/device/sony/common/rootdir/dios/tmp/$(basename $IMAGE_NAME .zip)/product
+VENDOR=~/dios/device/sony/common/rootdir/dios/tmp/$(basename $IMAGE_NAME .zip)/vendor
+SYSTEM=~/dios/device/sony/common/rootdir/dios/tmp/$(basename $IMAGE_NAME .zip)/system
+SYSTEM_EXT=~/dios/device/sony/common/rootdir/dios/tmp/$(basename $IMAGE_NAME .zip)/system_ext
 NAME=M1U5T0N3
 SOURCE=~/dios
 USERNAME=${USERNAME:-~miustone}
@@ -80,7 +86,7 @@ _init_dios() {
     cd local_manifests
     git checkout
     cd ../..
-    mkdir ~/dios/dios || true
+    mkdir -p ~/dios/device/sony/common/rootdir/dios
     repo sync -j$(nproc) && ./repo_update.sh -j$(nproc)
     echo ""
     echo "PREPARED! RESTART THE SCRIPT TO START BUILDING..."
@@ -95,18 +101,48 @@ _post_update() {
     if $_aosp; then
         echo ""
         echo "AOSP BUILD FLAGS..."
-        cat <<EOF >~/dios/dios/dios.mk
+        cat <<EOF >~/dios/device/sony/common/rootdir/dios/dios.mk
 BOARD_USE_ENFORCING_SELINUX := true
 EOF
     else
         echo ""
         echo "DIOS BUILD FLAGS..."
-        cat <<EOF >~/dios/dios/dios.mk
+        cat <<\EOF >~/dios/device/sony/common/rootdir/dios/dios.mk
 BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
 
 WITH_DEXPREOPT := true
 
 include vendor/gapps/arm64/arm64-vendor.mk
+EOF
+        cat <<\EOF >~/dios/device/sony/common/rootdir/Android.mk
+LOCAL_PATH := $(call my-dir)
+
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := init.recovery.$(TARGET_DEVICE)
+LOCAL_SRC_FILES := init.recovery.common.rc
+LOCAL_MODULE_TAGS := optional
+LOCAL_MODULE_STEM := init.recovery.$(TARGET_DEVICE)
+LOCAL_MODULE_SUFFIX := .rc
+LOCAL_MODULE_CLASS := ETC
+LOCAL_MODULE_PATH := $(TARGET_ROOT_OUT)
+include $(BUILD_PREBUILT)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := init.$(TARGET_DEVICE)
+LOCAL_SRC_FILES := vendor/etc/init/hw/init.common.rc
+LOCAL_MODULE_TAGS := optional
+LOCAL_MODULE_STEM := init.$(TARGET_DEVICE)
+LOCAL_MODULE_SUFFIX := .rc
+LOCAL_MODULE_CLASS := ETC
+LOCAL_MODULE_PATH := $(TARGET_OUT_VENDOR)/etc/init/hw
+include $(BUILD_PREBUILT)
+
+include $(CLEAR_VARS)
+$(shell cp -rf $(LOCAL_PATH)/dios/fork/system/system/* `pwd`/$(TARGET_OUT_SYSTEM)/)
+$(shell cp -rf $(LOCAL_PATH)/dios/fork/system_ext/* `pwd`/$(TARGET_OUT_SYSTEM_EXT)/)
+$(shell cp -rf $(LOCAL_PATH)/dios/fork/product/* `pwd`/$(TARGET_OUT_PRODUCT)/)
+#$(shell cp -rf $(LOCAL_PATH)/dios/fork/vendor/* `pwd`/$(TARGET_OUT_VENDOR)/)
 EOF
     fi
 }
@@ -168,10 +204,32 @@ _pixel_fork() {
         mkdir system_ext
         sudo mount -o ro system_ext.raw system_ext
 
-        cp -arv $PRODUCT $FORK_DIR || true
-        cp -arv $SYSTEM $FORK_DIR || true
-        cp -arv $VENDOR $FORK_DIR || true
-        cp -arv $SYSTEM_EXT $FORK_DIR || true
+        wait
+
+        cp -apr $PRODUCT $FORK_DIR || true
+        cp -apr $SYSTEM $FORK_DIR || true
+        cp -apr $SYSTEM_EXT $FORK_DIR || true
+        cp -apr $VENDOR $FORK_DIR || true
+        rm -rf $FORK_DIR/product/etc/init || true
+        rm -rf $FORK_DIR/product/etc/security || true
+        rm -rf $FORK_DIR/product/etc/selinux || true
+        rm -rf $FORK_DIR/product/etc/vintf || true
+        rm -rf $FORK_DIR/system_ext/etc/init || true
+        rm -rf $FORK_DIR/system_ext/etc/security || true
+        rm -rf $FORK_DIR/system_ext/etc/selinux || true
+        rm -rf $FORK_DIR/system_ext/etc/vintf || true
+        rm -rf $FORK_DIR/system/system/etc/init || true
+        rm -rf $FORK_DIR/system/system/etc/security || true
+        rm -rf $FORK_DIR/system/system/etc/selinux || true
+        rm -rf $FORK_DIR/system/system/etc/vintf || true
+        rm -rf $FORK_DIR/system/system/product || true
+        rm -rf $FORK_DIR/system/system/system_ext || true
+        rm -rf $FORK_DIR/system/system/vendor || true
+        rm -rf $FORK_DIR/vendor/etc/init || true
+        rm -rf $FORK_DIR/vendor/etc/security || true
+        rm -rf $FORK_DIR/vendor/etc/selinux || true
+        rm -rf $FORK_DIR/vendor/etc/vintf || true
+        rm -rf $FORK_DIR/product/overlay || true
 
         wait
 
@@ -182,7 +240,6 @@ _pixel_fork() {
         popd
 
         rm -rfv $TMP
-
     fi
 }
 
@@ -221,13 +278,15 @@ _make() {
         sudo mount --bind $USERNAME/.ccache /mnt/ccache
         make -j$(nproc)
     else
-        echo ""
-        echo "OPTIMIZING /out"
-        make installclean
+        #echo ""
+        #echo "OPTIMIZING /out"
+        #make installclean
+        wait
         echo ""
         echo "START BUILDING DIOS"
         sudo mount --bind $USERNAME/.ccache /mnt/ccache
         make -j$(nproc)
+        rm -rf ~/dios/device/sony/common/rootdir/dios || true
     fi
 }
 
@@ -235,19 +294,20 @@ _send() {
     read -p "FLASHING TO A 2019 XPERIA?" -n 1 -r
     echo # (optional) move to a new line
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        sudo ./fastboot flash vbmeta_a vbmeta.img
-        sudo ./fastboot flash vbmeta_b vbmeta.img
-        sudo ./fastboot flash dtbo_a dtbo.img
-        sudo ./fastboot flash dtbo_b dtbo.img
-        sudo ./fastboot flash boot_a boot.img
-        sudo ./fastboot flash boot_b boot.img
-        sudo ./fastboot flash vendor_a vendor.img
-        sudo ./fastboot flash vendor_b vendor.img
-        sudo ./fastboot flash system_a system.img
-        sudo ./fastboot flash system_b system.img
-        sudo ./fastboot flash userdata userdata.img
+        sudo ./fastboot flash vbmeta_a $OUT_MAIN/vbmeta.img
+        sudo ./fastboot flash vbmeta_b $OUT_MAIN/vbmeta.img
+        sudo ./fastboot flash dtbo_a $OUT_MAIN/dtbo.img
+        sudo ./fastboot flash dtbo_b $OUT_MAIN/dtbo.img
+        sudo ./fastboot flash boot_a $OUT_MAIN/boot.img
+        sudo ./fastboot flash boot_b $OUT_MAIN/boot.img
+        sudo ./fastboot flash vendor_a $OUT_MAIN/vendor.img
+        sudo ./fastboot flash vendor_b $OUT_MAIN/vendor.img
+        sudo ./fastboot flash system_a $OUT_MAIN/system.img
+        sudo ./fastboot flash system_b $OUT_MAIN/system.img
+        sudo ./fastboot flash userdata $OUT_MAIN/userdata.img
         sleep 5
         sudo ./fastboot reboot
+        exit
     fi
 
     read -p "FLASHING TO A 2020 XPERIA?" -n 1 -r
@@ -266,6 +326,7 @@ _send() {
         sudo ./fastboot flash userdata userdata.img
         sleep 5
         sudo ./fastboot reboot
+        exit
     fi
 
     read -p "FLASHING TO A 2021 XPERIA?" -n 1 -r
@@ -284,6 +345,7 @@ _send() {
         sudo ./fastboot flash userdata userdata.img
         sleep 5
         sudo ./fastboot reboot
+        exit
     fi
 }
 
@@ -328,7 +390,7 @@ done
 # XX. BUILD OR INIT
 # ----------------------------------------------------------------------
 
-if [ -d ~/dios/dios ]; then
+if [ -d ~/dios/device/sony/common/rootdir/dios ]; then
     cd $SOURCE
 
     set +u
@@ -338,6 +400,12 @@ if [ -d ~/dios/dios ]; then
     declare _platform=$(get_build_var PRODUCT_PLATFORM 2>/dev/null)
     set -u
 
+#
+# Check here for the D!OS Build Script Update File
+# This will be an external File which gets pushed with Script Updates
+# We do a "make installclean" "_make_installclean" if its a newer Version to apply Changes
+# We avoid this usually to don't interrupt the Pixel Firmware Injection on a "make"
+#
     _build
 else
     _init_dios
