@@ -114,6 +114,9 @@ BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
 
 WITH_DEXPREOPT := true
 
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.control_privapp_permissions=log
+
 include vendor/gapps/arm64/arm64-vendor.mk
 EOF
         cat <<\EOF >~/dios/device/sony/common/rootdir/Android.mk
@@ -222,18 +225,31 @@ _pixel_fork() {
 
         wait
 
-        #cp -apr $PRODUCT $FORK_DIR || true
+        cp -r $PRODUCT $FORK_DIR || true
         #cp -apr $SYSTEM $FORK_DIR || true
-        cp -apr $SYSTEM_EXT $FORK_DIR || true
+        #cp -av $SYSTEM_EXT $FORK_DIR || true
         #cp -apr $VENDOR $FORK_DIR || true
+        rm -rf $FORK_DIR/product/etc/build.prop || true
         rm -rf $FORK_DIR/product/etc/init || true
         rm -rf $FORK_DIR/product/etc/security || true
         rm -rf $FORK_DIR/product/etc/selinux || true
         rm -rf $FORK_DIR/product/etc/vintf || true
+        rm -rf $FORK_DIR/product/overlay/GoogleConfigOverlay.apk || true
+        rm -rf $FORK_DIR/product/overlay/PixelConfigOverlayCommon.apk || true
+        rm -rf $FORK_DIR/product/overlay/GoogleConfigOverlay.apk || true
+        rm -rf $FORK_DIR/product/priv-app/SetupWizardPrebuilt || true
+        rm -rf $FORK_DIR/system_ext/bin || true
+        rm -rf $FORK_DIR/system_ext/framework || true
+        rm -rf $FORK_DIR/system_ext/etc/build.prop || true
         rm -rf $FORK_DIR/system_ext/etc/init || true
+        rm -rf $FORK_DIR/system_ext/etc/perf || true
         rm -rf $FORK_DIR/system_ext/etc/security || true
         rm -rf $FORK_DIR/system_ext/etc/selinux || true
         rm -rf $FORK_DIR/system_ext/etc/vintf || true
+        rm -rf $FORK_DIR/system_ext/lib || true
+        rm -rf $FORK_DIR/system_ext/lib64 || true
+        rm -rf $FORK_DIR/system_ext/lost+found || true
+        rm -rf $FORK_DIR/system/system/etc/build.prop || true
         rm -rf $FORK_DIR/system/system/etc/init || true
         rm -rf $FORK_DIR/system/system/etc/security || true
         rm -rf $FORK_DIR/system/system/etc/selinux || true
@@ -245,14 +261,6 @@ _pixel_fork() {
         rm -rf $FORK_DIR/vendor/etc/security || true
         rm -rf $FORK_DIR/vendor/etc/selinux || true
         rm -rf $FORK_DIR/vendor/etc/vintf || true
-        rm -rf $FORK_DIR/product/overlay || true
-        rm -rf $FORK_DIR/product/etc/build.prop || true
-        rm -rf $FORK_DIR/system/system/etc/build.prop || true
-        rm -rf $FORK_DIR/system_ext/etc/build.prop || true
-        rm -rf $FORK_DIR/system_ext/lib || true
-        rm -rf $FORK_DIR/system_ext/lib64 || true
-        rm -rf $FORK_DIR/system_ext/app || true
-        rm -rf $FORK_DIR/system_ext/priv-app || true
 
         wait
 
@@ -315,17 +323,17 @@ _flash() {
     read -p "FLASHING TO A 2019 XPERIA?" -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        sudo ./fastboot flash vbmeta_a $OUT_MAIN/vbmeta.img
-        sudo ./fastboot flash vbmeta_b $OUT_MAIN/vbmeta.img
-        sudo ./fastboot flash dtbo_a $OUT_MAIN/dtbo.img
-        sudo ./fastboot flash dtbo_b $OUT_MAIN/dtbo.img
         sudo ./fastboot flash boot_a $OUT_MAIN/boot.img
         sudo ./fastboot flash boot_b $OUT_MAIN/boot.img
-        sudo ./fastboot flash vendor_a $OUT_MAIN/vendor.img
-        sudo ./fastboot flash vendor_b $OUT_MAIN/vendor.img
+        sudo ./fastboot flash dtbo_a $OUT_MAIN/dtbo.img
+        sudo ./fastboot flash dtbo_b $OUT_MAIN/dtbo.img
         sudo ./fastboot flash system_a $OUT_MAIN/system.img
         sudo ./fastboot flash system_b $OUT_MAIN/system.img
         sudo ./fastboot flash userdata $OUT_MAIN/userdata.img
+        sudo ./fastboot flash vbmeta_a $OUT_MAIN/vbmeta.img
+        sudo ./fastboot flash vbmeta_b $OUT_MAIN/vbmeta.img
+        sudo ./fastboot flash vendor_a $OUT_MAIN/vendor.img
+        sudo ./fastboot flash vendor_b $OUT_MAIN/vendor.img
         sleep 5
         sudo ./fastboot reboot
         exit
@@ -334,17 +342,17 @@ _flash() {
     read -p "FLASHING TO A 2020 XPERIA?" -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        sudo ./fastboot flash vbmeta_a vbmeta.img
-        sudo ./fastboot flash vbmeta_b vbmeta.img
-        sudo ./fastboot flash dtbo_a dtbo.img
-        sudo ./fastboot flash dtbo_b dtbo.img
-        sudo ./fastboot flash boot_a boot.img
-        sudo ./fastboot flash boot_b boot.img
-        sudo ./fastboot flash vendor_a vendor.img
-        sudo ./fastboot flash vendor_b vendor.img
-        sudo ./fastboot flash system_a system.img
-        sudo ./fastboot flash system_b system.img
-        sudo ./fastboot flash userdata userdata.img
+        sudo ./fastboot flash boot $OUT_MAIN/boot.img
+        sudo ./fastboot flash dtbo $OUT_MAIN/dtbo.img
+        sudo ./fastboot flash product $OUT_MAIN/product.img
+        sudo ./fastboot flash recovery $OUT_MAIN/recovery.img
+        sudo ./fastboot flash system $OUT_MAIN/system.img
+        sudo ./fastboot flash system_ext $OUT_MAIN/system_ext.img
+        sudo ./fastboot flash userdata $OUT_MAIN/userdata.img
+        sudo ./fastboot flash vbmeta $OUT_MAIN/vbmeta.img
+        sudo ./fastboot flash vbmeta_system $OUT_MAIN/vbmeta_system.img
+        sudo ./fastboot flash vendor $OUT_MAIN/vendor.img
+        sudo ./fastboot flash vendor_boot $OUT_MAIN/vendor_boot.img
         sleep 5
         sudo ./fastboot reboot
         exit
@@ -353,17 +361,17 @@ _flash() {
     read -p "FLASHING TO A 2021 XPERIA?" -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        sudo ./fastboot flash vbmeta_a vbmeta.img
-        sudo ./fastboot flash vbmeta_b vbmeta.img
-        sudo ./fastboot flash dtbo_a dtbo.img
-        sudo ./fastboot flash dtbo_b dtbo.img
-        sudo ./fastboot flash boot_a boot.img
-        sudo ./fastboot flash boot_b boot.img
-        sudo ./fastboot flash vendor_a vendor.img
-        sudo ./fastboot flash vendor_b vendor.img
-        sudo ./fastboot flash system_a system.img
-        sudo ./fastboot flash system_b system.img
-        sudo ./fastboot flash userdata userdata.img
+        sudo ./fastboot flash boot $OUT_MAIN/boot.img
+        sudo ./fastboot flash dtbo $OUT_MAIN/dtbo.img
+        sudo ./fastboot flash product $OUT_MAIN/product.img
+        sudo ./fastboot flash recovery $OUT_MAIN/recovery.img
+        sudo ./fastboot flash system $OUT_MAIN/system.img
+        sudo ./fastboot flash system_ext $OUT_MAIN/system_ext.img
+        sudo ./fastboot flash userdata $OUT_MAIN/userdata.img
+        sudo ./fastboot flash vbmeta $OUT_MAIN/vbmeta.img
+        sudo ./fastboot flash vbmeta_system $OUT_MAIN/vbmeta_system.img
+        sudo ./fastboot flash vendor $OUT_MAIN/vendor.img
+        sudo ./fastboot flash vendor_boot $OUT_MAIN/vendor_boot.img
         sleep 5
         sudo ./fastboot reboot
         exit
