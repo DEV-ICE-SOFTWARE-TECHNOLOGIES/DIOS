@@ -115,7 +115,23 @@ BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
 WITH_DEXPREOPT := true
 
 PRODUCT_PROPERTY_OVERRIDES += \
-    ro.control_privapp_permissions=log
+ro.control_privapp_permissions=log \
+ro.boot.vendor.overlay.theme=com.android.internal.systemui.navbar.gestural;com.google.android.systemui.gxoverlay \
+ro.setupwizard.enterprise_mode=1 \
+ro.setupwizard.esim_cid_ignore=00000001 \
+setupwizard.feature.baseline_setupwizard_enabled=true \
+setupwizard.feature.show_pai_screen_in_main_flow.carrier1839=false \
+setupwizard.feature.skip_button_use_mobile_data.carrier1839=true \
+setupwizard.theme=glif_v3_light \
+ro.com.google.ime.theme_id=5 \
+ro.com.google.ime.system_lm_dir=/product/usr/share/ime/google/d3_lms \
+setupwizard.feature.show_pixel_tos=true \
+ro.llkd.enable=false \
+ro.storage_manager.show_opt_in=false \
+setupwizard.feature.show_support_link_in_deferred_setup=false \
+ro.carriersetup.vzw_consent_page=true \
+ro.setupwizard.rotation_locked=true \
+setupwizard.feature.device_default_dark_mode=true
 
 include vendor/gapps/arm64/arm64-vendor.mk
 EOF
@@ -245,7 +261,7 @@ _pixel_fork() {
         rm -rf $FORK_DIR/system_ext/etc/perf || true
         rm -rf $FORK_DIR/system_ext/etc/permissions/com.qti.dpmframework.xml || true
         rm -rf $FORK_DIR/system_ext/etc/permissions/com.qti.media.secureprocessor.xml || true
-        rm -rf $FORK_DIR/system_ext/etc/permissions/com.qualcomm.qcrilmsgtunnel.xml|| true
+        rm -rf $FORK_DIR/system_ext/etc/permissions/com.qualcomm.qcrilmsgtunnel.xml || true
         rm -rf $FORK_DIR/system_ext/etc/permissions/com.qualcomm.qti.imscmservice-V2.0-java.xml || true
         rm -rf $FORK_DIR/system_ext/etc/permissions/com.qualcomm.qti.imscmservice-V2.1-java.xml || true
         rm -rf $FORK_DIR/system_ext/etc/permissions/com.qualcomm.qti.imscmservice-V2.2-java.xml || true
