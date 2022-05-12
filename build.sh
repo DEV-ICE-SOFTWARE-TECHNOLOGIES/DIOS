@@ -1,6 +1,14 @@
 #!/bin/bash
 set -eu
-
+# ----------------------------------------------------------------------
+# D!OS SCRIPT VERSION: 220513.2
+# ----------------------------------------------------------------------
+# CREDITS TO PAUL, THE RANDOM SONY OPEN DEVELOPER GUY!
+# IT WAS A STONY PATH BUT YOU HELPED ME TO PASS IT! <3
+# ALSO THANKS TO ALL OTHER SUPPORTERS AND TESTER FOR YOUR HELP! <3
+# YOU OPENED A NEW CHAPTER OF ANDROID WITH ME...
+# ----------------------------------------------------------------------
+# MADE BY MARIUS KOPP (M1U5T0N3) WITH MUCH LOVE AND SWEAT...
 # ----------------------------------------------------------------------
 # 1. VARIABLES
 # ----------------------------------------------------------------------
@@ -19,10 +27,6 @@ NAME=M1U5T0N3
 SOURCE=~/dios
 USERNAME=~/miustone
 
-#
-# CREDITS TO PAUL, THE RANDOM SONY OPEN DEVELOPER GUY!
-# IT WAS A STONY PATH BUT YOU HELPED ME TO PASS IT! <3
-#
 # ----------------------------------------------------------------------
 # 2. HELP
 # ----------------------------------------------------------------------
@@ -80,16 +84,18 @@ _init_dios() {
         sudo mkdir /mnt/ccache
     fi
 
-    mkdir ~/dios/device/sony/customization
-    cat >device/sony/customization/customization.mk <<EOF
+    mkdir -p ~/dios/device/sony/customization
+    cat <<\EOF >device/sony/customization/customization.mk
 DIOS_PATH := device/sony/dios
 
-\$(call inherit-product-if-exists, $(DIOS_PATH)/dios.mk)
+$(call inherit-product-if-exists, $(DIOS_PATH)/dios.mk)
 EOF
 
     repo init -u https://android.googlesource.com/platform/manifest -b android-12.1.0_r5
     cd .repo
-    git clone https://github.com/sonyxperiadev/local_manifests
+    if [ ! -d ~/dios/.repo/local_manifests ]; then
+        git clone https://github.com/sonyxperiadev/local_manifests
+    fi
     cd local_manifests
     git checkout
     cd ../..
@@ -167,7 +173,7 @@ BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
 
 WITH_DEXPREOPT := true
 
--include vendor/gapps/arm64/arm64-vendor.mk
+include vendor/gapps/arm64/arm64-vendor.mk
 
         PRODUCT_PROPERTY_OVERRIDES += \
 ro.control_privapp_permissions=log \
