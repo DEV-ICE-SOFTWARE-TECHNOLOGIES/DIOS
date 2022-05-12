@@ -5,26 +5,24 @@ set -eu
 # 1. VARIABLES
 # ----------------------------------------------------------------------
 
-DEVICE=bahamut
-DOWNLOAD_DIR=~/dios/device/sony/common/rootdir/dios/pixel
+DOWNLOAD_DIR=~/dios/device/sony/dios/pixel
 EMAIL=mariuskopp517@gmail.com
-FORK_DIR=~/dios/device/sony/common/rootdir/dios/fork
+FORK_DIR=~/dios/device/sony/dios/fork
 IMAGE_NAME=redfin-sp2a.220505.002-factory-7fe11c77.zip
 IMAGE_FILE=$DOWNLOAD_DIR/$IMAGE_NAME
-OUT_PRODUCT=~/dios/out/target/product/$DEVICE/system/product
-OUT_VENDOR=~/dios/out/target/product/$DEVICE/vendor
-OUT_SYSTEM=~/dios/out/target/product/$DEVICE/system
-OUT_SYSTEM_EXT=~/dios/out/target/product/$DEVICE/system/system_ext
-OUT_MAIN=~/dios/out/target/product/$DEVICE
-TMP=~/dios/device/sony/common/rootdir/dios/tmp/$(basename $IMAGE_NAME .zip)
-PRODUCT=~/dios/device/sony/common/rootdir/dios/tmp/$(basename $IMAGE_NAME .zip)/product
-VENDOR=~/dios/device/sony/common/rootdir/dios/tmp/$(basename $IMAGE_NAME .zip)/vendor
-SYSTEM=~/dios/device/sony/common/rootdir/dios/tmp/$(basename $IMAGE_NAME .zip)/system
-SYSTEM_EXT=~/dios/device/sony/common/rootdir/dios/tmp/$(basename $IMAGE_NAME .zip)/system_ext
+TMP=~/dios/device/sony/dios/tmp/$(basename $IMAGE_NAME .zip)
+PRODUCT=~/dios/device/sony/dios/tmp/$(basename $IMAGE_NAME .zip)/product
+VENDOR=~/dios/device/sony/dios/tmp/$(basename $IMAGE_NAME .zip)/vendor
+SYSTEM=~/dios/device/sony/dios/tmp/$(basename $IMAGE_NAME .zip)/system
+SYSTEM_EXT=~/dios/device/sony/dios/tmp/$(basename $IMAGE_NAME .zip)/system_ext
 NAME=M1U5T0N3
 SOURCE=~/dios
-USERNAME=${USERNAME:-~miustone}
+USERNAME=~/miustone
 
+#
+# CREDITS TO PAUL, THE RANDOM SONY OPEN DEVELOPER GUY!
+# IT WAS A STONY PATH BUT YOU HELPED ME TO PASS IT! <3
+#
 # ----------------------------------------------------------------------
 # 2. HELP
 # ----------------------------------------------------------------------
@@ -82,13 +80,59 @@ _init_dios() {
         sudo mkdir /mnt/ccache
     fi
 
+    mkdir ~/dios/device/sony/customization
+    cat >device/sony/customization/customization.mk <<EOF
+DIOS_PATH := device/sony/dios
+
+\$(call inherit-product-if-exists, $(DIOS_PATH)/dios.mk)
+EOF
+
     repo init -u https://android.googlesource.com/platform/manifest -b android-12.1.0_r5
     cd .repo
-    git clone https://github.com/DEV-ICE-TECHNOLOGIES/local_manifests
+    git clone https://github.com/sonyxperiadev/local_manifests
     cd local_manifests
     git checkout
     cd ../..
-    mkdir -p ~/dios/device/sony/common/rootdir/dios
+    cat <<\EOF >~/dios/.repo/local_manifests/dios.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+
+    <!-- DIOS -->
+    <remove-project name="platform/packages/apps/Browser2" />
+    <remove-project name="platform/packages/apps/Calendar" />
+    <remove-project name="platform/packages/apps/Camera2" />
+    <remove-project name="platform/packages/apps/Contacts" />
+    <remove-project name="platform/packages/apps/DeskClock" />
+    <remove-project name="platform/packages/apps/Dialer" />
+    <remove-project name="platform/packages/apps/DocumentsUI" />
+    <remove-project name="platform/packages/apps/Gallery" />
+    <remove-project name="platform/packages/apps/Gallery2" />
+    <remove-project name="platform/packages/apps/Launcher3" />
+    <remove-project name="platform/packages/apps/Messaging" />
+    <remove-project name="platform/packages/apps/Music" />
+    <remove-project name="platform/packages/apps/MusicFX" />
+    <remove-project name="platform/packages/apps/QuickSearchBox" />
+    <remove-project name="platform/packages/apps/Stk" />
+    <remove-project name="platform/packages/apps/StorageManager" />
+    <remove-project name="platform/packages/apps/WallpaperPicker" />
+    <remove-project name="platform/packages/apps/WallpaperPicker2" />
+    <remove-project name="platform/external/chromium-webview" />
+    <remove-project name="platform/packages/apps/ThemePicker" />
+    <remove-project name="platform/packages/inputmethods/LatinIME" />
+    <remove-project name="platform/packages/inputmethods/LeanbackIME" />
+	
+</manifest>
+EOF
+    mkdir -p ~/dios/device/sony/dios
+    cat <<\EOF >~/dios/device/sony/dios/Android.mk
+LOCAL_PATH := $(call my-dir)
+
+include $(CLEAR_VARS)
+$(shell cp -rf $(LOCAL_PATH)/dios/fork/system/system/* `pwd`/$(TARGET_OUT_SYSTEM)/)
+$(shell cp -rf $(LOCAL_PATH)/dios/fork/system_ext/* `pwd`/$(TARGET_OUT_SYSTEM_EXT)/)
+$(shell cp -rf $(LOCAL_PATH)/dios/fork/product/* `pwd`/$(TARGET_OUT_PRODUCT)/)
+$(shell cp -rf $(LOCAL_PATH)/dios/fork/vendor/* `pwd`/$(TARGET_OUT_VENDOR)/)
+EOF
     repo sync -j$(nproc) && ./repo_update.sh -j$(nproc)
     echo ""
     echo "PREPARED! RESTART THE SCRIPT TO START BUILDING..."
@@ -96,25 +140,36 @@ _init_dios() {
 }
 
 # ----------------------------------------------------------------------
-# 4. POST-UPDATE OPTIONS
+# 4. POST-UPDATE FLAGS
 # ----------------------------------------------------------------------
 
 _post_update() {
     if $_aosp; then
         echo ""
         echo "AOSP BUILD FLAGS..."
-        cat <<EOF >~/dios/device/sony/common/rootdir/dios/dios.mk
+        cat <<\EOF >~/dios/device/sony/dios/dios.mk
 BOARD_USE_ENFORCING_SELINUX := true
 EOF
     else
         echo ""
         echo "DIOS BUILD FLAGS..."
-        cat <<\EOF >~/dios/device/sony/common/rootdir/dios/dios.mk
+
+        cat <<\EOF >~/dios/.repo/local_manifests/gapps.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+<remote name="MindTheGapps" fetch="https://gitlab.com/MindTheGapps/" />
+<project path="vendor/gapps" name="vendor_gapps" remote="MindTheGapps" revision="sigma" />
+</manifest>
+EOF
+
+        cat <<\EOF >~/dios/device/sony/dios/dios.mk
 BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
 
 WITH_DEXPREOPT := true
 
-PRODUCT_PROPERTY_OVERRIDES += \
+-include vendor/gapps/arm64/arm64-vendor.mk
+
+        PRODUCT_PROPERTY_OVERRIDES += \
 ro.control_privapp_permissions=log \
 ro.boot.vendor.overlay.theme=com.android.internal.systemui.navbar.gestural;com.google.android.systemui.gxoverlay \
 ro.setupwizard.enterprise_mode=1 \
@@ -132,38 +187,293 @@ setupwizard.feature.show_support_link_in_deferred_setup=false \
 ro.carriersetup.vzw_consent_page=true \
 ro.setupwizard.rotation_locked=true \
 setupwizard.feature.device_default_dark_mode=true
-
-include vendor/gapps/arm64/arm64-vendor.mk
 EOF
-        cat <<\EOF >~/dios/device/sony/common/rootdir/Android.mk
-LOCAL_PATH := $(call my-dir)
+        cat <<\EOF >~/dios/device/sony/common/common-prop.mk
+# librqbalance enablement
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.vendor.extension_library=/vendor/lib/librqbalance.so
 
+# Limit dex2oat threads to improve thermals
+PRODUCT_PROPERTY_OVERRIDES += \
+    dalvik.vm.dex2oat-threads=2 \
+    dalvik.vm.image-dex2oat-threads=4
 
-include $(CLEAR_VARS)
-LOCAL_MODULE := init.recovery.$(TARGET_DEVICE)
-LOCAL_SRC_FILES := init.recovery.common.rc
-LOCAL_MODULE_TAGS := optional
-LOCAL_MODULE_STEM := init.recovery.$(TARGET_DEVICE)
-LOCAL_MODULE_SUFFIX := .rc
-LOCAL_MODULE_CLASS := ETC
-LOCAL_MODULE_PATH := $(TARGET_ROOT_OUT)
-include $(BUILD_PREBUILT)
+# Platform specific default properties
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.data.qmi.adb_logmask=0
 
-include $(CLEAR_VARS)
-LOCAL_MODULE := init.$(TARGET_DEVICE)
-LOCAL_SRC_FILES := vendor/etc/init/hw/init.common.rc
-LOCAL_MODULE_TAGS := optional
-LOCAL_MODULE_STEM := init.$(TARGET_DEVICE)
-LOCAL_MODULE_SUFFIX := .rc
-LOCAL_MODULE_CLASS := ETC
-LOCAL_MODULE_PATH := $(TARGET_OUT_VENDOR)/etc/init/hw
-include $(BUILD_PREBUILT)
+# configure adb over wifi only on the eng build
+ifneq (,$(filter eng, $(TARGET_BUILD_VARIANT)))
+PRODUCT_PROPERTY_OVERRIDES += \
+    service.adb.tcp.port=5555
+endif
 
-include $(CLEAR_VARS)
-$(shell cp -rf $(LOCAL_PATH)/dios/fork/system/system/* `pwd`/$(TARGET_OUT_SYSTEM)/)
-$(shell cp -rf $(LOCAL_PATH)/dios/fork/system_ext/* `pwd`/$(TARGET_OUT_SYSTEM_EXT)/)
-$(shell cp -rf $(LOCAL_PATH)/dios/fork/product/* `pwd`/$(TARGET_OUT_PRODUCT)/)
-#$(shell cp -rf $(LOCAL_PATH)/dios/fork/vendor/* `pwd`/$(TARGET_OUT_VENDOR)/)
+# Common property setup DS or SS devices.
+ifeq ($(PRODUCT_DEVICE_DS),true)
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.vendor.radio.multisim.config=dsds
+else
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.telephony.default_network=9
+endif
+
+# System props for the data modules
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.vendor.use_data_netmgrd=true \
+    persist.vendor.data.mode=concurrent \
+    persist.data.netmgrd.qos.enable=true \
+    ro.data.large_tcp_window_size=true
+
+# Enable Power save functionality for modem
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.vendor.radio.add_power_save=1 \
+    persist.vendor.radio.apm_sim_not_pwdn=1
+
+# Enable advanced power saving for data connectivity
+# DPM: Data Port Mapper, with TCM (TCP Connection Manager)
+# CnE: Connectivity Engine
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.vendor.dpm.feature=1 \
+    persist.vendor.dpm.tcm=1 \
+    persist.vendor.cne.feature=1
+
+# IMS
+# P.S.: va_{aosp,odm} is necessary to load imscmservice
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.vendor.qti.va_aosp.support=1 \
+    ro.vendor.qti.va_odm.support=1 \
+    persist.vendor.radio.vdp_on_ims_cap=1 \
+    persist.vendor.radio.report_codec=1
+
+# VoLTE / VT / WFC
+# These properties will force availability of the VoLTE,
+# VideoTelephony and Wi-Fi Call, without needing carrier
+# services provisioning sites hooked up: simplifies it.
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.dbg.volte_avail_ovr=1 \
+    persist.dbg.vt_avail_ovr=1  \
+    persist.dbg.wfc_avail_ovr=1
+
+# Modem properties
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.vendor.radio.wait_for_pbm=1 \
+    persist.vendor.radio.mt_sms_ack=19 \
+    persist.vendor.radio.enableadvancedscan=true \
+    persist.vendor.radio.unicode_op_names=true \
+    persist.vendor.radio.sib16_support=1 \
+    persist.vendor.radio.oem_socket=true
+
+# Ringer
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.telephony.call_ring.multiple=false
+
+# System props for telephony System prop to turn on CdmaLTEPhone always
+PRODUCT_PROPERTY_OVERRIDES += \
+    telephony.lteOnCdmaDevice=0
+
+# debug.sf.latch_unsignaled
+# - This causes SurfaceFlinger to latch
+#   buffers even if their fences haven't signaled
+PRODUCT_PROPERTY_OVERRIDES += \
+    debug.sf.latch_unsignaled=1
+
+# SurfaceFlinger
+# Keep uppercase makevars like TARGET_FORCE_HWC_FOR_VIRTUAL_DISPLAYS
+# in sync, use hardware/interfaces/configstore/1.1/default/surfaceflinger.mk
+# as a reference
+# ConfigStore is being deprecated and sf is moving to props, see
+# frameworks/native/services/surfaceflinger/sysprop/SurfaceFlingerProperties.sysprop
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.surface_flinger.force_hwc_copy_for_virtual_displays=true
+
+# Disable buffer age (b/74534157)
+PRODUCT_PROPERTY_OVERRIDES += \
+    debug.hwui.use_buffer_age=false
+
+# Stagefright
+PRODUCT_PROPERTY_OVERRIDES += \
+    media.stagefright.thumbnail.prefer_hw_codecs=true
+
+# Delay reduction
+PRODUCT_PROPERTY_OVERRIDES += \
+    sdm.debug.rotator_downscale=1
+
+# DRM service
+PRODUCT_PROPERTY_OVERRIDES += \
+    drm.service.enabled=true
+
+# VIDC: debug_levels 1:ERROR 2:HIGH 4:LOW 0:NOLOGS 7:AllLOGS
+PRODUCT_PROPERTY_OVERRIDES += \
+    vidc.debug.level=1
+
+# Audio
+PRODUCT_PROPERTY_OVERRIDES += \
+    audio.deep_buffer.media=true \
+    fmas.hdph_sgain=0 \
+    media.aac_51_output_enabled=true \
+    ro.config.media_vol_steps=25 \
+    ro.config.vc_call_vol_steps=7
+
+# Audio (AOSP HAL)
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.audio.fluence.speaker=true \
+    persist.audio.fluence.voicecall=true \
+    persist.audio.fluence.voicecomm=true \
+    persist.audio.fluence.voicerec=true \
+    ro.qc.sdk.audio.fluencetype=fluence
+
+# Audio (newer CAF HALs)
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.vendor.audio.fluence.speaker=true \
+    persist.vendor.audio.fluence.voicecall=true \
+    persist.vendor.audio.fluence.voicecomm=true \
+    persist.vendor.audio.fluence.voicerec=true \
+    ro.vendor.audio.sdk.fluencetype=fluence \
+    vendor.audio_hal.in_period_size=144 \
+    vendor.audio_hal.period_multiplier=3 \
+    vendor.audio_hal.period_size=192 \
+    vendor.audio.offload.gapless.enabled=true \
+    vendor.audio.offload.multiaac.enable=true \
+    vendor.audio.offload.multiple.enabled=false \
+    vendor.audio.offload.passthrough=false \
+    vendor.audio.offload.track.enable=true \
+    vendor.audio.parser.ip.buffer.size=262144 \
+    vendor.audio.volume.headset.gain.depcal=true \
+    vendor.voice.path.for.pcm.voip=true
+
+# Audio (CAF - Hardware enc/decoding)
+PRODUCT_PROPERTY_OVERRIDES += \
+    vendor.audio.flac.sw.decoder.24bit=true \
+    vendor.audio.hw.aac.encoder=true \
+    vendor.audio.use.sw.alac.decoder=true \
+    vendor.audio.use.sw.ape.decoder=true
+
+# Audio Features
+PRODUCT_PROPERTY_OVERRIDES += \
+    vendor.audio.feature.afe_proxy.enable=true \
+    vendor.audio.feature.anc_headset.enable=true \
+    vendor.audio.feature.audiozoom.enable=false \
+    vendor.audio.feature.battery_listener.enable=false \
+    vendor.audio.feature.compr_cap.enable=false \
+    vendor.audio.feature.compress_meta_data.enable=true \
+    vendor.audio.feature.deepbuffer_as_primary.enable=false \
+    vendor.audio.feature.dsm_feedback.enable=false \
+    vendor.audio.feature.ext_hw_plugin.enable=false \
+    vendor.audio.feature.external_dsp.enable=false \
+    vendor.audio.feature.external_speaker_tfa.enable=false \
+    vendor.audio.feature.external_speaker.enable=false \
+    vendor.audio.feature.fluence.enable=true \
+    vendor.audio.feature.fm.enable=true \
+    vendor.audio.feature.hfp.enable=true \
+    vendor.audio.feature.hifi_audio.enable=false \
+    vendor.audio.feature.hwdep_cal.enable=false \
+    vendor.audio.feature.incall_music.enable=false \
+    vendor.audio.feature.keep_alive.enable=false \
+    vendor.audio.feature.maxx_audio.enable=false \
+    vendor.audio.feature.multi_voice_session.enable=true \
+    vendor.audio.feature.ras.enable=true \
+    vendor.audio.feature.record_play_concurency.enable=false \
+    vendor.audio.feature.snd_mon.enable=true \
+    vendor.audio.feature.spkr_prot.enable=true \
+    vendor.audio.feature.src_trkn.enable=true \
+    vendor.audio.feature.ssrec.enable=true \
+    vendor.audio.feature.usb_offload_burst_mode.enable=false \
+    vendor.audio.feature.usb_offload_sidetone_volume.enable=false \
+    vendor.audio.feature.usb_offload.enable=true \
+    vendor.audio.feature.vbat.enable=true \
+    vendor.audio.feature.wsa.enable=false
+
+# AudioPolicy Manager
+PRODUCT_PROPERTY_OVERRIDES += \
+    audio.offload.video=1
+
+# AudioFlinger
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.af.client_heap_size_kbyte=7168
+
+# Enable stats logging in LMKD
+TARGET_LMKD_STATS_LOG := true
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.lmk.log_stats=true
+
+# Set lmkd options
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.lmk.low=1001 \
+    ro.lmk.medium=800 \
+    ro.lmk.critical=0 \
+    ro.lmk.critical_upgrade=false \
+    ro.lmk.upgrade_pressure=100 \
+    ro.lmk.downgrade_pressure=100 \
+    ro.lmk.kill_heaviest_task=true \
+    ro.lmk.kill_timeout_ms=100 \
+    ro.lmk.use_minfree_levels=true
+
+# Property to enable user to access Google WFD settings.
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.debug.wfd.enable=0
+
+# Property to choose between virtual/external wfd display
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.sys.wfd.virtual=0
+
+# Display properties
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.demo.hdmirotationlock=false \
+    persist.sys.sf.color_saturation=1.0 \
+    vendor.display.disable_inline_rotator=1 \
+    vendor.display.enable_null_display=0 \
+    vendor.display.disable_excl_rect=0 \
+    vendor.display.comp_mask=0 \
+    vendor.display.enable_default_color_mode=1 \
+    vendor.display.enable_optimize_refresh=1 \
+    vendor.display.disable_ui_3d_tonemap=1
+
+# Wi-Fi interface name
+PRODUCT_PROPERTY_OVERRIDES += \
+    wifi.interface=wlan0
+
+# BT address
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.vendor.bt.bdaddr_path=/data/vendor/bluetooth/bluetooth_bdaddr
+
+# BT address for devices with BCM BT
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.bt.bdaddr_path=/data/vendor/bluetooth/bluetooth_bdaddr
+
+# RILD
+PRODUCT_PROPERTY_OVERRIDES += \
+    vendor.rild.libpath=/odm/lib64/libril-qc-hal-qmi.so \
+    ril.subscription.types=NV,RUIM
+
+# OpenGLES version
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.opengles.version=196610
+
+# Vendor version
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.odm.expect.version=$(PLATFORM_VERSION)_$(SOMC_KERNEL_VERSION)_$(SOMC_PLATFORM)_$(TARGET_VENDOR_VERSION)
+
+# Perform color transform on the client
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.hwc2.skip_client_color_transform=false
+
+# Avoid Adoptable double encryption
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.crypto.allow_encrypt_override=true
+
+# Reduce cost of scrypt for FBE CE decryption
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.crypto.scrypt_params=15:3:1
+
+# Look for vulkan.qcom.so instead of vulkan.$(BOARD_TARGET_PLATFORM).so
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.hardware.vulkan=qcom
+
+# Disable Compressed APEX on 4.14 kernel as Android 12 enforces it and our kernel is not compatible (yet)
+ifeq ($(SOMC_KERNEL_VERSION), 4.14)
+OVERRIDE_PRODUCT_COMPRESSED_APEX := false
+endif
+
 EOF
     fi
 }
@@ -298,28 +608,7 @@ _pixel_fork() {
 }
 
 # ----------------------------------------------------------------------
-# 8. BASIC GAPPS
-# ----------------------------------------------------------------------
-
-_init_gapps() {
-    if $_aosp; then
-        return
-    else
-
-        pushd .repo/local_manifests
-        cat >gapps.xml <<EOF
-<?xml version="1.0" encoding="UTF-8"?>
-<manifest>
-<remote name="MindTheGapps" fetch="https://gitlab.com/MindTheGapps/" />
-<project path="vendor/gapps" name="vendor_gapps" remote="MindTheGapps" revision="sigma" />
-</manifest>
-EOF
-        popd
-    fi
-}
-
-# ----------------------------------------------------------------------
-# 9. MAKE OPTIONS
+# 8. MAKE OPTIONS
 # ----------------------------------------------------------------------
 
 _make() {
@@ -334,12 +623,12 @@ _make() {
         echo "START BUILDING DIOS"
         sudo mount --bind $USERNAME/.ccache /mnt/ccache
         make -j$(nproc)
-        rm -rf ~/dios/device/sony/common/rootdir/dios/fork || true
+        rm -rf ~/dios/device/sony/dios/fork || true
     fi
 }
 
 # ----------------------------------------------------------------------
-# 10. FLASHING OUTPUT
+# 9. FLASHING OUTPUT
 # ----------------------------------------------------------------------
 
 _flash() {
@@ -402,7 +691,7 @@ _flash() {
 }
 
 # ----------------------------------------------------------------------
-# 11. BUILD STEPS
+# 10. BUILD STEPS
 # ----------------------------------------------------------------------
 
 _build() {
@@ -416,7 +705,7 @@ _build() {
 }
 
 # ----------------------------------------------------------------------
-# 12. SETTING OPTIONS
+# 11. SETTING OPTIONS
 # ----------------------------------------------------------------------
 
 declare _shell_script=${0##*/}
@@ -453,7 +742,7 @@ done
 # 0. BUILD OR INIT
 # ----------------------------------------------------------------------
 
-if [ -d ~/dios/device/sony/common/rootdir/dios ]; then
+if [ -d ~/dios/device/sony/dios ]; then
     cd $SOURCE
 
     set +u
