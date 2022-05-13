@@ -13,6 +13,7 @@ set -eu
 # 1. VARIABLES
 # ----------------------------------------------------------------------
 
+DEVICE=bahamut
 NAME=M1U5T0N3
 USERNAME=miustone
 EMAIL=mariuskopp517@gmail.com
@@ -21,6 +22,7 @@ DOWNLOAD_DIR=~/dios/device/sony/dios/pixel
 FORK_DIR=~/dios/device/sony/dios/fork
 IMAGE_NAME=redfin-sp2a.220505.002-factory-7fe11c77.zip
 IMAGE_FILE=$DOWNLOAD_DIR/$IMAGE_NAME
+OUT=~/dios/out/target/product/$DEVICE
 TMP=~/dios/device/sony/dios/tmp/$(basename $IMAGE_NAME .zip)
 PRODUCT=~/dios/device/sony/dios/tmp/$(basename $IMAGE_NAME .zip)/product
 VENDOR=~/dios/device/sony/dios/tmp/$(basename $IMAGE_NAME .zip)/vendor
@@ -144,7 +146,8 @@ $(shell cp -rf $(LOCAL_PATH)/fork/product/* `pwd`/$(TARGET_OUT_PRODUCT)/)
 $(shell cp -rf $(LOCAL_PATH)/fork/vendor/* `pwd`/$(TARGET_OUT_VENDOR)/)
 $(shell cp -rf $(LOCAL_PATH)/ACDB/acdbdata/* `pwd`/$(TARGET_OUT_VENDOR)/etc/acdbdata)
 EOF
-    _repo_update
+
+    repo sync -j$(nproc) && ./repo_update.sh -j$(nproc)
     echo ""
     echo "PREPARED! RESTART THE SCRIPT TO START BUILDING..."
     #exit
@@ -647,17 +650,17 @@ _flash() {
     read -p "FLASHING TO A 2019 XPERIA?" -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        sudo ./fastboot flash boot_a $OUT_MAIN/boot.img
-        sudo ./fastboot flash boot_b $OUT_MAIN/boot.img
-        sudo ./fastboot flash dtbo_a $OUT_MAIN/dtbo.img
-        sudo ./fastboot flash dtbo_b $OUT_MAIN/dtbo.img
-        sudo ./fastboot flash system_a $OUT_MAIN/system.img
-        sudo ./fastboot flash system_b $OUT_MAIN/system.img
-        sudo ./fastboot flash userdata $OUT_MAIN/userdata.img
+        sudo ./fastboot flash boot_a $OUT/boot.img
+        sudo ./fastboot flash boot_b $OUT/boot.img
+        sudo ./fastboot flash dtbo_a $OUT/dtbo.img
+        sudo ./fastboot flash dtbo_b $OUT/dtbo.img
+        sudo ./fastboot flash system_a $OUT/system.img
+        sudo ./fastboot flash system_b $OUT/system.img
+        sudo ./fastboot flash userdata $OUT/userdata.img
         sudo ./fastboot flash vbmeta_a $OUT_MAIN/vbmeta.img
-        sudo ./fastboot flash vbmeta_b $OUT_MAIN/vbmeta.img
-        sudo ./fastboot flash vendor_a $OUT_MAIN/vendor.img
-        sudo ./fastboot flash vendor_b $OUT_MAIN/vendor.img
+        sudo ./fastboot flash vbmeta_b $OUT/vbmeta.img
+        sudo ./fastboot flash vendor_a $OUT/vendor.img
+        sudo ./fastboot flash vendor_b $OUT/vendor.img
         sleep 5
         sudo ./fastboot reboot
         exit
@@ -666,17 +669,17 @@ _flash() {
     read -p "FLASHING TO A 2020 XPERIA?" -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        sudo ./fastboot flash boot $OUT_MAIN/boot.img
-        sudo ./fastboot flash dtbo $OUT_MAIN/dtbo.img
-        sudo ./fastboot flash product $OUT_MAIN/product.img
-        sudo ./fastboot flash recovery $OUT_MAIN/recovery.img
-        sudo ./fastboot flash system $OUT_MAIN/system.img
-        sudo ./fastboot flash system_ext $OUT_MAIN/system_ext.img
-        sudo ./fastboot flash userdata $OUT_MAIN/userdata.img
-        sudo ./fastboot flash vbmeta $OUT_MAIN/vbmeta.img
-        sudo ./fastboot flash vbmeta_system $OUT_MAIN/vbmeta_system.img
-        sudo ./fastboot flash vendor $OUT_MAIN/vendor.img
-        sudo ./fastboot flash vendor_boot $OUT_MAIN/vendor_boot.img
+        sudo ./fastboot flash boot $OUT/boot.img
+        sudo ./fastboot flash dtbo $OUT/dtbo.img
+        sudo ./fastboot flash product $OUT/product.img
+        sudo ./fastboot flash recovery $OUT/recovery.img
+        sudo ./fastboot flash system $OUT/system.img
+        sudo ./fastboot flash system_ext $OUT/system_ext.img
+        sudo ./fastboot flash userdata $OUT/userdata.img
+        sudo ./fastboot flash vbmeta $OUT/vbmeta.img
+        sudo ./fastboot flash vbmeta_system $OUT/vbmeta_system.img
+        sudo ./fastboot flash vendor $OUT/vendor.img
+        sudo ./fastboot flash vendor_boot $OUT/vendor_boot.img
         sleep 5
         sudo ./fastboot reboot
         exit
@@ -685,17 +688,17 @@ _flash() {
     read -p "FLASHING TO A 2021 XPERIA?" -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        sudo ./fastboot flash boot $OUT_MAIN/boot.img
-        sudo ./fastboot flash dtbo $OUT_MAIN/dtbo.img
-        sudo ./fastboot flash product $OUT_MAIN/product.img
-        sudo ./fastboot flash recovery $OUT_MAIN/recovery.img
-        sudo ./fastboot flash system $OUT_MAIN/system.img
-        sudo ./fastboot flash system_ext $OUT_MAIN/system_ext.img
-        sudo ./fastboot flash userdata $OUT_MAIN/userdata.img
-        sudo ./fastboot flash vbmeta $OUT_MAIN/vbmeta.img
-        sudo ./fastboot flash vbmeta_system $OUT_MAIN/vbmeta_system.img
-        sudo ./fastboot flash vendor $OUT_MAIN/vendor.img
-        sudo ./fastboot flash vendor_boot $OUT_MAIN/vendor_boot.img
+        sudo ./fastboot flash boot $OUT/boot.img
+        sudo ./fastboot flash dtbo $OUT/dtbo.img
+        sudo ./fastboot flash product $OUT/product.img
+        sudo ./fastboot flash recovery $OUT/recovery.img
+        sudo ./fastboot flash system $OUT/system.img
+        sudo ./fastboot flash system_ext $OUT/system_ext.img
+        sudo ./fastboot flash userdata $OUT/userdata.img
+        sudo ./fastboot flash vbmeta $OUT/vbmeta.img
+        sudo ./fastboot flash vbmeta_system $OUT/vbmeta_system.img
+        sudo ./fastboot flash vendor $OUT/vendor.img
+        sudo ./fastboot flash vendor_boot $OUT/vendor_boot.img
         sleep 5
         sudo ./fastboot reboot
         exit
