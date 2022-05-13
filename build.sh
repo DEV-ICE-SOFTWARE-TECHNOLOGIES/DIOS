@@ -13,8 +13,11 @@ set -eu
 # 1. VARIABLES
 # ----------------------------------------------------------------------
 
-DOWNLOAD_DIR=~/dios/device/sony/dios/pixel
+NAME=M1U5T0N3
+USERNAME=miustone
 EMAIL=mariuskopp517@gmail.com
+DIOS_DIR=~/dios/device/sony/dios
+DOWNLOAD_DIR=~/dios/device/sony/dios/pixel
 FORK_DIR=~/dios/device/sony/dios/fork
 IMAGE_NAME=redfin-sp2a.220505.002-factory-7fe11c77.zip
 IMAGE_FILE=$DOWNLOAD_DIR/$IMAGE_NAME
@@ -23,9 +26,6 @@ PRODUCT=~/dios/device/sony/dios/tmp/$(basename $IMAGE_NAME .zip)/product
 VENDOR=~/dios/device/sony/dios/tmp/$(basename $IMAGE_NAME .zip)/vendor
 SYSTEM=~/dios/device/sony/dios/tmp/$(basename $IMAGE_NAME .zip)/system
 SYSTEM_EXT=~/dios/device/sony/dios/tmp/$(basename $IMAGE_NAME .zip)/system_ext
-NAME=M1U5T0N3
-SOURCE=~/dios
-USERNAME=~/miustone
 
 # ----------------------------------------------------------------------
 # 2. HELP
@@ -84,11 +84,10 @@ _init_dios() {
         sudo mkdir /mnt/ccache
     fi
 
-    mkdir -p ~/dios/device/sony/customization
-    cat <<\EOF >device/sony/customization/customization.mk
+    mkdir ~/dios/device/sony/customization
+    cat >device/sony/customization/customization.mk <<EOF
 DIOS_PATH := device/sony/dios
-
-$(call inherit-product-if-exists, $(DIOS_PATH)/dios.mk)
+\$(call inherit-product-if-exists, $(DIOS_PATH)/dios.mk)
 EOF
 
     repo init -u https://android.googlesource.com/platform/manifest -b android-12.1.0_r5
@@ -103,7 +102,8 @@ EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
 
-    <!-- DIOS -->
+    <!-- D!OS -->
+    <remove-project name="platform/external/chromium-webview" />
     <remove-project name="platform/packages/apps/Browser2" />
     <remove-project name="platform/packages/apps/Calendar" />
     <remove-project name="platform/packages/apps/Camera2" />
@@ -118,31 +118,36 @@ EOF
     <remove-project name="platform/packages/apps/Music" />
     <remove-project name="platform/packages/apps/MusicFX" />
     <remove-project name="platform/packages/apps/QuickSearchBox" />
+    <remove-project name="platform/packages/apps/SettingsIntelligence" />
     <remove-project name="platform/packages/apps/Stk" />
     <remove-project name="platform/packages/apps/StorageManager" />
+    <remove-project name="platform/packages/apps/ThemePicker" />
     <remove-project name="platform/packages/apps/WallpaperPicker" />
     <remove-project name="platform/packages/apps/WallpaperPicker2" />
-    <remove-project name="platform/external/chromium-webview" />
-    <remove-project name="platform/packages/apps/ThemePicker" />
     <remove-project name="platform/packages/inputmethods/LatinIME" />
     <remove-project name="platform/packages/inputmethods/LeanbackIME" />
+
 	
 </manifest>
 EOF
-    mkdir -p ~/dios/device/sony/dios
+    mkdir -p $DIOS_DIR
+    pushd $DIOS_DIR
+    git clone https://github.com/DEV-ICE-TECHNOLOGIES/ACDB
+    popd
     cat <<\EOF >~/dios/device/sony/dios/Android.mk
 LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
-$(shell cp -rf $(LOCAL_PATH)/dios/fork/system/system/* `pwd`/$(TARGET_OUT_SYSTEM)/)
-$(shell cp -rf $(LOCAL_PATH)/dios/fork/system_ext/* `pwd`/$(TARGET_OUT_SYSTEM_EXT)/)
-$(shell cp -rf $(LOCAL_PATH)/dios/fork/product/* `pwd`/$(TARGET_OUT_PRODUCT)/)
-$(shell cp -rf $(LOCAL_PATH)/dios/fork/vendor/* `pwd`/$(TARGET_OUT_VENDOR)/)
+$(shell cp -rf $(LOCAL_PATH)/fork/system/system/* `pwd`/$(TARGET_OUT_SYSTEM)/)
+$(shell cp -rf $(LOCAL_PATH)/fork/system_ext/* `pwd`/$(TARGET_OUT_SYSTEM_EXT)/)
+$(shell cp -rf $(LOCAL_PATH)/fork/product/* `pwd`/$(TARGET_OUT_PRODUCT)/)
+$(shell cp -rf $(LOCAL_PATH)/fork/vendor/* `pwd`/$(TARGET_OUT_VENDOR)/)
+$(shell cp -rf $(LOCAL_PATH)/ACDB/acdbdata/* `pwd`/$(TARGET_OUT_VENDOR)/etc/acdbdata)
 EOF
-    repo sync -j$(nproc) && ./repo_update.sh -j$(nproc)
+    _repo_update
     echo ""
     echo "PREPARED! RESTART THE SCRIPT TO START BUILDING..."
-    exit
+    #exit
 }
 
 # ----------------------------------------------------------------------
@@ -173,7 +178,7 @@ BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
 
 WITH_DEXPREOPT := true
 
-include vendor/gapps/arm64/arm64-vendor.mk
+-include vendor/gapps/arm64/arm64-vendor.mk
 
         PRODUCT_PROPERTY_OVERRIDES += \
 ro.control_privapp_permissions=log \
@@ -194,6 +199,7 @@ ro.carriersetup.vzw_consent_page=true \
 ro.setupwizard.rotation_locked=true \
 setupwizard.feature.device_default_dark_mode=true
 EOF
+
         cat <<\EOF >~/dios/device/sony/common/common-prop.mk
 # librqbalance enablement
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -489,10 +495,10 @@ EOF
 # ----------------------------------------------------------------------
 
 _repo_update() {
+    echo ""
+    echo "REPO SYNC AND REPO UPDATE..."
+    echo ""
     if $_update; then
-        echo ""
-        echo "REPO SYNC AND REPO UPDATE..."
-        echo ""
         repo sync -j$(nproc) && ./repo_update.sh -j$(nproc)
     fi
 }
@@ -609,7 +615,7 @@ _pixel_fork() {
         sudo umount system_ext
         popd
 
-        rm -rfv $TMP
+        rm -rf $TMP
     fi
 }
 
@@ -627,9 +633,9 @@ _make() {
         wait
         echo ""
         echo "START BUILDING DIOS"
-        sudo mount --bind $USERNAME/.ccache /mnt/ccache
+        sudo mount --bind /home/$USERNAME/.ccache /mnt/ccache
         make -j$(nproc)
-        rm -rf ~/dios/device/sony/dios/fork || true
+        rm -rf $FORK_DIR || true
     fi
 }
 
@@ -702,10 +708,9 @@ _flash() {
 
 _build() {
     _post_update
-    _repo_update
     _pixel_fork
-    _init_gapps
     _cleaning
+    _repo_update
     _make
     _flash
 }
@@ -748,8 +753,8 @@ done
 # 0. BUILD OR INIT
 # ----------------------------------------------------------------------
 
-if [ -d ~/dios/device/sony/dios ]; then
-    cd $SOURCE
+if [ -d $DIOS_DIR ]; then
+    cd ~/dios
 
     set +u
     . build/envsetup.sh
