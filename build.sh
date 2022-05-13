@@ -87,9 +87,9 @@ _init_dios() {
     fi
 
     mkdir ~/dios/device/sony/customization
-    cat >device/sony/customization/customization.mk <<EOF
+    cat <<\EOF >device/sony/customization/customization.mk
 DIOS_PATH := device/sony/dios
-\$(call inherit-product-if-exists, $(DIOS_PATH)/dios.mk)
+$(call inherit-product-if-exists, $(DIOS_PATH)/dios.mk)
 EOF
 
     repo init -u https://android.googlesource.com/platform/manifest -b android-12.1.0_r5
@@ -150,7 +150,7 @@ EOF
     repo sync -j$(nproc) && ./repo_update.sh -j$(nproc)
     echo ""
     echo "PREPARED! RESTART THE SCRIPT TO START BUILDING..."
-    #exit
+    exit
 }
 
 # ----------------------------------------------------------------------
@@ -498,10 +498,10 @@ EOF
 # ----------------------------------------------------------------------
 
 _repo_update() {
-    echo ""
-    echo "REPO SYNC AND REPO UPDATE..."
-    echo ""
     if $_update; then
+        echo ""
+        echo "REPO SYNC AND REPO UPDATE..."
+        echo ""
         repo sync -j$(nproc) && ./repo_update.sh -j$(nproc)
     fi
 }
@@ -576,8 +576,8 @@ _pixel_fork() {
         rm -rf $FORK_DIR/product/etc/selinux || true
         rm -rf $FORK_DIR/product/etc/vintf || true
         rm -rf $FORK_DIR/product/overlay/GoogleConfigOverlay.apk || true
-        rm -rf $FORK_DIR/product/overlay/GoogleConfigOverlay.apk || true
         rm -rf $FORK_DIR/product/overlay/PixelConfigOverlayCommon.apk || true
+        rm -rf $FORK_DIR/product/overlay/SystemUIGoogle__auto_generated_rro_product.apk || true
         rm -rf $FORK_DIR/product/priv-app/PrebuiltGmsCore || true
         rm -rf $FORK_DIR/product/priv-app/SetupWizardPrebuilt || true
         rm -rf $FORK_DIR/system_ext/bin || true
@@ -597,6 +597,7 @@ _pixel_fork() {
         rm -rf $FORK_DIR/system_ext/lib || true
         rm -rf $FORK_DIR/system_ext/lib64 || true
         rm -rf $FORK_DIR/system_ext/lost+found || true
+        rm -rf $FORK_DIR/system_ext/priv-app/SystemUIGoogle || true
         rm -rf $FORK_DIR/system/system/etc/build.prop || true
         rm -rf $FORK_DIR/system/system/etc/init || true
         rm -rf $FORK_DIR/system/system/etc/security || true
@@ -657,7 +658,7 @@ _flash() {
         sudo ./fastboot flash system_a $OUT/system.img
         sudo ./fastboot flash system_b $OUT/system.img
         sudo ./fastboot flash userdata $OUT/userdata.img
-        sudo ./fastboot flash vbmeta_a $OUT_MAIN/vbmeta.img
+        sudo ./fastboot flash vbmeta_a $OUT/vbmeta.img
         sudo ./fastboot flash vbmeta_b $OUT/vbmeta.img
         sudo ./fastboot flash vendor_a $OUT/vendor.img
         sudo ./fastboot flash vendor_b $OUT/vendor.img
