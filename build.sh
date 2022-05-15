@@ -14,6 +14,9 @@ set -eu
 # --------------------------------------------------------------------------------------------------
 
 DEVICE=bahamut
+INSTALL=apt-get install
+REMOVE=apt-get purge
+UPDATE=apt-get update
 NAME=M1U5T0N3
 USERNAME=miustone
 EMAIL=mariuskopp517@gmail.com
@@ -63,10 +66,10 @@ _show_help() {
 # --------------------------------------------------------------------------------------------------
 
 _init_dios() {
-    sudo apt-get purge openjdk-* icedtea-* icedtea6-* || true
-    sudo apt-get update
-    sudo apt-get install -y openjdk-11-jdk
-    sudo apt-get install -y bison g++-multilib git gperf libxml2-utils make zlib1g-dev zip liblz4-tool libncurses5 libssl-dev bc flex curl python-is-python3 ccache simg2img aapt
+    sudo $REMOVE openjdk-* icedtea-* icedtea6-* || true
+    sudo $UPDATE
+    sudo $INSTALL -y openjdk-11-jdk
+    sudo $INSTALL -y bison g++-multilib git gperf libxml2-utils make zlib1g-dev zip liblz4-tool libncurses5 libssl-dev bc flex curl python-is-python3 ccache simg2img aapt
 
     mkdir ~/bin || true
     curl http://commondatastorage.googleapis.com/git-repo-downloads/repo >~/bin/repo
@@ -305,7 +308,16 @@ persist.vendor.sys.modem.diag.mdlog_br_num=5 \
 persist.vendor.sys.modem.diag.mdlog=false \
 persist.vendor.sys.ssr.restart_level=modem,adsp \
 persist.vendor.testing_battery_profile=2 \
-persist.vendor.verbose_logging_enabled=false 
+persist.vendor.verbose_logging_enabled=false \
+ro.apex.updatable=true \
+ro.audio.monitorRotation=true \
+ro.atrace.core.services=com.google.android.gms,com.google.android.gms.ui,com.google.android.gms.persistent \
+ro.bluetooth.a2dp_offload.supported=true \
+ro.board.first_api_level=30 \
+ro.boot.dynamic_partitions=true \
+ro.boot.vendor.overlay.theme=com.android.internal.systemui.navbar.gestural;com.google.android.systemui.gxoverlay \
+ro.build.ab_update=true \
+ro.build.characteristics=default 
 EOF
 
     # --------------------------------------------------------------------------------------------------
@@ -1029,9 +1041,7 @@ _pixel_fork() {
         rm -rf $FORK_DIR/product/etc/vintf || true
         rm -rf $FORK_DIR/product/overlay/GoogleConfigOverlay.apk || true
         rm -rf $FORK_DIR/product/overlay/PixelConfigOverlayCommon.apk || true
-        rm -rf $FORK_DIR/product/overlay/SettingsOverlayG5NZ6.apk || true
-        rm -rf $FORK_DIR/product/overlay/SettingsOverlayGD1YQ.apk || true
-        rm -rf $FORK_DIR/product/overlay/SettingsOverlayGTT9Q.apk || true
+        rm -rf $FORK_DIR/product/overlay/SettingsGoogleOverlayRedfin.apk || true
         rm -rf $FORK_DIR/product/overlay/SystemUIGoogle__auto_generated_rro_product.apk || true
         rm -rf $FORK_DIR/product/priv-app/PrebuiltGmsCore || true
         rm -rf $FORK_DIR/product/priv-app/SetupWizardPrebuilt || true
@@ -1042,9 +1052,6 @@ _pixel_fork() {
         rm -rf $FORK_DIR/system_ext/etc/permissions/com.qti.dpmframework.xml || true
         rm -rf $FORK_DIR/system_ext/etc/permissions/com.qti.media.secureprocessor.xml || true
         rm -rf $FORK_DIR/system_ext/etc/permissions/com.qualcomm.qcrilmsgtunnel.xml || true
-        rm -rf $FORK_DIR/system_ext/etc/permissions/com.qualcomm.qti.imscmservice-V2.0-java.xml || true
-        rm -rf $FORK_DIR/system_ext/etc/permissions/com.qualcomm.qti.imscmservice-V2.1-java.xml || true
-        rm -rf $FORK_DIR/system_ext/etc/permissions/com.qualcomm.qti.imscmservice-V2.2-java.xml || true
         rm -rf $FORK_DIR/system_ext/etc/security || true
         rm -rf $FORK_DIR/system_ext/etc/selinux || true
         rm -rf $FORK_DIR/system_ext/etc/vintf || true
