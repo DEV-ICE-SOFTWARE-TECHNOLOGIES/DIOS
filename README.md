@@ -1,7 +1,8 @@
 # D!OS
 
-Automated Superuser Script to be used for building █▀▄ █ ▄▀▄ ▄▀▀ 
-                                                   █▄▀ █ ▀▄▀ ▄█▀ 
+Automated Superuser Script to be used for building 
+█▀▄ █ ▄▀▄ ▄▀▀ 
+█▄▀ █ ▀▄▀ ▄█▀ 
 
 Welcome to the Android Revolution...
 
