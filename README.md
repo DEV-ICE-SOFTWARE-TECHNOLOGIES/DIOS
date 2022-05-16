@@ -1,6 +1,7 @@
 # D!OS
 
-Automated Superuser Script to be used for building D!OS (or AOSP)
+Automated Superuser Script to be used for building █▀▄ █ ▄▀▄ ▄▀▀ 
+                                                   █▄▀ █ ▀▄▀ ▄█▀ 
 
 Welcome to the Android Revolution...
 
