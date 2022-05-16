@@ -23,20 +23,14 @@ The Script will use Superuser rights and does things like...
 ...Therefore the Script must not be used in a developers AOSP Tree with changed Files and/or local Commits. Both might get lost when running this Script!
 
 
-The Script contains the following Variables that can be set from outside.
-The Value after the Colon is the default Value...
+To Initialize the Script:
 ```
-LUNCH_CHOICE=
+env LUNCH_CHOICE=aosp_j9210-userdebug bash ./build.sh -i
 ```
 
 To build Bahamut following Script call has to be done:
 ```
 env LUNCH_CHOICE=aosp_j9210-userdebug bash ./build.sh
-```
-
-To build AOSP for whatever Reason:
-```
-env LUNCH_CHOICE=aosp_j9210-userdebug bash ./build.sh -a
 ```
 
 To apply Changes after the Script got updated use:
@@ -46,7 +40,7 @@ env LUNCH_CHOICE=aosp_j9210-userdebug bash ./build.sh -c -u
 
 You can also combine Variables like:
 ```
-env LUNCH_CHOICE=aosp_j9210-userdebug bash ./build.sh -a -c -u
+env LUNCH_CHOICE=aosp_j9210-userdebug bash ./build.sh c -u
 ```
 
 An overview of the latest branches can be found here:\

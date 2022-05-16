@@ -43,7 +43,7 @@ _show_help() {
     echo ""
     echo ""
     echo "OPTIONS:"
-    echo "   -a|--aosp               BUILDS ONLY VANILLA AOSP"
+    echo "   -i|--init               DO THIS FIRST..."
     echo "   -c|--clean              NEEDED FOR UPDATES"
     echo "   -u|--update             DO THIS AFTER SCRIPT UPDATES"
     echo "   -h|--help               SHOWS THIS HELP SCREEN"
@@ -53,8 +53,8 @@ _show_help() {
     echo "   env LUNCH_CHOICE=aosp_j9210-userdebug bash ./$_shell_script"
     echo ""
     echo ""
-    echo "USAGE EXAMPLE FOR XPERIA 5 AOSP:"
-    echo "   env LUNCH_CHOICE=aosp_j9210-userdebug bash ./$_shell_script -a"
+    echo "USAGE EXAMPLE FOR UPDATES:"
+    echo "   env LUNCH_CHOICE=aosp_j9210-userdebug bash ./$_shell_script -c -u"
     echo ""
 }
 
