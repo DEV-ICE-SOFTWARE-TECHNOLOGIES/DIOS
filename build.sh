@@ -130,6 +130,7 @@ EOF
     <remove-project name="platform/packages/apps/DeskClock" />
     <remove-project name="platform/packages/apps/Dialer" />
     <remove-project name="platform/packages/apps/DocumentsUI" />
+    <remove-project name="platform/packages/apps/EmergencyInfo" />
     <remove-project name="platform/packages/apps/Gallery" />
     <remove-project name="platform/packages/apps/Gallery2" />
     <remove-project name="platform/packages/apps/Launcher3" />
@@ -145,7 +146,7 @@ EOF
     <remove-project name="platform/packages/apps/WallpaperPicker2" />
     <remove-project name="platform/packages/inputmethods/LatinIME" />
     <remove-project name="platform/packages/inputmethods/LeanbackIME" />
-
+	
 </manifest>
 EOF
 
@@ -450,17 +451,16 @@ EOF
     cat <<\EOF >~/dios/device/sony/dios/dios.mk
 
 BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
-DONT_DEXPREOPT_PREBUILTS := false
+DONT_DEXPREOPT_PREBUILTS := true
 WITH_DEXPREOPT := true
 
 PRODUCT_DEXPREOPT_SPEED_APPS += \
-    SystemUI \
-    NexusLauncherRelease
+    SystemUI 
 
 -include vendor/gapps/arm64/arm64-vendor.mk
 
         PRODUCT_PROPERTY_OVERRIDES += \
-ro.control_privapp_permissions=log \
+ro.control_privapp_permissions=enforce \
 aaudio.hw_burst_min_usec=2000 \
 aaudio.mmap_exclusive_policy=2 \
 aaudio.mmap_policy=2 \
@@ -1850,6 +1850,9 @@ _pixel_fork() {
             rm -rf $FORK_DIR/product/overlay/GoogleConfigOverlay.apk || true
             rm -rf $FORK_DIR/product/overlay/PixelConfigOverlayCommon.apk || true
             rm -rf $FORK_DIR/product/overlay/SettingsGoogleOverlayRedfin.apk || true
+            rm -rf $FORK_DIR/product/overlay/SettingsOverlayG5NZ6.apk || true
+            rm -rf $FORK_DIR/product/overlay/SettingsOverlayGD1YQ.apk || true
+            rm -rf $FORK_DIR/product/overlay/SettingsOverlayGTT9Q.apk || true
             rm -rf $FORK_DIR/product/overlay/SystemUIGoogle__auto_generated_rro_product.apk || true
             rm -rf $FORK_DIR/product/priv-app/PrebuiltGmsCore || true
             rm -rf $FORK_DIR/product/priv-app/SetupWizardPrebuilt || true
@@ -1977,6 +1980,7 @@ _flash() {
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         sudo ./fastboot reboot fastboot
+        sudo ./fastboot erase metadata​
         sudo ./fastboot flash boot $OUT/boot.img
         sudo ./fastboot flash dtbo $OUT/dtbo.img
         sudo ./fastboot flash product $OUT/product.img
@@ -1997,6 +2001,7 @@ _flash() {
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         sudo ./fastboot reboot fastboot
+        sudo ./fastboot erase metadata​
         sudo ./fastboot flash boot $OUT/boot.img
         sudo ./fastboot flash dtbo $OUT/dtbo.img
         sudo ./fastboot flash product $OUT/product.img
