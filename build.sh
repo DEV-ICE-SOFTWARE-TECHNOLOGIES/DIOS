@@ -182,8 +182,8 @@ EOF
 _post_update() {
 
     echo ""
-    echo "DIOS BUILD FLAGS..."
-cat <<\EOF >~/dios/device/sony/dios/Android.mk
+    echo "STARTED BUILDING DIOS..."
+    cat <<\EOF >~/dios/device/sony/dios/Android.mk
 LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
@@ -198,17 +198,37 @@ $(shell cp -rf $(LOCAL_PATH)/fork/system/system/* `pwd`/$(TARGET_OUT_SYSTEM)/)
 $(shell cp -rf $(LOCAL_PATH)/fork/vendor/* `pwd`/$(TARGET_OUT_VENDOR)/)
 EOF
 
-
     if [ ! -d ~/dios/device/sony/dios/dios/system_ext/etc/permissions ]; then
         mkdir -p ~/dios/device/sony/dios/dios/system_ext/etc/permissions
     fi
 
     echo ""
     echo "PATCHING DIOS.XML..."
-    cat <<\EOF >~/dios/device/sony/dios/dios/system_ext/etc/permissions/dios.xml
+    cat <<\EOF >~/dios/device/sony/dios/dios/system_ext/etc/permissions/privapp-permissions-dios.xml
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2018 The Android Open Source Project
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License
+  -->
 
+<!--
+This XML file declares which signature|privileged permissions should be granted to privileged
+applications in /system_ext on GMS or D!OS devices.
+It allows additional grants on top of privapp-permissions-platform.xml
+-->
 <permissions>
+
     <privapp-permissions package="com.android.systemui">
         <permission name="android.permission.WRITE_EMBEDDED_SUBSCRIPTIONS"/>
         <permission name="android.permission.SET_WALLPAPER_COMPONENT"/>
@@ -430,13 +450,68 @@ EOF
     cat <<\EOF >~/dios/device/sony/dios/dios.mk
 
 BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
-
+DONT_DEXPREOPT_PREBUILTS := false
 WITH_DEXPREOPT := true
+
+PRODUCT_DEXPREOPT_SPEED_APPS += \
+    SystemUI \
+    NexusLauncherRelease
 
 -include vendor/gapps/arm64/arm64-vendor.mk
 
         PRODUCT_PROPERTY_OVERRIDES += \
 ro.control_privapp_permissions=log \
+aaudio.hw_burst_min_usec=2000 \
+aaudio.mmap_exclusive_policy=2 \
+aaudio.mmap_policy=2 \
+af.fast_track_multiplier=1 \
+dalvik.vm.dex2oat64.enabled=true \
+dalvik.vm.heapgrowthlimit=256m \
+dalvik.vm.heapmaxfree=32m \
+dalvik.vm.heapminfree=8m \
+dalvik.vm.heapsize=512m \
+dalvik.vm.heapstartsize=16m \
+dalvik.vm.heaptargetutilization=0.5 \
+dalvik.vm.isa.arm.features=default \
+dalvik.vm.isa.arm.variant=cortex-a76 \
+dalvik.vm.isa.arm64.features=default \
+dalvik.vm.isa.arm64.variant=cortex-a76 \
+debug.egl.hw=1 \
+debug.gralloc.enable_fb_ubwc=1 \
+debug.mdpcomp.logs=0 \
+debug.sf.early.app.duration=16500000 \
+debug.sf.early.sf.duration=16000000 \
+debug.sf.earlyGl.app.duration=21000000 \
+debug.sf.earlyGl.sf.duration=13500000 \
+debug.sf.enable_gl_backpressure=1 \
+debug.sf.hw=1 \
+debug.sf.late.app.duration=20500000 \
+debug.sf.late.sf.duration=10500000 \
+debug.sf.use_phase_offsets_as_durations=1 \
+debug.stagefright.c2inputsurface=-1 \
+debug.stagefright.omx_default_rank=512 \
+DEVICE_PROVISIONED=1 \
+drm.service.enabled=true \
+external_storage.casefold.enabled=1 \
+external_storage.projid.enabled=1 \
+external_storage.sdcardfs.enabled=0 \
+framework_watchdog.fatal_count=3 \
+framework_watchdog.fatal_window.second=600 \
+graphics.gpu.profiler.support=true \
+graphics.gpu.profiler.vulkan_layer_apk=com.google.pixel.redbull.gpuprofiling.vulkanlayer \
+keyguard.no_require_sim=true \
+log.tag.stats_log=I \
+masterclear.allow_retain_esim_profiles_after_fdr=true \
+media.aac_51_output_enabled=true \
+media.mediadrmservice.enable=true \
+media.stagefright.enable-aac=true \
+media.stagefright.enable-http=true \
+media.stagefright.enable-player=true \
+media.stagefright.enable-qcp=true \
+media.stagefright.enable-scan=true \
+mm.enable.qcom_parser=13631487 \
+mm.enable.smoothstreaming=true \
+mmp.enable.3g2=true \
 persist.bluetooth.a2dp_aac.vbr_supported=true \
 persist.bluetooth.a2dp_offload.cap=sbc-aac-aptx-aptxhd-ldac \
 persist.bluetooth.a2dp_offload.disabled=false \
@@ -664,7 +739,7 @@ vidc.enc.disable.pq=1
 EOF
 
     echo ""
-    echo "PATCHING common-prop.MK..."
+    echo "PATCHING COMMON-PROP.MK..."
     cat <<\EOF >~/dios/device/sony/common/common-prop.mk
 # librqbalance enablement
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -915,12 +990,8 @@ OVERRIDE_PRODUCT_COMPRESSED_APEX := false
 endif
 EOF
 
-    # --------------------------------------------------------------------------------------------------
-    # 4.3 POST-UPDATE PLATFORM FLAGS
-    # --------------------------------------------------------------------------------------------------
-
     echo ""
-    echo "PATCHING KUMANO platform.MK..."
+    echo "PATCHING KUMANO PLATFORM.MK..."
     cat <<\EOF >~/dios/device/sony/kumano/platform.mk
 # Platform path
 PLATFORM_COMMON_PATH := device/sony/kumano
@@ -1552,6 +1623,10 @@ while (("$#")); do
         _update="true"
         shift
         ;;
+    -i | --init)
+        _init="true"
+        shift
+        ;;
     -h | --help)
         _show_help
         exit 0
@@ -1567,7 +1642,12 @@ done
 # 0. BUILD OR INIT
 # --------------------------------------------------------------------------------------------------
 
-if [ -d $DIOS_DIR ]; then
+if $_init; then
+
+    _init_dios
+
+else
+
     cd ~/dios
 
     set +u
@@ -1578,7 +1658,5 @@ if [ -d $DIOS_DIR ]; then
     set -u
 
     _build
-else
 
-    _init_dios
 fi
