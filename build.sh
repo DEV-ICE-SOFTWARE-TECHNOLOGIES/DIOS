@@ -14,9 +14,6 @@ set -eu
 # --------------------------------------------------------------------------------------------------
 
 DEVICE=bahamut
-INSTALL=apt-get install
-REMOVE=apt-get purge
-UPDATE=apt-get update
 NAME=M1U5T0N3
 USERNAME=miustone
 EMAIL=mariuskopp517@gmail.com
@@ -66,12 +63,19 @@ _show_help() {
 # --------------------------------------------------------------------------------------------------
 
 _init_dios() {
-    sudo $REMOVE openjdk-* icedtea-* icedtea6-* || true
-    sudo $UPDATE
-    sudo $INSTALL -y openjdk-11-jdk
-    sudo $INSTALL -y bison g++-multilib git gperf libxml2-utils make zlib1g-dev zip liblz4-tool libncurses5 libssl-dev bc flex curl python-is-python3 ccache simg2img aapt
 
-    mkdir ~/bin || true
+    echo ""
+    echo "INSTALLING DEPENDENCIES..."
+    echo ""
+    sudo apt-get purge openjdk-* icedtea-* icedtea6-* || true
+    sudo apt-get update
+    sudo apt-get install -y openjdk-11-jdk
+    sudo apt-get install -y bison g++-multilib git gperf libxml2-utils make zlib1g-dev zip liblz4-tool libncurses5 libssl-dev bc flex curl python-is-python3 ccache simg2img aapt
+
+    if [ ! -d ~/bin ]; then
+        mkdir -p ~/bin
+    fi
+
     curl http://commondatastorage.googleapis.com/git-repo-downloads/repo >~/bin/repo
     chmod a+x ~/bin/repo
 
@@ -89,7 +93,13 @@ _init_dios() {
         sudo mkdir /mnt/ccache
     fi
 
-    mkdir -p ~/dios/device/sony/customization
+    if [ ! -d ~/dios/device/sony/customization ]; then
+        mkdir -p ~/dios/device/sony/customization
+    fi
+
+    echo ""
+    echo "CREATING DIOS PATH..."
+    echo ""
     cat <<\EOF >device/sony/customization/customization.mk
 DIOS_PATH := device/sony/dios
 $(call inherit-product-if-exists, $(DIOS_PATH)/dios.mk)
@@ -103,6 +113,10 @@ EOF
     cd local_manifests
     git checkout
     cd ../..
+
+    echo ""
+    echo "REMOVING PACKAGES..."
+    echo ""
     cat <<\EOF >~/dios/.repo/local_manifests/dios.xml
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
@@ -134,35 +148,10 @@ EOF
 
 </manifest>
 EOF
-    mkdir -p $DIOS_DIR
-    pushd $DIOS_DIR
-    git clone https://github.com/DEV-ICE-TECHNOLOGIES/ACDB
-    popd
-    cat <<\EOF >~/dios/device/sony/dios/Android.mk
-LOCAL_PATH := $(call my-dir)
 
-include $(CLEAR_VARS)
-$(shell cp -rf $(LOCAL_PATH)/fork/system/system/* `pwd`/$(TARGET_OUT_SYSTEM)/)
-$(shell cp -rf $(LOCAL_PATH)/fork/system_ext/* `pwd`/$(TARGET_OUT_SYSTEM_EXT)/)
-$(shell cp -rf $(LOCAL_PATH)/fork/product/* `pwd`/$(TARGET_OUT_PRODUCT)/)
-$(shell cp -rf $(LOCAL_PATH)/fork/vendor/* `pwd`/$(TARGET_OUT_VENDOR)/)
-$(shell cp -rf $(LOCAL_PATH)/ACDB/acdbdata/* `pwd`/$(TARGET_OUT_VENDOR)/etc/acdbdata)
-EOF
-
-    repo sync -j$(nproc) && ./repo_update.sh -j$(nproc)
     echo ""
-    echo "PREPARED! RESTART THE SCRIPT TO START BUILDING..."
-    exit
-}
-
-# --------------------------------------------------------------------------------------------------
-# 4. POST-UPDATE FLAGS
-# --------------------------------------------------------------------------------------------------
-
-_post_update() {
+    echo "ADDING GAPPS..."
     echo ""
-    echo "DIOS BUILD FLAGS..."
-
     cat <<\EOF >~/dios/.repo/local_manifests/gapps.xml
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
@@ -171,9 +160,270 @@ _post_update() {
 </manifest>
 EOF
 
-    # --------------------------------------------------------------------------------------------------
-    # 4.1 POST-UPDATE DIOS FLAGS
-    # --------------------------------------------------------------------------------------------------
+    if [ ! -d $DIOS_DIR ]; then
+        mkdir -p $DIOS_DIR
+    fi
+
+    pushd $DIOS_DIR
+    git clone https://github.com/DEV-ICE-TECHNOLOGIES/ACDB
+    popd
+
+    repo sync -j$(nproc) && ./repo_update.sh -j$(nproc)
+    echo ""
+    echo "PREPARED! RESTART THE SCRIPT TO START BUILDING..."
+    exit
+
+}
+
+# --------------------------------------------------------------------------------------------------
+# 4. POST-UPDATE FLAGS
+# --------------------------------------------------------------------------------------------------
+
+_post_update() {
+
+    echo ""
+    echo "DIOS BUILD FLAGS..."
+cat <<\EOF >~/dios/device/sony/dios/Android.mk
+LOCAL_PATH := $(call my-dir)
+
+include $(CLEAR_VARS)
+$(shell cp -rf $(LOCAL_PATH)/ACDB/acdbdata/* `pwd`/$(TARGET_OUT_VENDOR)/etc/acdbdata)
+$(shell cp -rf $(LOCAL_PATH)/dios/product/* `pwd`/$(TARGET_OUT_PRODUCT)/)
+$(shell cp -rf $(LOCAL_PATH)/dios/system_ext/* `pwd`/$(TARGET_OUT_SYSTEM_EXT)/)
+$(shell cp -rf $(LOCAL_PATH)/dios/system/* `pwd`/$(TARGET_OUT_SYSTEM)/)
+$(shell cp -rf $(LOCAL_PATH)/dios/vendor/* `pwd`/$(TARGET_OUT_VENDOR)/)
+$(shell cp -rf $(LOCAL_PATH)/fork/product/* `pwd`/$(TARGET_OUT_PRODUCT)/)
+$(shell cp -rf $(LOCAL_PATH)/fork/system_ext/* `pwd`/$(TARGET_OUT_SYSTEM_EXT)/)
+$(shell cp -rf $(LOCAL_PATH)/fork/system/system/* `pwd`/$(TARGET_OUT_SYSTEM)/)
+$(shell cp -rf $(LOCAL_PATH)/fork/vendor/* `pwd`/$(TARGET_OUT_VENDOR)/)
+EOF
+
+
+    if [ ! -d ~/dios/device/sony/dios/dios/system_ext/etc/permissions ]; then
+        mkdir -p ~/dios/device/sony/dios/dios/system_ext/etc/permissions
+    fi
+
+    echo ""
+    echo "PATCHING DIOS.XML..."
+    cat <<\EOF >~/dios/device/sony/dios/dios/system_ext/etc/permissions/dios.xml
+<?xml version="1.0" encoding="utf-8"?>
+
+<permissions>
+    <privapp-permissions package="com.android.systemui">
+        <permission name="android.permission.WRITE_EMBEDDED_SUBSCRIPTIONS"/>
+        <permission name="android.permission.SET_WALLPAPER_COMPONENT"/>
+        <permission name="android.permission.LOCATION_HARDWARE"/>
+        <permission name="android.permission.ACCESS_CONTEXT_HUB"/>
+        <permission name="android.permission.REGISTER_STATS_PULL_ATOM"/>
+        <permission name="android.permission.REQUEST_NETWORK_SCORES"/>
+    </privapp-permissions>
+
+    <privapp-permissions package="com.android.settings">
+        <permission name="android.permission.INSTALL_DYNAMIC_SYSTEM"/>
+    </privapp-permissions>
+
+    <privapp-permissions package="com.google.android.storagemanager">
+        <permission name="android.permission.DELETE_PACKAGES"/>
+        <permission name="android.permission.INTERACT_ACROSS_USERS"/>
+        <permission name="android.permission.MANAGE_USERS"/>
+        <permission name="android.permission.PACKAGE_USAGE_STATS"/>
+        <permission name="android.permission.USE_RESERVED_DISK"/>
+        <permission name="android.permission.WRITE_SECURE_SETTINGS"/>
+    </privapp-permissions>
+
+    <privapp-permissions package="com.google.android.volta">
+        <permission name="android.permission.BATTERY_STATS"/>
+        <permission name="android.permission.CHANGE_APP_IDLE_STATE"/>
+        <permission name="android.permission.DUMP"/>
+        <permission name="android.permission.INTERACT_ACROSS_USERS"/>
+        <permission name="android.permission.PACKAGE_USAGE_STATS"/>
+        <permission name="android.permission.QUERY_ALL_PACKAGES"/>
+        <permission name="android.permission.REAL_GET_TASKS"/>
+        <permission name="android.permission.REBOOT"/>
+    </privapp-permissions>
+
+    <privapp-permissions package="com.google.android.apps.nexuslauncher">
+        <permission name="android.permission.VIEW_INSTANT_APPS" />
+        <permission name="com.google.android.apps.nexuslauncher.permission.QSB" />
+        <permission name="com.google.android.launcher.permission.READ_SETTINGS" />
+        <permission name="com.google.android.as.allapps.SUGGESTION_CONSUMER" />
+        <permission name="android.permission.GET_PEOPLE_TILE_PREVIEW" />
+        <permission name="android.permission.GET_TOP_ACTIVITY_INFO" />
+        <permission name="com.google.android.apps.nexuslauncher.permission.HOTSEAT_EDU" />
+        <permission name="android.permission.REGISTER_STATS_PULL_ATOM" />
+        <permission name="android.permission.BROADCAST_CLOSE_SYSTEM_DIALOGS" />
+        <permission name="android.permission.CONTROL_REMOTE_APP_TRANSITION_ANIMATIONS" />
+        <permission name="android.permission.VIBRATE" />
+        <permission name="android.permission.QUERY_ALL_PACKAGES" />
+        <permission name="android.permission.START_TASKS_FROM_RECENTS" />
+        <permission name="android.permission.REMOVE_TASKS" />
+        <permission name="android.permission.WRITE_SECURE_SETTINGS" />
+        <permission name="android.permission.MANAGE_ACTIVITY_TASKS" />
+        <permission name="android.permission.STATUS_BAR" />
+        <permission name="android.permission.STOP_APP_SWITCHES" />
+        <permission name="android.permission.SET_ORIENTATION" />
+        <permission name="android.permission.READ_FRAME_BUFFER" />
+        <permission name="android.permission.MANAGE_ACCESSIBILITY" />
+        <permission name="android.permission.MONITOR_INPUT" />
+        <permission name="android.permission.ALLOW_SLIPPERY_TOUCHES" />
+        <permission name="android.permission.SYSTEM_APPLICATION_OVERLAY" />
+        <permission name="android.permission.CALL_PHONE" />
+        <permission name="android.permission.SET_WALLPAPER" />
+        <permission name="android.permission.SET_WALLPAPER_HINTS" />
+        <permission name="android.permission.BIND_APPWIDGET" />
+        <permission name="android.permission.READ_EXTERNAL_STORAGE" />
+        <permission name="android.permission.RECEIVE_BOOT_COMPLETED" />
+        <permission name="android.permission.REQUEST_DELETE_PACKAGES" />
+        <permission name="android.permission.READ_DEVICE_CONFIG" />
+        <permission name="android.permission.ROTATE_SURFACE_FLINGER" />
+        <permission name="com.google.android.apps.nexuslauncher.permission.READ_SETTINGS" />
+        <permission name="com.google.android.apps.nexuslauncher.permission.WRITE_SETTINGS" />
+    </privapp-permissions>
+
+    <privapp-permissions package="com.google.android.gsf">
+        <permission name="android.permission.ACCESS_CACHE_FILESYSTEM"/>
+        <permission name="android.permission.BACKUP"/>
+        <permission name="android.permission.CHANGE_COMPONENT_ENABLED_STATE"/>
+        <permission name="android.permission.DUMP"/>
+        <permission name="android.permission.INTERACT_ACROSS_USERS"/>
+        <permission name="android.permission.INVOKE_CARRIER_SETUP"/>
+        <permission name="android.permission.MANAGE_USERS"/>
+        <permission name="android.permission.MASTER_CLEAR"/>
+        <permission name="android.permission.READ_DREAM_STATE"/>
+        <permission name="android.permission.READ_LOGS"/>
+        <permission name="android.permission.READ_NETWORK_USAGE_HISTORY"/>
+        <permission name="android.permission.REBOOT"/>
+        <permission name="android.permission.RECEIVE_DATA_ACTIVITY_CHANGE"/>
+        <permission name="android.permission.RECOVERY"/>
+        <permission name="android.permission.SET_TIME"/>
+        <permission name="android.permission.STATUS_BAR"/>
+        <permission name="android.permission.UPDATE_DEVICE_STATS"/>
+        <permission name="android.permission.WRITE_GSERVICES"/>
+        <permission name="android.permission.WRITE_SECURE_SETTINGS"/>
+    </privapp-permissions>
+
+    <privapp-permissions package="com.google.android.partnersetup">
+        <permission name="android.permission.CHANGE_COMPONENT_ENABLED_STATE"/>
+        <permission name="android.permission.CHANGE_CONFIGURATION"/>
+        <permission name="android.permission.READ_PRIVILEGED_PHONE_STATE"/>
+    </privapp-permissions>
+
+    <privapp-permissions package="com.google.android.carriersetup">
+        <permission name="android.permission.CONNECTIVITY_USE_RESTRICTED_NETWORKS"/>
+        <permission name="android.permission.MODIFY_PHONE_STATE"/>
+        <permission name="android.permission.READ_PRIVILEGED_PHONE_STATE"/>
+    </privapp-permissions>
+
+    <privapp-permissions package="com.google.android.apps.wallpaper">
+        <permission name="android.permission.BIND_WALLPAPER"/>
+        <permission name="android.permission.CHANGE_OVERLAY_PACKAGES"/>
+        <permission name="android.permission.READ_WALLPAPER_INTERNAL"/>
+        <permission name="android.permission.SET_WALLPAPER_COMPONENT"/>
+        <permission name="android.permission.WRITE_SECURE_SETTINGS"/>
+        <permission name="android.permission.MODIFY_DAY_NIGHT_MODE"/>
+    </privapp-permissions>
+
+    <privapp-permissions package="com.google.android.feedback">
+        <permission name="android.permission.READ_LOGS"/>
+        <permission name="android.permission.PACKAGE_USAGE_STATS"/>
+    </privapp-permissions>
+
+    <privapp-permissions package="com.android.yadayada">
+        <permission name="android.permission.START_ACTIVITIES_FROM_BACKGROUND"/>
+    </privapp-permissions>
+
+    <privapp-permissions package="com.google.android.pixel.setupwizard">
+        <permission name="android.permission.CHANGE_CONFIGURATION"/>
+        <permission name="android.permission.GET_ACCOUNTS_PRIVILEGED"/>
+        <permission name="android.permission.MANAGE_USERS"/>
+        <permission name="android.permission.STATUS_BAR"/>
+        <permission name="android.permission.WRITE_SECURE_SETTINGS"/>
+        <permission name="android.permission.SHUTDOWN"/>
+        <permission name="android.permission.START_ACTIVITIES_FROM_BACKGROUND"/>
+    </privapp-permissions>
+
+    <privapp-permissions package="com.google.android.grilservice">
+        <permission name="android.permission.INTERACT_ACROSS_USERS"/>
+        <permission name="android.permission.READ_PRIVILEGED_PHONE_STATE"/>
+    </privapp-permissions>
+
+    <privapp-permissions package="com.google.android.connectivitymonitor">
+        <permission name="android.permission.DUMP"/>
+        <permission name="android.permission.INTERACT_ACROSS_USERS_FULL"/>
+        <permission name="android.permission.MODIFY_PHONE_STATE"/>
+        <permission name="android.permission.READ_PRECISE_PHONE_STATE"/>
+        <permission name="android.permission.READ_PRIVILEGED_PHONE_STATE"/>
+        <permission name="android.permission.BATTERY_STATS"/>
+    </privapp-permissions>
+
+    <privapp-permissions package="com.google.android.connectivitythermalpowermanager">
+        <permission name="android.permission.MODIFY_PHONE_STATE"/>
+        <permission name="android.permission.READ_PRIVILEGED_PHONE_STATE"/>
+        <permission name="android.permission.READ_NETWORK_USAGE_HISTORY"/>
+        <permission name="android.permission.REGISTER_STATS_PULL_ATOM"/>
+        <permission name="android.permission.READ_PRECISE_PHONE_STATE"/>
+    </privapp-permissions>
+
+    <privapp-permissions package="com.google.android.gnsspixelmonitor">
+        <permission name="android.permission.MODIFY_PHONE_STATE"/>
+        <permission name="android.permission.ACCESS_FINE_LOCATION"/>
+        <permission name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+        <permission name="android.permission.DUMP"/>
+        <permission name="android.permission.REGISTER_STATS_PULL_ATOM"/>
+    </privapp-permissions>
+
+    <privapp-permissions package="com.android.refreshratecontrol">
+        <permission name="android.permission.INTERACT_ACROSS_USERS_FULL"/>
+        <permission name="android.permission.MANAGE_USERS"/>
+    </privapp-permissions>
+
+    <privapp-permissions package="com.android.hbmsvmanager">
+        <permission name="android.permission.INTERACT_ACROSS_USERS_FULL"/>
+        <permission name="android.permission.MANAGE_USERS"/>
+    </privapp-permissions>
+
+    <privapp-permissions package="com.google.oslo">
+        <permission name="android.permission.ACCESS_CONTEXT_HUB"/>
+        <permission name="android.permission.CAPTURE_AUDIO_HOTWORD"/>
+        <permission name="android.permission.MANAGE_SOUND_TRIGGER"/>
+        <permission name="android.permission.MANAGE_USERS"/>
+        <permission name="android.permission.MEDIA_CONTENT_CONTROL"/>
+        <permission name="android.permission.MODIFY_AUDIO_ROUTING"/>
+        <permission name="android.permission.MODIFY_PHONE_STATE"/>
+        <permission name="android.permission.RECORD_AUDIO"/>
+        <permission name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+        <permission name="android.permission.START_ACTIVITIES_FROM_BACKGROUND"/>
+        <permission name="android.permission.USER_ACTIVITY"/>
+        <permission name="android.permission.WRITE_SECURE_SETTINGS"/>
+    </privapp-permissions>
+
+    <privapp-permissions package="com.android.emergency">
+        <!-- Required to place emergency calls from emergency info screen. -->
+        <permission name="android.permission.CALL_PRIVILEGED"/>
+        <permission name="android.permission.MANAGE_USERS"/>
+    </privapp-permissions>
+
+    <privapp-permissions package="com.google.android.devicedropmonitor">
+        <permission name="android.permission.ACCESS_CONTEXT_HUB"/>
+        <permission name="android.permission.READ_DEVICE_CONFIG"/>
+        <permission name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    </privapp-permissions>
+
+    <privapp-permissions package="com.google.android.uvexposurereporter">
+        <permission name="android.permission.ACCESS_CONTEXT_HUB"/>
+        <permission name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    </privapp-permissions>
+
+    <privapp-permissions package="com.google.android.iphealthmonitor">
+        <permission name="android.permission.ACCESS_CONTEXT_HUB"/>
+        <permission name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    </privapp-permissions>
+
+    <privapp-permissions package="com.google.android.turboadapter">
+        <permission name="android.permission.DUMP"/>
+    </privapp-permissions>
+</permissions>
+EOF
 
     echo ""
     echo "PATCHING DIOS.MK..."
@@ -187,57 +437,6 @@ WITH_DEXPREOPT := true
 
         PRODUCT_PROPERTY_OVERRIDES += \
 ro.control_privapp_permissions=log \
-aaudio.hw_burst_min_usec=2000 \
-aaudio.mmap_exclusive_policy=2 \
-aaudio.mmap_policy=2 \
-af.fast_track_multiplier=1 \
-dalvik.vm.dex2oat64.enabled=true \
-dalvik.vm.heapgrowthlimit=256m \
-dalvik.vm.heapmaxfree=32m \
-dalvik.vm.heapminfree=8m \
-dalvik.vm.heapsize=512m \
-dalvik.vm.heapstartsize=16m \
-dalvik.vm.heaptargetutilization=0.5 \
-dalvik.vm.isa.arm.features=default \
-dalvik.vm.isa.arm.variant=cortex-a76 \
-dalvik.vm.isa.arm64.features=default \
-dalvik.vm.isa.arm64.variant=cortex-a76 \
-debug.egl.hw=1 \
-debug.gralloc.enable_fb_ubwc=1 \
-debug.mdpcomp.logs=0 \
-debug.sf.early.app.duration=16500000 \
-debug.sf.early.sf.duration=16000000 \
-debug.sf.earlyGl.app.duration=21000000 \
-debug.sf.earlyGl.sf.duration=13500000 \
-debug.sf.enable_gl_backpressure=1 \
-debug.sf.hw=1 \
-debug.sf.late.app.duration=20500000 \
-debug.sf.late.sf.duration=10500000 \
-debug.sf.use_phase_offsets_as_durations=1 \
-debug.stagefright.c2inputsurface=-1 \
-debug.stagefright.omx_default_rank=512 \
-DEVICE_PROVISIONED=1 \
-drm.service.enabled=true \
-external_storage.casefold.enabled=1 \
-external_storage.projid.enabled=1 \
-external_storage.sdcardfs.enabled=0 \
-framework_watchdog.fatal_count=3 \
-framework_watchdog.fatal_window.second=600 \
-graphics.gpu.profiler.support=true \
-graphics.gpu.profiler.vulkan_layer_apk=com.google.pixel.redbull.gpuprofiling.vulkanlayer \
-keyguard.no_require_sim=true \
-log.tag.stats_log=I \
-masterclear.allow_retain_esim_profiles_after_fdr=true \
-media.aac_51_output_enabled=true \
-media.mediadrmservice.enable=true \
-media.stagefright.enable-aac=true \
-media.stagefright.enable-http=true \
-media.stagefright.enable-player=true \
-media.stagefright.enable-qcp=true \
-media.stagefright.enable-scan=true \
-mm.enable.qcom_parser=13631487 \
-mm.enable.smoothstreaming=true \
-mmp.enable.3g2=true \
 persist.bluetooth.a2dp_aac.vbr_supported=true \
 persist.bluetooth.a2dp_offload.cap=sbc-aac-aptx-aptxhd-ldac \
 persist.bluetooth.a2dp_offload.disabled=false \
@@ -317,12 +516,152 @@ ro.board.first_api_level=30 \
 ro.boot.dynamic_partitions=true \
 ro.boot.vendor.overlay.theme=com.android.internal.systemui.navbar.gestural;com.google.android.systemui.gxoverlay \
 ro.build.ab_update=true \
-ro.build.characteristics=default 
+ro.build.characteristics=default \
+ro.carrier=unknown \
+ro.carriersetup.vzw_consent_page=true \
+ro.charger.enable_suspend=true \
+ro.com.android.dataroaming=false \
+ro.com.android.prov_mobiledata=false \
+ro.com.google.clientidbase=android-google \
+ro.com.google.ime.bs_theme=true \
+ro.com.google.ime.height_ratio=1.2 \
+ro.com.google.ime.kb_pad_port_b=10 \
+ro.com.google.ime.system_lm_dir=/product/usr/share/ime/google/d3_lms \
+ro.com.google.ime.theme_id=5 \
+ro.config.alarm_alert=Bright_morning.ogg \
+ro.config.low_ram=false \
+ro.config.media_vol_steps=50 \
+ro.config.notification_sound=Popcorn.ogg \
+ro.config.ringtone=The_big_adventure.ogg \
+ro.config.vc_call_vol_steps=50 \
+ro.cp_system_other_odex=1 \
+ro.llkd.enable=false \
+ro.lmk.log_stats=true \
+ro.logd.size.stats=64K \
+ro.minui.pixel_format=RGBX_8888 \
+ro.netflix.bsp_rev=Q7250-19133-1 \
+ro.odm.build.media_performance_class=30 \
+ro.oem_unlock_supported=1 \
+ro.opa.eligible_device=true \
+ro.opengles.version=196610 \
+ro.postinstall.fstab.prefix=/product \
+ro.product.vndk.version=32 \
+ro.qti.sdk.sensors.gestures=false \
+ro.qti.sensors.amd=false \
+ro.qti.sensors.cmc=false \
+ro.qti.sensors.dev_ori=true \
+ro.qti.sensors.facing=false \
+ro.qti.sensors.pedometer=false \
+ro.qti.sensors.rmd=false \
+ro.qti.sensors.scrn_ortn=false \
+ro.qti.sensors.step_counter=false \
+ro.qti.sensors.step_detector=false \
+ro.qti.sensors.wu=false \
+ro.setupwizard.enterprise_mode=1 \
+ro.setupwizard.esim_cid_ignore=00000001 \
+ro.setupwizard.rotation_locked=false \
+ro.soc.manufacturer=Qualcomm \
+ro.storage_manager.enabled=false \
+ro.storage_manager.show_opt_in=false \
+ro.support_hide_display_cutout=true \
+ro.support_one_handed_mode=true \
+ro.surface_flinger.force_hwc_copy_for_virtual_displays=true \
+ro.surface_flinger.has_HDR_display=true \
+ro.surface_flinger.has_wide_color_display=true \
+ro.surface_flinger.protected_contents=true \
+ro.surface_flinger.set_display_power_timer_ms=1000 \
+ro.surface_flinger.set_idle_timer_ms=80 \
+ro.surface_flinger.set_touch_timer_ms=200 \
+ro.surface_flinger.support_kernel_idle_timer=true \
+ro.surface_flinger.use_color_management=true \
+ro.surface_flinger.use_content_detection_for_refresh_rate=true \
+ro.surface_flinger.wcg_composition_dataspace=143261696 \
+ro.sys.sdcardfs=1 \
+ro.telephony.default_cdma_sub=0 \
+ro.thermal_warmreset=true \
+ro.vendor.audio.sdk.fluencetype=fluencepro \
+ro.qc.sdk.audio.fluencetype=fluencepro
+ro.vendor.bluetooth.emb_wp_mode=false \
+ro.vendor.bluetooth.wipower=false \
+ro.vendor.bt.bdaddr_path=/proc/device-tree/chosen/cdt/cdb2/bt_addr \
+ro.vendor.camera.extensions.package=com.google.android.apps.camera.services \
+ro.vendor.camera.extensions.service=com.google.android.apps.camera.services.extensions.service.PixelExtensions \
+ro.vendor.display.paneltype=2 \
+ro.vendor.display.sensortype=1 \
+ro.vendor.radio.log_loc=/data/vendor/modem_dump \
+ro.vendor.radio.log_prefix=modem_log_ \
+ro.vendor.vibrator.hal.click.duration=6 \
+ro.vendor.vibrator.hal.config.dynamic=1 \
+ro.vendor.vibrator.hal.heavyclick.duration=6 \
+ro.vendor.vibrator.hal.long.frequency.shift=10 \
+ro.vendor.vibrator.hal.long.voltage=161 \
+ro.vendor.vibrator.hal.lptrigger=0 \
+ro.vendor.vibrator.hal.short.voltage=161 \
+ro.vendor.vibrator.hal.steady.shape=1 \
+ro.vendor.vibrator.hal.tick.duration=6 \
+ro.virtual_ab.compression.enabled=true \
+ro.virtual_ab.enabled=true \
+ro.vndk.version=32 \
+ro.zram.first_wb_delay_mins=1440 \
+ro.zram.mark_idle_delay_mins=60 \
+ro.zram.periodic_wb_delay_hours=24 \
+ro.zygote=zygote64_32 \
+setupwizard.feature.baseline_setupwizard_enabled=true \
+setupwizard.feature.device_default_dark_mode=true \
+setupwizard.feature.show_pai_screen_in_main_flow.carrier1839=false \
+setupwizard.feature.show_pixel_tos=true \
+setupwizard.feature.show_support_link_in_deferred_setup=true \
+setupwizard.feature.skip_button_use_mobile_data.carrier1839=true \
+setupwizard.theme=glif_v3_light \
+telephony.active_modems.max_count=2 \
+telephony.lteOnCdmaDevice=1 \
+vendor.audio_hal.period_multiplier=2 \
+vendor.audio_hal.in_period_size=144 \
+vendor.audio_hal.period_size=192 \
+vendor.audio.adm.buffering.ms=2 \
+vendor.audio.capture.enforce_legacy_copp_sr=true \
+vendor.audio.feature.a2dp_offload.enable=true \
+vendor.audio.feature.audiozoom.enable=true \
+vendor.audio.feature.concurrent_capture.enable=true \
+vendor.audio.feature.devicestate_listener.enable=true \
+vendor.audio.feature.external_dsp.enable=false \
+vendor.audio.feature.external_speaker.enable=false \
+vendor.audio.feature.external_speaker_tfa.enable=false \
+vendor.audio.feature.hfp.enable=true \
+vendor.audio.feature.hwdep_cal.enable=true \
+vendor.audio.feature.incall_music.enable=true \
+vendor.audio.feature.maxx_audio.enable=true \
+vendor.audio.feature.multi_voice_session.enable=true \
+vendor.audio.feature.snd_mon.enable=true \
+vendor.audio.feature.spkr_prot.enable=true \
+vendor.audio.feature.thermal_listener.enable=true \
+vendor.audio.feature.usb_offload.enable=true \
+vendor.audio.mic_break=true \
+vendor.audio.offload.buffer.size.kb=1024 \
+vendor.audio.offload.gapless.enabled=true \
+vendor.audio.snd_card.open.retries=50 \
+vendor.display.comp_mask=0 \
+vendor.display.defer_fps_frame_count=2 \
+vendor.display.disable_excl_rect_partial_fb=1 \
+vendor.display.disable_excl_rect=0 \
+vendor.display.disable_hw_recovery_dump=1 \
+vendor.display.disable_offline_rotator=1 \
+vendor.display.disable_scaler=0 \
+vendor.display.enable_async_powermode=0 \
+vendor.display.enable_camera_smooth=1 \
+vendor.display.enable_optimize_refresh=1 \
+vendor.display.enable_posted_start_dyn=1 \
+vendor.display.lbe.supported=1 \
+vendor.display.qdcm.mode_combine=1 \
+vendor.display.use_smooth_motion=1 \
+vendor.gralloc.disable_ubwc=0 \
+vendor.media.omx=0 \
+vendor.qc2.venc.avgqp.enable=1 \
+vendor.qcom.bluetooth.soc=cherokee \
+vendor.skip.init=0 \
+vidc.enc.dcvs.extra-buff-count=2 \
+vidc.enc.disable.pq=1 
 EOF
-
-    # --------------------------------------------------------------------------------------------------
-    # 4.2 POST-UPDATE COMMON PROP FLAGS
-    # --------------------------------------------------------------------------------------------------
 
     echo ""
     echo "PATCHING common-prop.MK..."
@@ -957,7 +1296,130 @@ EOF
 }
 
 # --------------------------------------------------------------------------------------------------
-# 5. REPO SYNC AND UPDATE
+# 5. PIXEL CONTENT
+# --------------------------------------------------------------------------------------------------
+
+_pixel_fork() {
+    if ! $_clean; then
+        if [ ! -d $FORK_DIR ]; then
+            echo ""
+            echo "FORKING PIXEL FIRMWARE..."
+            echo ""
+            for dir in $FORK_DIR $DOWNLOAD_DIR; do
+                if [ ! -d $dir ]; then
+                    mkdir $dir
+                fi
+            done
+
+            if [ ! -f $IMAGE_FILE ]; then
+                pushd $DOWNLOAD_DIR
+                wget https://dl.google.com/dl/android/aosp/$IMAGE_NAME
+                popd
+            fi
+
+            if [ -d $TMP ]; then
+                sudo rm -rf $TMP
+            fi
+            mkdir -p $TMP
+
+            pushd $TMP
+            sudo unzip -p $IMAGE_FILE "*/image*" >image.zip
+            sudo unzip image.zip product.img system.img vendor.img system_ext.img
+
+            simg2img product.img product.raw
+            mkdir product
+            sudo mount -o ro product.raw product
+
+            simg2img system.img system.raw
+            mkdir system
+            sudo mount -o ro system.raw system
+
+            simg2img vendor.img vendor.raw
+            mkdir vendor
+            sudo mount -o ro vendor.raw vendor
+
+            simg2img system_ext.img system_ext.raw
+            mkdir system_ext
+            sudo mount -o ro system_ext.raw system_ext
+
+            wait
+            echo ""
+            echo "PREPARING PIXEL FIRMWARE..."
+            echo ""
+
+            cp -r $PRODUCT $FORK_DIR || true
+            #cp -apr $SYSTEM $FORK_DIR || true
+            cp -r $SYSTEM_EXT $FORK_DIR || true
+            cp -apr $VENDOR $FORK_DIR || true
+            rm -rf $FORK_DIR/product/etc/build.prop || true
+            rm -rf $FORK_DIR/product/etc/init || true
+            rm -rf $FORK_DIR/product/etc/security || true
+            rm -rf $FORK_DIR/product/etc/selinux || true
+            rm -rf $FORK_DIR/product/etc/vintf || true
+            rm -rf $FORK_DIR/product/overlay/GoogleConfigOverlay.apk || true
+            rm -rf $FORK_DIR/product/overlay/PixelConfigOverlayCommon.apk || true
+            rm -rf $FORK_DIR/product/overlay/SettingsGoogleOverlayRedfin.apk || true
+            rm -rf $FORK_DIR/product/overlay/SystemUIGoogle__auto_generated_rro_product.apk || true
+            rm -rf $FORK_DIR/product/priv-app/PrebuiltGmsCore || true
+            rm -rf $FORK_DIR/product/priv-app/SetupWizardPrebuilt || true
+            rm -rf $FORK_DIR/system_ext/app/com.qualcomm.qti.services.secureui || true
+            rm -rf $FORK_DIR/system_ext/bin || true
+            rm -rf $FORK_DIR/system_ext/etc/build.prop || true
+            rm -rf $FORK_DIR/system_ext/etc/init || true
+            rm -rf $FORK_DIR/system_ext/etc/perf || true
+            rm -rf $FORK_DIR/system_ext/etc/permissions/com.qti.dpmframework.xml || true
+            rm -rf $FORK_DIR/system_ext/etc/permissions/com.qti.media.secureprocessor.xml || true
+            rm -rf $FORK_DIR/system_ext/etc/security || true
+            rm -rf $FORK_DIR/system_ext/etc/selinux || true
+            rm -rf $FORK_DIR/system_ext/etc/vintf || true
+            rm -rf $FORK_DIR/system_ext/framework || true
+            rm -rf $FORK_DIR/system_ext/lib || true
+            rm -rf $FORK_DIR/system_ext/lib64 || true
+            rm -rf $FORK_DIR/system_ext/lost+found || true
+            rm -rf $FORK_DIR/system_ext/priv-app/ConnectivityThermalPowerManager || true
+            rm -rf $FORK_DIR/system_ext/priv-app/grilservice || true
+            rm -rf $FORK_DIR/system_ext/priv-app/ims || true
+            rm -rf $FORK_DIR/system_ext/priv-app/qcrilmsgtunnel || true
+            rm -rf $FORK_DIR/system_ext/priv-app/RilConfigService || true
+            rm -rf $FORK_DIR/system_ext/priv-app/SystemUIGoogle || true
+            rm -rf $FORK_DIR/system/system/etc/build.prop || true
+            rm -rf $FORK_DIR/system/system/etc/init || true
+            rm -rf $FORK_DIR/system/system/etc/security || true
+            rm -rf $FORK_DIR/system/system/etc/selinux || true
+            rm -rf $FORK_DIR/system/system/etc/vintf || true
+            rm -rf $FORK_DIR/system/system/product || true
+            rm -rf $FORK_DIR/system/system/system_ext || true
+            rm -rf $FORK_DIR/system/system/vendor || true
+            rm -rf $FORK_DIR/vendor/build.prop || true
+            rm -rf $FORK_DIR/vendor/dsp || true
+            rm -rf $FORK_DIR/vendor/etc || true
+            rm -rf $FORK_DIR/vendor/etc/security || true
+            rm -rf $FORK_DIR/vendor/etc/selinux || true
+            rm -rf $FORK_DIR/vendor/etc/vintf || true
+            rm -rf $FORK_DIR/vendor/firmware || true
+            rm -rf $FORK_DIR/vendor/framework || true
+            rm -rf $FORK_DIR/vendor/lib || true
+            rm -rf $FORK_DIR/vendor/lib64 || true
+            rm -rf $FORK_DIR/vendor/odm || true
+            rm -rf $FORK_DIR/vendor/odm_dlkm || true
+            rm -rf $FORK_DIR/vendor/rfs || true
+            rm -rf $FORK_DIR/vendor/vendor_dlkm || true
+
+            wait
+
+            sudo umount product
+            sudo umount system
+            sudo umount vendor
+            sudo umount system_ext
+            popd
+
+            rm -rf $TMP
+        fi
+    fi
+}
+
+# --------------------------------------------------------------------------------------------------
+# 6. REPO SYNC AND UPDATE
 # --------------------------------------------------------------------------------------------------
 
 _repo_update() {
@@ -970,137 +1432,30 @@ _repo_update() {
 }
 
 # --------------------------------------------------------------------------------------------------
-# 6. CLEANING OUTPUT
+# 7. CLEANING OUTPUT
 # --------------------------------------------------------------------------------------------------
 
 _cleaning() {
     if $_clean; then
         echo ""
         echo "CLEANING /out"
+        echo ""
         make installclean -j$(nproc)
+        rm -rf $FORK_DIR || true
     fi
 }
 
 # --------------------------------------------------------------------------------------------------
-# 7. PIXEL CONTENT
-# --------------------------------------------------------------------------------------------------
-
-_pixel_fork() {
-    if ! $_clean; then
-        echo ""
-        echo "FORKING PIXEL FIRMWARE..."
-        for dir in $FORK_DIR $DOWNLOAD_DIR; do
-            if [ ! -d $dir ]; then
-                mkdir $dir
-            fi
-        done
-
-        if [ ! -f $IMAGE_FILE ]; then
-            pushd $DOWNLOAD_DIR
-            wget https://dl.google.com/dl/android/aosp/$IMAGE_NAME
-            popd
-        fi
-
-        if [ -d $TMP ]; then
-            sudo rm -rf $TMP
-        fi
-        mkdir -p $TMP
-
-        pushd $TMP
-        sudo unzip -p $IMAGE_FILE "*/image*" >image.zip
-        sudo unzip image.zip product.img system.img vendor.img system_ext.img
-
-        simg2img product.img product.raw
-        mkdir product
-        sudo mount -o ro product.raw product
-
-        simg2img system.img system.raw
-        mkdir system
-        sudo mount -o ro system.raw system
-
-        simg2img vendor.img vendor.raw
-        mkdir vendor
-        sudo mount -o ro vendor.raw vendor
-
-        simg2img system_ext.img system_ext.raw
-        mkdir system_ext
-        sudo mount -o ro system_ext.raw system_ext
-
-        wait
-        echo ""
-        echo "PREPARING PIXEL FIRMWARE..."
-
-        cp -r $PRODUCT $FORK_DIR || true
-        #cp -apr $SYSTEM $FORK_DIR || true
-        cp -r $SYSTEM_EXT $FORK_DIR || true
-        #cp -apr $VENDOR $FORK_DIR || true
-        rm -rf $FORK_DIR/product/etc/build.prop || true
-        rm -rf $FORK_DIR/product/etc/init || true
-        rm -rf $FORK_DIR/product/etc/security || true
-        rm -rf $FORK_DIR/product/etc/selinux || true
-        rm -rf $FORK_DIR/product/etc/vintf || true
-        rm -rf $FORK_DIR/product/overlay/GoogleConfigOverlay.apk || true
-        rm -rf $FORK_DIR/product/overlay/PixelConfigOverlayCommon.apk || true
-        rm -rf $FORK_DIR/product/overlay/SettingsGoogleOverlayRedfin.apk || true
-        rm -rf $FORK_DIR/product/overlay/SystemUIGoogle__auto_generated_rro_product.apk || true
-        rm -rf $FORK_DIR/product/priv-app/PrebuiltGmsCore || true
-        rm -rf $FORK_DIR/product/priv-app/SetupWizardPrebuilt || true
-        rm -rf $FORK_DIR/system_ext/app/com.qualcomm.qti.services.secureui || true
-        rm -rf $FORK_DIR/system_ext/bin || true
-        rm -rf $FORK_DIR/system_ext/etc/init || true
-        rm -rf $FORK_DIR/system_ext/etc/perf || true
-        rm -rf $FORK_DIR/system_ext/etc/permissions/com.qti.dpmframework.xml || true
-        rm -rf $FORK_DIR/system_ext/etc/permissions/com.qti.media.secureprocessor.xml || true
-        rm -rf $FORK_DIR/system_ext/etc/permissions/com.qualcomm.qcrilmsgtunnel.xml || true
-        rm -rf $FORK_DIR/system_ext/etc/security || true
-        rm -rf $FORK_DIR/system_ext/etc/selinux || true
-        rm -rf $FORK_DIR/system_ext/etc/vintf || true
-        rm -rf $FORK_DIR/system_ext/framework || true
-        rm -rf $FORK_DIR/system_ext/lib || true
-        rm -rf $FORK_DIR/system_ext/lib64 || true
-        rm -rf $FORK_DIR/system_ext/lost+found || true
-        rm -rf $FORK_DIR/system_ext/priv-app/ConnectivityThermalPowerManager || true
-        rm -rf $FORK_DIR/system_ext/priv-app/grilservice || true
-        rm -rf $FORK_DIR/system_ext/priv-app/ims || true
-        rm -rf $FORK_DIR/system_ext/priv-app/qcrilmsgtunnel || true
-        rm -rf $FORK_DIR/system_ext/priv-app/RilConfigService || true
-        rm -rf $FORK_DIR/system_ext/priv-app/SystemUIGoogle || true
-        rm -rf $FORK_DIR/system/system/etc/build.prop || true
-        rm -rf $FORK_DIR/system/system/etc/init || true
-        rm -rf $FORK_DIR/system/system/etc/security || true
-        rm -rf $FORK_DIR/system/system/etc/selinux || true
-        rm -rf $FORK_DIR/system/system/etc/vintf || true
-        rm -rf $FORK_DIR/system/system/product || true
-        rm -rf $FORK_DIR/system/system/system_ext || true
-        rm -rf $FORK_DIR/system/system/vendor || true
-        rm -rf $FORK_DIR/vendor/etc/init || true
-        rm -rf $FORK_DIR/vendor/etc/security || true
-        rm -rf $FORK_DIR/vendor/etc/selinux || true
-        rm -rf $FORK_DIR/vendor/etc/vintf || true
-
-        wait
-
-        sudo umount product
-        sudo umount system
-        sudo umount vendor
-        sudo umount system_ext
-        popd
-
-        rm -rf $TMP
-    fi
-}
-
-# --------------------------------------------------------------------------------------------------
-# 8. MAKE OPTIONS
+# 8. MAKE DIOS
 # --------------------------------------------------------------------------------------------------
 
 _make() {
     wait
     echo ""
     echo "START BUILDING DIOS"
+    echo ""
     sudo mount --bind /home/$USERNAME/.ccache /mnt/ccache
     make -j$(nproc)
-    rm -rf $FORK_DIR || true
 }
 
 # --------------------------------------------------------------------------------------------------
@@ -1173,8 +1528,8 @@ _flash() {
 _build() {
     _post_update
     _pixel_fork
-    _cleaning
     _repo_update
+    _cleaning
     _make
     _flash
 }
@@ -1224,5 +1579,6 @@ if [ -d $DIOS_DIR ]; then
 
     _build
 else
+
     _init_dios
 fi
