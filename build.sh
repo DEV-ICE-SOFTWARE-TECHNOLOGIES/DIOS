@@ -473,9 +473,7 @@ dalvik.vm.heapsize=512m \
 dalvik.vm.heapstartsize=16m \
 dalvik.vm.heaptargetutilization=0.5 \
 dalvik.vm.isa.arm.features=default \
-dalvik.vm.isa.arm.variant=cortex-a76 \
 dalvik.vm.isa.arm64.features=default \
-dalvik.vm.isa.arm64.variant=cortex-a76 \
 debug.egl.hw=1 \
 debug.gralloc.enable_fb_ubwc=1 \
 debug.mdpcomp.logs=0 \
@@ -1435,7 +1433,7 @@ PRODUCT_USE_DYNAMIC_PARTITIONS := true
 
 # Display
 TARGET_HAS_HDR_DISPLAY := true
-TARGET_RECOVERY_PIXEL_FORMAT := BGRA_8888
+TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888
 TARGET_USES_DRM_PP := true
 NUM_FRAMEBUFFER_SURFACE_BUFFERS := 2
 
