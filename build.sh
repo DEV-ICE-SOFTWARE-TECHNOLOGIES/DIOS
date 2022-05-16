@@ -1556,6 +1556,7 @@ _flash() {
     read -p "FLASHING TO A 2020 XPERIA?" -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
+        sudo ./fastboot reboot fastboot
         sudo ./fastboot flash boot $OUT/boot.img
         sudo ./fastboot flash dtbo $OUT/dtbo.img
         sudo ./fastboot flash product $OUT/product.img
@@ -1575,6 +1576,7 @@ _flash() {
     read -p "FLASHING TO A 2021 XPERIA?" -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
+        sudo ./fastboot reboot fastboot
         sudo ./fastboot flash boot $OUT/boot.img
         sudo ./fastboot flash dtbo $OUT/dtbo.img
         sudo ./fastboot flash product $OUT/product.img
