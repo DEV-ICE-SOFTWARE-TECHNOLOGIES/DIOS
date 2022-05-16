@@ -1612,6 +1612,7 @@ _build() {
 declare _shell_script=${0##*/}
 declare _clean="false"
 declare _update="false"
+declare _init="false"
 
 while (("$#")); do
     case $1 in
