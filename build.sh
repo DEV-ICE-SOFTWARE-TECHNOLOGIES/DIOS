@@ -20,7 +20,7 @@ EMAIL=mariuskopp517@gmail.com
 DIOS_DIR=~/dios/device/sony/dios
 DOWNLOAD_DIR=~/dios/device/sony/dios/pixel
 FORK_DIR=~/dios/device/sony/dios/fork
-IMAGE_NAME=redfin-sp2a.220505.002-factory-7fe11c77.zip
+IMAGE_NAME=coral-sp2a.220505.002-factory-165116a1.zip
 IMAGE_FILE=$DOWNLOAD_DIR/$IMAGE_NAME
 OUT=~/dios/out/target/product/$DEVICE
 TMP=~/dios/device/sony/dios/tmp/$(basename $IMAGE_NAME .zip)
@@ -451,11 +451,12 @@ EOF
     cat <<\EOF >~/dios/device/sony/dios/dios.mk
 
 BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
-DONT_DEXPREOPT_PREBUILTS := true
+DONT_DEXPREOPT_PREBUILTS := false
 WITH_DEXPREOPT := true
 
 PRODUCT_DEXPREOPT_SPEED_APPS += \
-    SystemUI 
+    SystemUI \
+    NexusLauncherRelease
 
 -include vendor/gapps/arm64/arm64-vendor.mk
 
@@ -617,7 +618,6 @@ ro.odm.build.media_performance_class=30 \
 ro.oem_unlock_supported=1 \
 ro.opa.eligible_device=true \
 ro.opengles.version=196610 \
-ro.postinstall.fstab.prefix=/product \
 ro.product.vndk.version=32 \
 ro.qti.sdk.sensors.gestures=false \
 ro.qti.sensors.amd=false \
@@ -1784,6 +1784,56 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/core_64_bit.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/updatable_apex.mk)
 EOF
 
+if [ ! -d ~/dios/device/sony/dios/dios/product/etc ]; then
+        mkdir -p ~/dios/device/sony/dios/dios/product/etc
+    fi
+
+echo ""
+    echo "CREATING PRODUCT BUILD PROP..."
+    cat <<\EOF >~/dios/device/sony/dios/dios/product/etc/build.prop
+# D!OS
+ro.postinstall.fstab.prefix=/product
+ro.product.product.brand=google
+ro.product.product.device=redfin
+ro.product.product.manufacturer=Google
+ro.product.product.model=Pixel 5
+ro.product.product.name=redfin
+ro.product.build.date=Tue Feb 22 18:36:04 UTC 2022
+ro.product.build.date.utc=1645554964
+ro.product.build.fingerprint=google/redfin/redfin:12/SP2A.220405.003/8210211:user/release-keys
+ro.product.build.id=SP2A.220405.003
+ro.product.build.tags=release-keys
+ro.product.build.type=user
+ro.product.build.version.incremental=8210211
+ro.product.build.version.release=12
+ro.product.build.version.release_or_codename=12
+ro.product.build.version.sdk=32
+EOF
+
+if [ ! -d ~/dios/device/sony/dios/dios/system_ext/etc ]; then
+        mkdir -p ~/dios/device/sony/dios/dios/system_ext/etc
+    fi
+
+echo ""
+    echo "CREATING SYSTEM_EXT BUILD PROP..."
+    cat <<\EOF >~/dios/device/sony/dios/dios/system_ext/etc/build.prop
+# D!OS
+ro.product.system_ext.brand=google
+ro.product.system_ext.device=redfin
+ro.product.system_ext.manufacturer=Google
+ro.product.system_ext.model=Pixel 5
+ro.product.system_ext.name=redfin
+ro.system_ext.build.date=Tue Feb 22 18:36:04 UTC 2022
+ro.system_ext.build.date.utc=1645554964
+ro.system_ext.build.fingerprint=google/redfin/redfin:12/SP2A.220405.003/8210211:user/release-keys
+ro.system_ext.build.id=SP2A.220405.003
+ro.system_ext.build.tags=release-keys
+ro.system_ext.build.type=user
+ro.system_ext.build.version.incremental=8210211
+ro.system_ext.build.version.release=12
+ro.system_ext.build.version.release_or_codename=12
+ro.system_ext.build.version.sdk=32
+EOF
 }
 
 # --------------------------------------------------------------------------------------------------
@@ -1838,12 +1888,11 @@ _pixel_fork() {
             echo "PREPARING PIXEL FIRMWARE..."
             echo ""
 
-            cp -r $PRODUCT $FORK_DIR || true
-            #cp -apr $SYSTEM $FORK_DIR || true
-            cp -r $SYSTEM_EXT $FORK_DIR || true
+            cp -apr $PRODUCT $FORK_DIR || true
+            cp -apr $SYSTEM $FORK_DIR || true
+            cp -apr $SYSTEM_EXT $FORK_DIR || true
             cp -apr $VENDOR $FORK_DIR || true
             rm -rf $FORK_DIR/product/etc/build.prop || true
-            rm -rf $FORK_DIR/product/etc/init || true
             rm -rf $FORK_DIR/product/etc/security || true
             rm -rf $FORK_DIR/product/etc/selinux || true
             rm -rf $FORK_DIR/product/etc/vintf || true
@@ -1854,21 +1903,13 @@ _pixel_fork() {
             rm -rf $FORK_DIR/product/overlay/SettingsOverlayGD1YQ.apk || true
             rm -rf $FORK_DIR/product/overlay/SettingsOverlayGTT9Q.apk || true
             rm -rf $FORK_DIR/product/overlay/SystemUIGoogle__auto_generated_rro_product.apk || true
-            rm -rf $FORK_DIR/product/priv-app/PrebuiltGmsCore || true
-            rm -rf $FORK_DIR/product/priv-app/SetupWizardPrebuilt || true
             rm -rf $FORK_DIR/system_ext/app/com.qualcomm.qti.services.secureui || true
             rm -rf $FORK_DIR/system_ext/bin || true
-            rm -rf $FORK_DIR/system_ext/etc/build.prop || true
-            rm -rf $FORK_DIR/system_ext/etc/init || true
-            rm -rf $FORK_DIR/system_ext/etc/perf || true
             rm -rf $FORK_DIR/system_ext/etc/permissions/com.qti.dpmframework.xml || true
             rm -rf $FORK_DIR/system_ext/etc/permissions/com.qti.media.secureprocessor.xml || true
             rm -rf $FORK_DIR/system_ext/etc/security || true
             rm -rf $FORK_DIR/system_ext/etc/selinux || true
             rm -rf $FORK_DIR/system_ext/etc/vintf || true
-            rm -rf $FORK_DIR/system_ext/framework || true
-            rm -rf $FORK_DIR/system_ext/lib || true
-            rm -rf $FORK_DIR/system_ext/lib64 || true
             rm -rf $FORK_DIR/system_ext/lost+found || true
             rm -rf $FORK_DIR/system_ext/priv-app/ConnectivityThermalPowerManager || true
             rm -rf $FORK_DIR/system_ext/priv-app/grilservice || true
@@ -1885,17 +1926,16 @@ _pixel_fork() {
             rm -rf $FORK_DIR/system/system/system_ext || true
             rm -rf $FORK_DIR/system/system/vendor || true
             rm -rf $FORK_DIR/vendor/build.prop || true
-            rm -rf $FORK_DIR/vendor/dsp || true
-            rm -rf $FORK_DIR/vendor/etc || true
+            rm -rf $FORK_DIR/vendor/etc/init || true
             rm -rf $FORK_DIR/vendor/etc/security || true
             rm -rf $FORK_DIR/vendor/etc/selinux || true
             rm -rf $FORK_DIR/vendor/etc/vintf || true
             rm -rf $FORK_DIR/vendor/firmware || true
-            rm -rf $FORK_DIR/vendor/framework || true
             rm -rf $FORK_DIR/vendor/lib || true
             rm -rf $FORK_DIR/vendor/lib64 || true
             rm -rf $FORK_DIR/vendor/odm || true
             rm -rf $FORK_DIR/vendor/odm_dlkm || true
+            rm -rf $FORK_DIR/vendor/overlay/framework-res__auto_generated_rro_vendor.apk || true
             rm -rf $FORK_DIR/vendor/rfs || true
             rm -rf $FORK_DIR/vendor/vendor_dlkm || true
 
