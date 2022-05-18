@@ -11,6 +11,7 @@ fi
 
 echo ""
 echo "D!OS DIOS MK..."
+echo ""
 cat <<\EOF >~/dios/device/sony/dios/dios.mk
 
 BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true

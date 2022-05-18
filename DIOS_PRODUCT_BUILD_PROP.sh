@@ -11,6 +11,7 @@ fi
 
 echo ""
 echo "D!OS PRODUCT BUILD PROP..."
+echo ""
 cat <<\EOF >~/dios/device/sony/dios/dios/product/etc/build.prop
 # D!OS
 ro.postinstall.fstab.prefix=/product

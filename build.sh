@@ -3,18 +3,25 @@ set -eu
 
 # --------------------------------------------------------------------------------------------------
 # Copyright © 2022 Marius Kopp
+# THE D!OS BUILD AI IS PROPERTY OF DEV ICE TECHNOLOGIES. A COMPANY OF MARIUS KOPP
+# YOU ARE NOT ALLOWED TO COPY, SHARE OR EDIT THIS SCRIPT WITHOUT PERMISSIONS FROM THE OWNER
 # --------------------------------------------------------------------------------------------------
+echo ""
+echo ""
+echo ""
+echo "█▀▄ █ ▄▀▄ ▄▀▀    ██▄ █ █ █ █   █▀▄    ▄▀▄ █ "
+echo "█▄▀ █ ▀▄▀ ▄█▀    █▄█ ▀▄█ █ █▄▄ █▄▀    █▀█ █ "
+echo ""
+echo ""
+echo ""
 
 # --------------------------------------------------------------------------------------------------
 # VARIABLES
 # --------------------------------------------------------------------------------------------------
 
-DEVICE=bahamut
 NAME=M1U5T0N3
 USERNAME=miustone
 EMAIL=mariuskopp517@gmail.com
-DIOS_DIR=~/dios/device/sony/dios
-OUT=~/dios/out/target/product/$DEVICE
 
 # --------------------------------------------------------------------------------------------------
 # INITIALIZING
@@ -64,6 +71,10 @@ DIOS_PATH := device/sony/dios
 $(call inherit-product-if-exists, $(DIOS_PATH)/dios.mk)
 EOF
 
+    git config --global user.email $EMAIL
+
+    git config --global user.name $NAME
+
     repo init -u https://android.googlesource.com/platform/manifest -b android-12.1.0_r5
 
     cd .repo
@@ -83,11 +94,11 @@ EOF
     bash ./DIOS_GAPPS_XML.sh
     wait
 
-    if [ ! -d $DIOS_DIR ]; then
-        mkdir -p $DIOS_DIR
+    if [ ! -d ~/dios/device/sony/dios ]; then
+        mkdir -p ~/dios/device/sony/dios
     fi
 
-    pushd $DIOS_DIR
+    pushd ~/dios/device/sony/dios
     git clone https://github.com/DEV-ICE-TECHNOLOGIES/ACDB
     popd
 
@@ -123,7 +134,7 @@ _prepare() {
 }
 
 # --------------------------------------------------------------------------------------------------
-# PIXEL CONTENT
+# PIXEL
 # --------------------------------------------------------------------------------------------------
 
 _pixel_fork() {
