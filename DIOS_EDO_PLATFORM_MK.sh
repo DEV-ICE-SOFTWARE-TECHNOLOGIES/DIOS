@@ -5,29 +5,29 @@ set -eu
 # Copyright © 2022 Marius Kopp
 # --------------------------------------------------------------------------------------------------
 
-if [ ! -d ~/dios/device/sony/sagami ]; then
-    mkdir -p ~/dios/device/sony/sagami
+if [ ! -d ~/dios/device/sony/edo ]; then
+    mkdir -p ~/dios/device/sony/edo
 fi
 
 echo ""
-echo "D!OS SAGAMI PLATFORM MK..."
+echo "D!OS EDO PLATFORM MK..."
 echo ""
-cat <<\EOF >~/dios/device/sony/sagami/platform.mk
+cat <<\EOF >~/dios/device/sony/edo/platform.mk
 # D!OS
 BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
-BOARD_USE_ENFORCING_SELINUX := false
+BOARD_USE_ENFORCING_SELINUX := true
 
 # Platform path
-PLATFORM_COMMON_PATH := device/sony/sagami
+PLATFORM_COMMON_PATH := device/sony/edo
 
-LAHAINA := sm8350
+KONA := sm8250
 
-SOMC_PLATFORM := sagami
-SOMC_KERNEL_VERSION := 5.4
+SOMC_PLATFORM := edo
+SOMC_KERNEL_VERSION := 4.19
 
 PRODUCT_PLATFORM_SOD := true
 
-TARGET_BOARD_PLATFORM := $(LAHAINA)
+TARGET_BOARD_PLATFORM := $(KONA)
 
 SONY_ROOT := $(PLATFORM_COMMON_PATH)/rootdir
 
@@ -35,8 +35,13 @@ SONY_ROOT := $(PLATFORM_COMMON_PATH)/rootdir
 DEVICE_PACKAGE_OVERLAYS += \
     $(PLATFORM_COMMON_PATH)/overlay
 
+# SDX55M PCI-e Modem
+TARGET_USES_ESOC := true
+
 # RIL
 TARGET_PER_MGR_ENABLED := true
+
+TARGET_VIBRATOR_V1_2 := true
 
 TARGET_PD_SERVICE_ENABLED := true
 
@@ -77,7 +82,6 @@ AUDIO_FEATURE_ENABLED_HDMI_PASSTHROUGH := true
 AUDIO_FEATURE_ENABLED_DISPLAY_PORT := true
 AUDIO_FEATURE_ENABLED_USB_BURST_MODE := true
 AUDIO_FEATURE_SONY_CIRRUS := true
-AUDIO_FEATURE_ENABLED_GKI := true
 
 # Dynamic Partitions: Enable DP
 PRODUCT_USE_DYNAMIC_PARTITIONS := true
@@ -90,6 +94,10 @@ NUM_FRAMEBUFFER_SURFACE_BUFFERS := 2
 
 # Lights HAL: Backlight
 TARGET_USES_SDE := true
+
+# Force building a boot image.
+# This needs to be set explicitly since Android R
+PRODUCT_BUILD_BOOT_IMAGE := true
 
 # A/B support
 AB_OTA_UPDATER := true
@@ -118,10 +126,10 @@ AB_OTA_PARTITIONS += \
     dtbo \
     product \
     system \
-    vbmeta \
-    vbmeta_system \
+    recovery \
     vendor \
-    vendor_boot
+    vbmeta \
+    vbmeta_system
 
 # Dynamic Partitions: build fastbootd
 PRODUCT_PACKAGES += \
@@ -137,7 +145,8 @@ PRODUCT_COPY_FILES += \
      frameworks/native/data/etc/android.hardware.sensor.gyroscope.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.sensor.gyroscope.xml \
      frameworks/native/data/etc/android.hardware.sensor.barometer.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.sensor.barometer.xml \
      frameworks/native/data/etc/android.hardware.sensor.stepcounter.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.sensor.stepcounter.xml \
-     frameworks/native/data/etc/android.hardware.sensor.stepdetector.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.sensor.stepdetector.xml
+     frameworks/native/data/etc/android.hardware.sensor.stepdetector.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.sensor.stepdetector.xml \
+     frameworks/native/data/etc/android.software.device_id_attestation.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.software.device_id_attestation.xml
 
 # Audio
 PRODUCT_COPY_FILES += \
@@ -163,7 +172,8 @@ endif
 PRODUCT_COPY_FILES += \
     $(SONY_ROOT)/vendor/etc/media_codecs.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs.xml \
     $(SONY_ROOT)/vendor/etc/media_codecs_performance.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_performance.xml \
-    $(SONY_ROOT)/vendor/etc/media_profiles_V1_0.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_profiles_V1_0.xml
+    $(SONY_ROOT)/vendor/etc/media_profiles_V1_0.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_profiles_V1_0.xml \
+    $(SONY_ROOT)/vendor/etc/system_properties.xml:$(TARGET_COPY_OUT_VENDOR)/etc/system_properties.xml
 
 # Qualcom WiFi Overlay
 PRODUCT_COPY_FILES += \
@@ -214,9 +224,13 @@ DEVICE_MANIFEST_FILE += $(PLATFORM_COMMON_PATH)/vintf/android.hardware.authsecre
 # Platform specific init
 PRODUCT_PACKAGES += \
     tad.rc \
-    init.sagami \
-    init.sagami.pwr \
+    init.edo \
+    init.edo.pwr \
     ueventd
+
+# HVDCP init
+PRODUCT_PACKAGES += \
+    hvdcp_opti.rc
 
 # Audio init
 PRODUCT_PACKAGES += \
@@ -224,41 +238,31 @@ PRODUCT_PACKAGES += \
 
 # Audio
 PRODUCT_PACKAGES += \
-    sound_trigger.primary.sm8350 \
-    audio.primary.sm8350 \
+    sound_trigger.primary.sm8250 \
+    audio.primary.sm8250 \
     libcirrusspkrprot
-
-# Camera
-PRODUCT_PACKAGES += \
-    model1.dat \
-    model2.dat
 
 # GFX
 PRODUCT_PACKAGES += \
-    copybit.sm8350 \
-    gralloc.sm8350 \
-    hwcomposer.sm8350 \
-    memtrack.default
+    copybit.sm8250 \
+    gralloc.sm8250 \
+    hwcomposer.sm8250 \
+    memtrack.sm8250
 
 # Keymaster 4 passthrough service init file
 # (executable is on odm)
 PRODUCT_PACKAGES += \
-    android.hardware.keymaster@4.1-service-qti.rc \
-    android.hardware.keymaster@4.1.vendor \
-    vendor.qti.hardware.qseecom@1.0-service.rc
+    android.hardware.keymaster@4.0-service-qti.rc \
+    android.hardware.keymaster@4.1.vendor
 
 PRODUCT_PROPERTY_OVERRIDES += \
-    ro.vendor.keymaster.version=v4.1 \
-    ro.crypto.dm_default_key.options_format.version=2 \
-    ro.crypto.volume.metadata.method=dm-default-key
+    ro.vendor.keymaster.version=v4
 
-DEVICE_MANIFEST_FILE += \
-    $(PLATFORM_COMMON_PATH)/vintf/android.hw.keymaster_v4.1.xml \
-    $(PLATFORM_COMMON_PATH)/vintf/vendor.qti.hardware.qseecom_v1.0.xml
+DEVICE_MANIFEST_FILE += $(PLATFORM_COMMON_PATH)/vintf/android.hw.keymaster_v4.xml
 
 # GPS
 PRODUCT_PACKAGES += \
-    gps.sm8350
+    gps.sm8250
 
 # Sensors init
 PRODUCT_PACKAGES += \
@@ -333,12 +337,50 @@ PRODUCT_PACKAGES += \
 
 # Platform SSC Sensors
 PRODUCT_PACKAGES += \
+    kona_ak991x_0.json \
+    kona_bmp380_0.json \
+    kona_bu52053nvx_0.json \
+    kona_default_sensors.json \
+    kona_dynamic_sensors.json \
+    kona_hdk_ak991x_0.json \
+    kona_hdk_lsm6dst_0.json \
+    kona_hdk_lsm6dst_1.json \
+    kona_irq.json \
+    kona_lps22hh_0.json \
+    kona_lsm6dsm_0.json \
+    kona_lsm6dst_0.json \
+    kona_lsm6dst_1.json \
+    kona_power_0.json \
+    kona_qrd_ak991x_0.json \
+    kona_qrd_lsm6dst_0.json \
+    kona_qrd_sx932x_0.json \
+    kona_qrd_tmd2725_0.json \
+    kona_shtw2_0.json \
+    kona_somc_default_sensors.json \
+    kona_stk3x3x_0.json \
+    kona_svr_bma4_0.json \
+    kona_svr_bmg160_0.json \
+    kona_svr_icm4x6xx_0.json \
+    kona_svr_rpr0521rs_0.json \
+    kona_sx932x_0.json \
+    kona_tmd2725_0.json
 
-# Other sagami-specific sensors
+# Other edo-specific sensors
 PRODUCT_PACKAGES += \
+    sns_ccd_v2_walk.json \
+    sns_ccd_v3_1_walk.json \
+    sns_ccd_v3_walk.json \
+    sns_fmv_legacy.json \
+    sns_heart_rate.json \
+    sns_mag_cal_legacy.json \
+    sns_wrist_pedo.json \
+    stk3x3x_0.json \
+    wigig_sensing_0.json
 
 # Platform-specific sensor overlays
 PRODUCT_COPY_FILES += \
+    $(SONY_ROOT)/vendor/etc/sensors/config/kona_ak991x_0_somc_platform.json:$(TARGET_COPY_OUT_VENDOR)/etc/sensors/config/kona_ak991x_0_somc_platform.json \
+    $(SONY_ROOT)/vendor/etc/sensors/config/sns_device_orient_somc_platform.json:$(TARGET_COPY_OUT_VENDOR)/etc/sensors/config/sns_device_orient_somc_platform.json
 
 # CAMERA
 TARGET_USES_64BIT_CAMERA := true
@@ -425,6 +467,10 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.surface_flinger.set_touch_timer_ms=200 \
     ro.surface_flinger.use_color_management=true \
     ro.surface_flinger.wcg_composition_dataspace=143261696
+
+# External modem
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.vendor.mdm_helper.fail_action=cold_reset
 
 # Gatekeeper
 PRODUCT_PROPERTY_OVERRIDES += \

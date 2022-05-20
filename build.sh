@@ -53,7 +53,7 @@ _init_dios() {
     wait
     source ~/.bashrc
 
-    ccache -M 300G -F 0
+    ccache -M 50G -F 0
 
     if [ ! -d /mnt/ccache ]; then
         sudo mkdir /mnt/ccache
@@ -125,11 +125,17 @@ _prepare() {
     wait
     bash ./DIOS_KUMANO_PLATFORM_MK.sh
     wait
+    bash ./DIOS_EDO_PLATFORM_MK.sh
+    wait
     bash ./DIOS_SAGAMI_PLATFORM_MK.sh
     wait
     bash ./DIOS_PRODUCT_BUILD_PROP.sh
     wait
+    bash ./DIOS_SYSTEM_BUILD_PROP.sh
+    wait
     bash ./DIOS_SYSTEM_EXT_BUILD_PROP.sh
+    wait
+    bash ./DIOS_VENDOR_BUILD_PROP.sh
     wait
 }
 
@@ -154,6 +160,9 @@ _cleaning() {
         echo ""
         make installclean -j$(nproc)
         rm -rf ~/dios/device/sony/dios/fork || true
+        echo ""
+        echo "D!OS OUTPUT CLEANED..."
+        echo ""
     fi
 }
 
