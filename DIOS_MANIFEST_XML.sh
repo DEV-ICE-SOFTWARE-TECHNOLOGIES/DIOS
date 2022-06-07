@@ -31,6 +31,7 @@ cat <<\EOF >~/dios/.repo/local_manifests/dios.xml
     <remove-project name="platform/packages/apps/Messaging" />
     <remove-project name="platform/packages/apps/Music" />
     <remove-project name="platform/packages/apps/MusicFX" />
+    <remove-project name="platform/packages/apps/Launcher3" />
     <remove-project name="platform/packages/apps/QuickSearchBox" />
     <remove-project name="platform/packages/apps/SettingsIntelligence" />
     <remove-project name="platform/packages/apps/Stk" />

@@ -9,8 +9,8 @@ set -eu
 echo ""
 echo ""
 echo ""
-echo "█▀▄ █ ▄▀▄ ▄▀▀    ██▄ █ █ █ █   █▀▄    ▄▀▄ █ "
-echo "█▄▀ █ ▀▄▀ ▄█▀    █▄█ ▀▄█ █ █▄▄ █▄▀    █▀█ █ "
+echo " █▀▄ █ ▄▀▄ ▄▀▀    ██▄ █ █ █ █   █▀▄    ▄▀▄ █ "
+echo " █▄▀ █ ▀▄▀ ▄█▀    █▄█ ▀▄█ █ █▄▄ █▄▀    █▀█ █ "
 echo ""
 echo ""
 echo ""
@@ -115,13 +115,13 @@ EOF
 
 _prepare() {
 
-    bash ./DIOS_ANDROID_MK.sh
-    wait
-    bash ./DIOS_DIOS_MK.sh
-    wait
-    bash ./DIOS_PERMISSIONS_XML.sh
+    echo ""
+    echo "RUNNING PREPERATION..."
+    echo ""
     wait
     bash ./DIOS_COMMON_PROPS_MK.sh
+    wait
+    bash ./DIOS_DIOS_MK.sh
     wait
     bash ./DIOS_KUMANO_PLATFORM_MK.sh
     wait
@@ -129,23 +129,18 @@ _prepare() {
     wait
     bash ./DIOS_SAGAMI_PLATFORM_MK.sh
     wait
-    bash ./DIOS_PRODUCT_BUILD_PROP.sh
-    wait
-    bash ./DIOS_SYSTEM_BUILD_PROP.sh
-    wait
-    bash ./DIOS_SYSTEM_EXT_BUILD_PROP.sh
-    wait
-    bash ./DIOS_VENDOR_BUILD_PROP.sh
-    wait
 }
 
 # --------------------------------------------------------------------------------------------------
 # PIXEL
 # --------------------------------------------------------------------------------------------------
 
-_pixel_fork() {
+_forking() {
     if ! $_clean; then
+        wait
         bash ./DIOS_PIXEL_FORK.sh
+        #bash ./DIOS_XPERIA_FORK.sh
+        wait
     fi
 }
 
@@ -158,11 +153,14 @@ _cleaning() {
         echo ""
         echo "CLEANING /out"
         echo ""
+        wait
         make installclean -j$(nproc)
         rm -rf ~/dios/device/sony/dios/fork || true
+        rm -rf ~/dios/device/sony/dios/tmp || true
         echo ""
         echo "D!OS OUTPUT CLEANED..."
         echo ""
+        wait
     fi
 }
 
@@ -180,6 +178,37 @@ _repo_update() {
 }
 
 # --------------------------------------------------------------------------------------------------
+# UPDATE
+# --------------------------------------------------------------------------------------------------
+
+_patching() {
+    if $_update; then
+        echo ""
+        echo "PATCHING FILES..."
+        echo ""
+        wait
+        bash ./DIOS_ANDROID_MK.sh
+        wait
+        bash ./DIOS_APPS_SETTINGS_XML.sh
+        wait
+        bash ./DIOS_FRAMEWORK_XML.sh
+        wait
+        bash ./DIOS_PRODUCT_BUILD_PROP.sh
+        wait
+        bash ./DIOS_SYSTEM_BUILD_PROP.sh
+        wait
+        bash ./DIOS_SYSTEM_EXT_BUILD_PROP.sh
+        wait
+        bash ./DIOS_VENDOR_BUILD_PROP.sh
+        wait
+        bash ./DIOS_MANIFEST_XML.sh
+        wait
+        bash ./DIOS_PERMISSIONS_XML.sh
+        wait
+    fi
+}
+
+# --------------------------------------------------------------------------------------------------
 # MAKE
 # --------------------------------------------------------------------------------------------------
 
@@ -189,6 +218,7 @@ _make() {
     echo "START BUILDING DIOS"
     echo ""
     sudo mount --bind /home/$USERNAME/.ccache /mnt/ccache
+    wait
     make -j$(nproc)
 }
 
@@ -197,7 +227,9 @@ _make() {
 # --------------------------------------------------------------------------------------------------
 
 _flash() {
+    wait
     bash ./DIOS_FASTBOOT_FLASH.sh
+    wait
 }
 
 # --------------------------------------------------------------------------------------------------
@@ -206,9 +238,10 @@ _flash() {
 
 _build() {
     _prepare
-    _pixel_fork
+    _forking
     _cleaning
     _repo_update
+    _patching
     _make
     _flash
 }
@@ -220,6 +253,7 @@ _build() {
 declare _shell_script=${0##*/}
 declare _clean="false"
 declare _update="false"
+declare _patch="false"
 declare _init="false"
 
 while (("$#")); do
@@ -230,6 +264,10 @@ while (("$#")); do
         ;;
     -u | --update)
         _update="true"
+        shift
+        ;;
+    -p | --patch)
+        _patch="true"
         shift
         ;;
     -i | --init)
