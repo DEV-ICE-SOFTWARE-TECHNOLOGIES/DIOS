@@ -9,7 +9,7 @@ set -eu
 # VARIABLES
 # --------------------------------------------------------------------------------------------------
 
-DEVICE=bahamut
+DEVICE=PDX215
 OUT=~/dios/out/target/product/$DEVICE
 
 read -p "FLASHING TO A 2019 XPERIA?" -n 1 -r
@@ -34,19 +34,19 @@ fi
 read -p "FLASHING TO A 2020 XPERIA?" -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-    sudo ./fastboot reboot fastboot
-    sudo ./fastboot erase metadata​
     sudo ./fastboot flash boot $OUT/boot.img
     sudo ./fastboot flash dtbo $OUT/dtbo.img
-    sudo ./fastboot flash product $OUT/product.img
     sudo ./fastboot flash recovery $OUT/recovery.img
+    sudo ./fastboot flash vbmeta $OUT/vbmeta.img
+    sudo ./fastboot flash vendor_boot $OUT/vendor_boot.img
+    sudo ./fastboot erase metadata​
+    sudo ./fastboot reboot fastboot
+    sudo ./fastboot flash product $OUT/product.img
     sudo ./fastboot flash system $OUT/system.img
     sudo ./fastboot flash system_ext $OUT/system_ext.img
     sudo ./fastboot flash userdata $OUT/userdata.img
-    sudo ./fastboot flash vbmeta $OUT/vbmeta.img
     sudo ./fastboot flash vbmeta_system $OUT/vbmeta_system.img
     sudo ./fastboot flash vendor $OUT/vendor.img
-    sudo ./fastboot flash vendor_boot $OUT/vendor_boot.img
     sleep 5
     sudo ./fastboot reboot
     exit
@@ -55,19 +55,19 @@ fi
 read -p "FLASHING TO A 2021 XPERIA?" -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-    sudo ./fastboot reboot fastboot
-    sudo ./fastboot erase metadata​
     sudo ./fastboot flash boot $OUT/boot.img
     sudo ./fastboot flash dtbo $OUT/dtbo.img
-    sudo ./fastboot flash product $OUT/product.img
     sudo ./fastboot flash recovery $OUT/recovery.img
+    sudo ./fastboot flash vbmeta $OUT/vbmeta.img
+    sudo ./fastboot flash vendor_boot $OUT/vendor_boot.img
+    sudo ./fastboot erase metadata​
+    sudo ./fastboot reboot fastboot
+    sudo ./fastboot flash product $OUT/product.img
     sudo ./fastboot flash system $OUT/system.img
     sudo ./fastboot flash system_ext $OUT/system_ext.img
     sudo ./fastboot flash userdata $OUT/userdata.img
-    sudo ./fastboot flash vbmeta $OUT/vbmeta.img
     sudo ./fastboot flash vbmeta_system $OUT/vbmeta_system.img
     sudo ./fastboot flash vendor $OUT/vendor.img
-    sudo ./fastboot flash vendor_boot $OUT/vendor_boot.img
     sleep 5
     sudo ./fastboot reboot
     exit

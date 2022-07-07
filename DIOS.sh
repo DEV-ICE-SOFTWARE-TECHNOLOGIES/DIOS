@@ -4,8 +4,9 @@ set -eu
 # --------------------------------------------------------------------------------------------------
 # Copyright © 2022 Marius Kopp
 # THE D!OS BUILD AI IS PROPERTY OF DEV ICE TECHNOLOGIES. A COMPANY OF MARIUS KOPP
-# YOU ARE NOT ALLOWED TO COPY, SHARE OR EDIT THIS SCRIPT WITHOUT PERMISSIONS FROM THE OWNER
+# YOU ARE NOT ALLOWED TO COPY, SHARE OR EDIT THIS WORK WITHOUT PERMISSIONS FROM THE OWNER
 # --------------------------------------------------------------------------------------------------
+
 echo ""
 echo ""
 echo ""
@@ -14,6 +15,14 @@ echo " █▄▀ █ ▀▄▀ ▄█▀    █▄█ ▀▄█ █ █▄▄ �
 echo ""
 echo ""
 echo ""
+
+# --------------------------------------------------------------------------------------------------
+# HELP
+# --------------------------------------------------------------------------------------------------
+
+_help() {
+    echo "NOOOOOOOOOOOOOOOOOOOOOOOB!"
+}
 
 # --------------------------------------------------------------------------------------------------
 # VARIABLES
@@ -27,8 +36,9 @@ EMAIL=mariuskopp517@gmail.com
 # INITIALIZING
 # --------------------------------------------------------------------------------------------------
 
-_init_dios() {
+_initialize() {
 
+    echo ""
     echo ""
     echo "INSTALLING DEPENDENCIES..."
     echo ""
@@ -48,34 +58,27 @@ _init_dios() {
     echo 'export PATH=~/bin:$PATH' >>~/.bashrc
     echo 'export USE_CCACHE=1' >>~/.bashrc
     echo 'export CCACHE_EXEC=/usr/bin/ccache' >>~/.bashrc
-    echo 'export CCACHE_DIR=~/.ccache' >>~/.bashrc
+    echo 'export CCACHE_DIR=/mnt/ccache' >>~/.bashrc
     echo 'export ALLOW_MISSING_DEPENDENCIES=true' >>~/.bashrc
     wait
     source ~/.bashrc
-
-    ccache -M 50G -F 0
 
     if [ ! -d /mnt/ccache ]; then
         sudo mkdir /mnt/ccache
     fi
 
-    if [ ! -d ~/dios/device/sony/customization ]; then
-        mkdir -p ~/dios/device/sony/customization
-    fi
+    sudo mount --bind ~/.ccache /mnt/ccache
 
-    echo ""
-    echo "CREATING DIOS PATH..."
-    echo ""
-    cat <<\EOF >device/sony/customization/customization.mk
-DIOS_PATH := device/sony/dios
-$(call inherit-product-if-exists, $(DIOS_PATH)/dios.mk)
-EOF
+    ccache -M 50G -F 0
+
+    wait
+    bash ./DIOS_PATH.sh
 
     git config --global user.email $EMAIL
 
     git config --global user.name $NAME
 
-    repo init -u https://android.googlesource.com/platform/manifest -b android-12.1.0_r5
+    repo init -u https://android.googlesource.com/platform/manifest -b android-12.1.0_r7
 
     cd .repo
 
@@ -107,6 +110,7 @@ EOF
     echo ""
     echo "PREPARED! RESTART THE SCRIPT TO START BUILDING..."
     exit
+
 }
 
 # --------------------------------------------------------------------------------------------------
@@ -118,16 +122,16 @@ _prepare() {
     echo ""
     echo "RUNNING PREPERATION..."
     echo ""
-    wait
-    bash ./DIOS_COMMON_PROPS_MK.sh
-    wait
-    bash ./DIOS_DIOS_MK.sh
-    wait
-    bash ./DIOS_KUMANO_PLATFORM_MK.sh
-    wait
-    bash ./DIOS_EDO_PLATFORM_MK.sh
-    wait
-    bash ./DIOS_SAGAMI_PLATFORM_MK.sh
+    #wait
+    #bash ./DIOS_COMMON_PROPS_MK.sh
+    #wait
+    #bash ./DIOS_DIOS_MK.sh
+    #wait
+    #bash ./DIOS_KUMANO_PLATFORM_MK.sh
+    #wait
+    #bash ./DIOS_EDO_PLATFORM_MK.sh
+    #wait
+    #bash ./DIOS_SAGAMI_PLATFORM_MK.sh
     wait
 }
 
@@ -182,7 +186,7 @@ _repo_update() {
 # --------------------------------------------------------------------------------------------------
 
 _patching() {
-    if $_update; then
+    if $_patch; then
         echo ""
         echo "PATCHING FILES..."
         echo ""
@@ -217,7 +221,7 @@ _make() {
     echo ""
     echo "START BUILDING DIOS"
     echo ""
-    sudo mount --bind /home/$USERNAME/.ccache /mnt/ccache
+    sudo mount --bind ~/.ccache /mnt/ccache
     wait
     make -j$(nproc)
 }
@@ -274,6 +278,10 @@ while (("$#")); do
         _init="true"
         shift
         ;;
+    -h | --help)
+        _help
+        exit 0
+        ;;
     *)
         echo "OPTION: $1 FAILED! USE: $_shell_script -h FOR HELP..."
         exit 1
@@ -287,7 +295,7 @@ done
 
 if $_init; then
 
-    _init_dios
+    _initialize
 
 else
 
