@@ -9,7 +9,7 @@ set -eu
 # VARIABLES
 # --------------------------------------------------------------------------------------------------
 
-DEVICE=PDX215
+DEVICE=pdx215
 OUT=~/dios/out/target/product/$DEVICE
 
 read -p "FLASHING TO A 2019 XPERIA?" -n 1 -r

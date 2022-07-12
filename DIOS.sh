@@ -31,6 +31,7 @@ _help() {
 NAME=M1U5T0N3
 USERNAME=miustone
 EMAIL=mariuskopp517@gmail.com
+LUNCH_CHOICE=aosp_arm64-eng
 
 # --------------------------------------------------------------------------------------------------
 # INITIALIZING
@@ -78,7 +79,7 @@ _initialize() {
 
     git config --global user.name $NAME
 
-    repo init -u https://android.googlesource.com/platform/manifest -b android-12.1.0_r7
+    repo init -u https://android.googlesource.com/platform/manifest -b android-12.1.0_r11
 
     cd .repo
 
@@ -132,7 +133,7 @@ _prepare() {
     #bash ./DIOS_EDO_PLATFORM_MK.sh
     #wait
     #bash ./DIOS_SAGAMI_PLATFORM_MK.sh
-    wait
+    #wait
 }
 
 # --------------------------------------------------------------------------------------------------
@@ -142,7 +143,7 @@ _prepare() {
 _forking() {
     if ! $_clean; then
         wait
-        bash ./DIOS_PIXEL_FORK.sh
+        #bash ./DIOS_PIXEL_FORK.sh
         #bash ./DIOS_XPERIA_FORK.sh
         wait
     fi
