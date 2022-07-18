@@ -8,6 +8,10 @@ set -eu
 echo ""
 echo "D!OS SETTINGS APP XML..."
 echo ""
+if [ ! -d ~/dios/backups/apps/Settings/res/values ]; then
+    mkdir -p ~/dios/backups/apps/Settings/res/values
+fi
+cp -afnrp ~/dios/packages/apps/Settings/res/values/config.xml ~/dios/backups/apps/Settings/res/values
 cat <<\EOF >~/dios/packages/apps/Settings/res/values/config.xml
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright (C) 2007 The Android Open Source Project

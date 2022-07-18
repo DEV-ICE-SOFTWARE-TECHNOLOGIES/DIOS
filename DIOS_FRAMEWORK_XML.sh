@@ -8,6 +8,10 @@ set -eu
 echo ""
 echo "D!OS FRAMEWORK XML..."
 echo ""
+if [ ! -d ~/dios/backups/frameworks/base/core/res/res/values ]; then
+     mkdir -p ~/dios/backups/frameworks/base/core/res/res/values
+fi
+cp -afnrp ~/dios/frameworks/base/core/res/res/values/config.xml ~/dios/backups/frameworks/base/core/res/res/values
 cat <<\EOF >~/dios/frameworks/base/core/res/res/values/config.xml
 <?xml version="1.0" encoding="utf-8"?>
 <!--
@@ -3035,7 +3039,6 @@ cat <<\EOF >~/dios/frameworks/base/core/res/res/values/config.xml
         <item>restart</item>
         <item>screenshot</item>
         <item>settings</item>
-        <item>silent</item>
         <item>users</item>
     </string-array>
 
@@ -4667,6 +4670,8 @@ cat <<\EOF >~/dios/frameworks/base/core/res/res/values/config.xml
         <item>0.75</item>
     </string-array>
 
+    <bool name="config_udfpsSupportsNewUi" translatable="false">false</bool>
+
     <!-- Messages that should not be shown to the user during face auth enrollment. This should be
          used to hide messages that may be too chatty or messages that the user can't do much about.
          Entries are defined in android.hardware.biometrics.face@1.0 types.hal -->
@@ -5321,6 +5326,14 @@ cat <<\EOF >~/dios/frameworks/base/core/res/res/values/config.xml
     </string>
 
     <integer name="config_chooser_max_targets_per_row">4</integer>
+
+    <!-- List of system components which are allowed to receive ServiceState entries in an
+         un-sanitized form, even if the location toggle is off. This is intended ONLY for system
+         components, such as the telephony stack, which require access to the full ServiceState for
+         tasks such as network registration. -->
+    <string-array name="config_serviceStateLocationAllowedPackages">
+        <item>"com.android.phone"</item>
+    </string-array>
 </resources>
 
 EOF

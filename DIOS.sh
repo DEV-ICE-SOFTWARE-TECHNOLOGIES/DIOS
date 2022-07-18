@@ -72,41 +72,26 @@ _initialize() {
 
     ccache -M 50G -F 0
 
-    wait
-    bash ./DIOS_PATH.sh
-
     git config --global user.email $EMAIL
 
     git config --global user.name $NAME
 
     repo init -u https://android.googlesource.com/platform/manifest -b android-12.1.0_r11
 
-    cd .repo
-
-    if [ ! -d ~/dios/.repo/local_manifests ]; then
-        git clone https://github.com/sonyxperiadev/local_manifests
-    fi
-
-    cd local_manifests
-
-    git checkout
-
-    cd ../..
-
     bash ./DIOS_MANIFEST_XML.sh
     wait
     bash ./DIOS_GAPPS_XML.sh
     wait
 
-    if [ ! -d ~/dios/device/sony/dios ]; then
-        mkdir -p ~/dios/device/sony/dios
+    if [ ! -d ~/dios/device/generic/dios ]; then
+        mkdir -p ~/dios/device/generic/dios
     fi
 
-    pushd ~/dios/device/sony/dios
+    pushd ~/dios/device/generic/dios
     git clone https://github.com/DEV-ICE-TECHNOLOGIES/ACDB
     popd
 
-    repo sync -j$(nproc) && ./repo_update.sh -j$(nproc)
+    repo sync -j$(nproc)
 
     echo ""
     echo "PREPARED! RESTART THE SCRIPT TO START BUILDING..."
@@ -118,35 +103,15 @@ _initialize() {
 # PREPARE
 # --------------------------------------------------------------------------------------------------
 
-_prepare() {
-
-    echo ""
-    echo "RUNNING PREPERATION..."
-    echo ""
-    #wait
-    #bash ./DIOS_COMMON_PROPS_MK.sh
-    #wait
-    #bash ./DIOS_DIOS_MK.sh
-    #wait
-    #bash ./DIOS_KUMANO_PLATFORM_MK.sh
-    #wait
-    #bash ./DIOS_EDO_PLATFORM_MK.sh
-    #wait
-    #bash ./DIOS_SAGAMI_PLATFORM_MK.sh
-    #wait
-}
-
-# --------------------------------------------------------------------------------------------------
-# PIXEL
-# --------------------------------------------------------------------------------------------------
-
-_forking() {
-    if ! $_clean; then
+_preparing() {
+        echo ""
+        echo "PREPARING DIOS..."
+        echo ""
         wait
-        #bash ./DIOS_PIXEL_FORK.sh
-        #bash ./DIOS_XPERIA_FORK.sh
+        bash ./DIOS_VENDOR_MK.sh
         wait
-    fi
+        bash ./DIOS_ANDROID_MK.sh
+
 }
 
 # --------------------------------------------------------------------------------------------------
@@ -160,11 +125,24 @@ _cleaning() {
         echo ""
         wait
         make installclean -j$(nproc)
-        rm -rf ~/dios/device/sony/dios/fork || true
-        rm -rf ~/dios/device/sony/dios/tmp || true
+        rm -rf ~/dios/device/generic/dios/fork || true
+        rm -rf ~/dios/device/generic/dios/tmp || true
         echo ""
         echo "D!OS OUTPUT CLEANED..."
         echo ""
+        wait
+    fi
+}
+
+# --------------------------------------------------------------------------------------------------
+# PIXEL
+# --------------------------------------------------------------------------------------------------
+
+_forking() {
+    if $_fork; then
+        wait
+        bash ./DIOS_PIXEL_FORK.sh
+        #bash ./DIOS_XPERIA_FORK.sh
         wait
     fi
 }
@@ -178,7 +156,7 @@ _repo_update() {
         echo ""
         echo "REPO SYNC AND REPO UPDATE..."
         echo ""
-        repo sync -j$(nproc) && ./repo_update.sh -j$(nproc)
+        repo sync -j$(nproc)
     fi
 }
 
@@ -192,21 +170,17 @@ _patching() {
         echo "PATCHING FILES..."
         echo ""
         wait
-        bash ./DIOS_ANDROID_MK.sh
-        wait
         bash ./DIOS_APPS_SETTINGS_XML.sh
         wait
         bash ./DIOS_FRAMEWORK_XML.sh
         wait
-        bash ./DIOS_PRODUCT_BUILD_PROP.sh
+        #bash ./DIOS_PRODUCT_BUILD_PROP.sh
         wait
-        bash ./DIOS_SYSTEM_BUILD_PROP.sh
+        #bash ./DIOS_SYSTEM_BUILD_PROP.sh
         wait
-        bash ./DIOS_SYSTEM_EXT_BUILD_PROP.sh
+        #bash ./DIOS_SYSTEM_EXT_BUILD_PROP.sh
         wait
-        bash ./DIOS_VENDOR_BUILD_PROP.sh
-        wait
-        bash ./DIOS_MANIFEST_XML.sh
+        #bash ./DIOS_VENDOR_BUILD_PROP.sh
         wait
         bash ./DIOS_PERMISSIONS_XML.sh
         wait
@@ -233,7 +207,11 @@ _make() {
 
 _flash() {
     wait
-    bash ./DIOS_FASTBOOT_FLASH.sh
+    read -p "DO YOU WANT TO FLASH DIOS?" -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        bash ./DIOS_FASTBOOT_FLASH.sh
+    fi
     wait
 }
 
@@ -242,9 +220,9 @@ _flash() {
 # --------------------------------------------------------------------------------------------------
 
 _build() {
-    _prepare
-    _forking
+    _preparing
     _cleaning
+    _forking
     _repo_update
     _patching
     _make
@@ -257,6 +235,7 @@ _build() {
 
 declare _shell_script=${0##*/}
 declare _clean="false"
+declare _fork="false"
 declare _update="false"
 declare _patch="false"
 declare _init="false"
@@ -265,6 +244,10 @@ while (("$#")); do
     case $1 in
     -c | --clean)
         _clean="true"
+        shift
+        ;;
+    -f | --fork)
+        _fork="true"
         shift
         ;;
     -u | --update)
