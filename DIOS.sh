@@ -31,7 +31,7 @@ _help() {
 NAME=M1U5T0N3
 USERNAME=miustone
 EMAIL=mariuskopp517@gmail.com
-LUNCH_CHOICE=aosp_arm64-eng
+LUNCH_CHOICE=gsi_arm64-user
 
 # --------------------------------------------------------------------------------------------------
 # INITIALIZING
@@ -83,11 +83,11 @@ _initialize() {
     bash ./DIOS_GAPPS_XML.sh
     wait
 
-    if [ ! -d ~/dios/device/generic/dios ]; then
-        mkdir -p ~/dios/device/generic/dios
+    if [ ! -d ~/dios/device/generic/goldfish ]; then
+        mkdir -p ~/dios/device/generic/goldfish
     fi
 
-    pushd ~/dios/device/generic/dios
+    pushd ~/dios/device/generic/goldfish
     git clone https://github.com/DEV-ICE-TECHNOLOGIES/ACDB
     popd
 
@@ -104,13 +104,13 @@ _initialize() {
 # --------------------------------------------------------------------------------------------------
 
 _preparing() {
-        echo ""
-        echo "PREPARING DIOS..."
-        echo ""
-        wait
-        bash ./DIOS_VENDOR_MK.sh
-        wait
-        bash ./DIOS_ANDROID_MK.sh
+    echo ""
+    echo "PREPARING DIOS..."
+    echo ""
+    wait
+    bash ./DIOS_ANDROID_MK.sh
+    wait
+    bash ./DIOS_VENDOR_MK.sh
 
 }
 
@@ -125,8 +125,8 @@ _cleaning() {
         echo ""
         wait
         make installclean -j$(nproc)
-        rm -rf ~/dios/device/generic/dios/fork || true
-        rm -rf ~/dios/device/generic/dios/tmp || true
+        rm -rf ~/dios/device/generic/goldfish/fork || true
+        rm -rf ~/dios/device/generic/goldfish/tmp || true
         echo ""
         echo "D!OS OUTPUT CLEANED..."
         echo ""
@@ -170,9 +170,9 @@ _patching() {
         echo "PATCHING FILES..."
         echo ""
         wait
-        bash ./DIOS_APPS_SETTINGS_XML.sh
+        #bash ./DIOS_APPS_SETTINGS_XML.sh
         wait
-        bash ./DIOS_FRAMEWORK_XML.sh
+        #bash ./DIOS_FRAMEWORK_XML.sh
         wait
         #bash ./DIOS_PRODUCT_BUILD_PROP.sh
         wait
@@ -202,6 +202,23 @@ _make() {
 }
 
 # --------------------------------------------------------------------------------------------------
+# MAKE
+# --------------------------------------------------------------------------------------------------
+
+_zip() {
+    if $_zipping; then
+        echo ""
+        echo "ZIPPING DIOS..."
+        echo ""
+        wait
+        if [ ! -d ~/dios/dist_output ]; then
+            mkdir -p ~/dios/dist_output
+        fi
+        make dist DIST_DIR=dist_output -j$(nproc)
+    fi
+}
+
+# --------------------------------------------------------------------------------------------------
 # FLASH
 # --------------------------------------------------------------------------------------------------
 
@@ -226,6 +243,7 @@ _build() {
     _repo_update
     _patching
     _make
+    _zip
     _flash
 }
 
@@ -239,6 +257,7 @@ declare _fork="false"
 declare _update="false"
 declare _patch="false"
 declare _init="false"
+declare _zipping="false"
 
 while (("$#")); do
     case $1 in
@@ -260,6 +279,10 @@ while (("$#")); do
         ;;
     -i | --init)
         _init="true"
+        shift
+        ;;
+    -z | --zipping)
+        _zipping="true"
         shift
         ;;
     -h | --help)

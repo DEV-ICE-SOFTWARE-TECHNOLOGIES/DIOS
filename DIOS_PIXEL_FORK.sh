@@ -9,19 +9,22 @@ set -eu
 # VARIABLES
 # --------------------------------------------------------------------------------------------------
 
-DOWNLOAD_DIR=~/dios/device/generic/dios/pixel
-FORK_DIR=~/dios/device/generic/dios/fork/pixel
+DOWNLOAD_DIR=~/dios/device/generic/goldfish/pixel
+FORK_DIR=~/dios/device/generic/goldfish/fork/pixel
 IMAGE_NAME=redfin-sq3a.220705.003.a1-factory-b193f96f.zip
 IMAGE_FILE=$DOWNLOAD_DIR/$IMAGE_NAME
-PRODUCT=~/dios/device/generic/dios/tmp/$(basename $IMAGE_NAME .zip)/product
-SYSTEM_EXT=~/dios/device/generic/dios/tmp/$(basename $IMAGE_NAME .zip)/system_ext
-SYSTEM=~/dios/device/generic/dios/tmp/$(basename $IMAGE_NAME .zip)/system
-VENDOR=~/dios/device/generic/dios/tmp/$(basename $IMAGE_NAME .zip)/vendor
-TMP=~/dios/device/generic/dios/tmp/$(basename $IMAGE_NAME .zip)
+PRODUCT=~/dios/device/generic/goldfish/tmp/$(basename $IMAGE_NAME .zip)/product
+SYSTEM_EXT=~/dios/device/generic/goldfish/tmp/$(basename $IMAGE_NAME .zip)/system_ext
+SYSTEM=~/dios/device/generic/goldfish/tmp/$(basename $IMAGE_NAME .zip)/system
+VENDOR=~/dios/device/generic/goldfish/tmp/$(basename $IMAGE_NAME .zip)/vendor
+TMP=~/dios/device/generic/goldfish/tmp/$(basename $IMAGE_NAME .zip)
 
 echo ""
 echo "D!OS PIXEL FORK..."
 echo ""
+
+rm -rf ~/dios/device/generic/goldfish/fork || true
+
 for dir in $FORK_DIR $DOWNLOAD_DIR; do
     if [ ! -d $dir ]; then
         mkdir -p $dir
@@ -37,6 +40,7 @@ fi
 if [ -d $TMP ]; then
     sudo rm -rf $TMP
 fi
+
 mkdir -p $TMP
 
 pushd $TMP
@@ -65,10 +69,10 @@ echo ""
 echo "PREPARING PIXEL FIRMWARE..."
 echo ""
 
-cp -afnrp $PRODUCT $FORK_DIR || true
-cp -afnrp $SYSTEM $FORK_DIR || true
-cp -afnrp $SYSTEM_EXT $FORK_DIR || true
-cp -afnrp $VENDOR $FORK_DIR || true
+cp -rf $PRODUCT $FORK_DIR || true
+cp -rf $SYSTEM $FORK_DIR || true
+cp -rf $SYSTEM_EXT $FORK_DIR || true
+cp -rf $VENDOR $FORK_DIR || true
 rm -rf $FORK_DIR/product/app/SSRestartDetector || true
 rm -rf $FORK_DIR/product/priv-app/SprintDM || true
 rm -rf $FORK_DIR/product/priv-app/SprintHM || true
@@ -76,12 +80,16 @@ rm -rf $FORK_DIR/product/etc/security || true
 rm -rf $FORK_DIR/product/etc/selinux || true
 rm -rf $FORK_DIR/product/etc/vintf || true
 rm -rf $FORK_DIR/product/overlay/GoogleConfigOverlay.apk || true
+rm -rf $FORK_DIR/product/overlay/SettingsGoogleOverlayRedfin.apk || true
+rm -rf $FORK_DIR/product/overlay/SettingsOverlayG5NZ6.apk || true
+rm -rf $FORK_DIR/product/overlay/SettingsOverlayGD1YQ.apk || true
+rm -rf $FORK_DIR/product/overlay/SettingsOverlayGTT9Q.apk || true
 rm -rf $FORK_DIR/system_ext/app/com.qualcomm.qti.services.secureui || true
 rm -rf $FORK_DIR/system_ext/app/datastatusnotification || true
 rm -rf $FORK_DIR/system_ext/app/uceShimService || true
 rm -rf $FORK_DIR/system_ext/app/uimremoteclient || true
 rm -rf $FORK_DIR/system_ext/app/uimremoteserver || true
-rm -rf $FORK_DIR/system_ext/app || true
+rm -rf $FORK_DIR/system_ext/app/Penis || true
 rm -rf $FORK_DIR/system_ext/bin || true
 rm -rf $FORK_DIR/system_ext/etc/permissions/com.qti.dpmframework.xml || true
 rm -rf $FORK_DIR/system_ext/etc/permissions/com.qti.media.secureprocessor.xml || true
@@ -93,6 +101,7 @@ rm -rf $FORK_DIR/system_ext/priv-app/ConnectivityThermalPowerManager || true
 rm -rf $FORK_DIR/system_ext/priv-app/qcrilmsgtunnel || true
 rm -rf $FORK_DIR/system_ext/priv-app/RilConfigService || true
 rm -rf $FORK_DIR/system_ext/priv-app/SystemUIGoogle || true
+rm -rf $FORK_DIR/system_ext/priv-app/SettingsGoogle || true
 rm -rf $FORK_DIR/system/system/apex/com.android.runtime.apex || true
 rm -rf $FORK_DIR/system/system/apex/com.android.vndk.current.apex || true
 rm -rf $FORK_DIR/system/system/etc/init || true
@@ -129,4 +138,4 @@ wait
 
 popd
 
-rm -rf $TMP
+rm -rf ~/dios/device/generic/goldfish/tmp || true
