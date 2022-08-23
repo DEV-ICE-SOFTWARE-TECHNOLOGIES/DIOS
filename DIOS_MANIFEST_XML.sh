@@ -17,8 +17,6 @@ cat <<\EOF >~/dios/.repo/local_manifests/dios.xml
 <manifest>
 
     <!-- D!OS -->
-    <remove-project name="device/amlogic/yukawa" />
-    <remove-project name="device/amlogic/yukawa-kernel" />
     <remove-project name="platform/external/chromium-webview" />
     <remove-project name="platform/packages/apps/Browser2" />
     <remove-project name="platform/packages/apps/Calendar" />

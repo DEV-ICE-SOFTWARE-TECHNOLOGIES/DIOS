@@ -10,7 +10,7 @@ if [ ! -d ~/dios/build/core ]; then
 fi
 
 echo ""
-echo "D!OS SYSPROP MK..."
+echo "D!OS SYSPROP..."
 echo ""
 cat <<\EOF >~/dios/build/core/sysprop.mk
 # --------------------------------------------------------------------------------------------------

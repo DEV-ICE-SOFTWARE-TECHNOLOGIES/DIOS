@@ -2,17 +2,17 @@
 set -eu
 
 # --------------------------------------------------------------------------------------------------
-# Copyright © 2022 Marius Kopp
+# Copyright (C) 2022 DEV ICE TECHNOLOGIES
 # --------------------------------------------------------------------------------------------------
 
-if [ ! -d ~/dios/device/generic/goldfish/dios/system_ext/etc/permissions ]; then
-    mkdir -p ~/dios/device/generic/goldfish/dios/system_ext/etc/permissions
+if [ ! -d ~/dios/device/sony/dios/dios/system_ext/etc/permissions ]; then
+    mkdir -p ~/dios/device/sony/dios/dios/system_ext/etc/permissions
 fi
 
 echo ""
 echo "D!OS PERMISSIONS XML..."
 echo ""
-cat <<\EOF >~/dios/device/generic/goldfish/dios/system_ext/etc/permissions/privapp-permissions-dios.xml
+cat <<\EOF >~/dios/device/sony/dios/dios/system_ext/etc/permissions/privapp-permissions-dios.xml
 <?xml version="1.0" encoding="utf-8"?>
 
 <permissions>

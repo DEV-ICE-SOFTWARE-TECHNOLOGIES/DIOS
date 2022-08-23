@@ -9,21 +9,21 @@ set -eu
 # VARIABLES
 # --------------------------------------------------------------------------------------------------
 
-DOWNLOAD_DIR=~/dios/device/generic/goldfish/pixel
-FORK_DIR=~/dios/device/generic/goldfish/fork/pixel
-IMAGE_NAME=redfin-sq3a.220705.003.a1-factory-b193f96f.zip
+DOWNLOAD_DIR=~/dios/device/sony/dios/pixel
+FORK_DIR=~/dios/device/sony/dios/fork/pixel
+IMAGE_NAME=coral-sp2a.220505.002-factory-165116a1.zip
 IMAGE_FILE=$DOWNLOAD_DIR/$IMAGE_NAME
-PRODUCT=~/dios/device/generic/goldfish/tmp/$(basename $IMAGE_NAME .zip)/product
-SYSTEM_EXT=~/dios/device/generic/goldfish/tmp/$(basename $IMAGE_NAME .zip)/system_ext
-SYSTEM=~/dios/device/generic/goldfish/tmp/$(basename $IMAGE_NAME .zip)/system
-VENDOR=~/dios/device/generic/goldfish/tmp/$(basename $IMAGE_NAME .zip)/vendor
-TMP=~/dios/device/generic/goldfish/tmp/$(basename $IMAGE_NAME .zip)
+PRODUCT=~/dios/device/sony/dios/tmp/$(basename $IMAGE_NAME .zip)/product
+SYSTEM_EXT=~/dios/device/sony/dios/tmp/$(basename $IMAGE_NAME .zip)/system_ext
+SYSTEM=~/dios/device/sony/dios/tmp/$(basename $IMAGE_NAME .zip)/system
+VENDOR=~/dios/device/sony/dios/tmp/$(basename $IMAGE_NAME .zip)/vendor
+TMP=~/dios/device/sony/dios/tmp/$(basename $IMAGE_NAME .zip)
 
 echo ""
 echo "D!OS PIXEL FORK..."
 echo ""
 
-rm -rf ~/dios/device/generic/goldfish/fork || true
+rm -rf ~/dios/device/sony/dios/fork/ || true
 
 for dir in $FORK_DIR $DOWNLOAD_DIR; do
     if [ ! -d $dir ]; then
@@ -89,7 +89,8 @@ rm -rf $FORK_DIR/system_ext/app/datastatusnotification || true
 rm -rf $FORK_DIR/system_ext/app/uceShimService || true
 rm -rf $FORK_DIR/system_ext/app/uimremoteclient || true
 rm -rf $FORK_DIR/system_ext/app/uimremoteserver || true
-rm -rf $FORK_DIR/system_ext/app/Penis || true
+rm -rf $FORK_DIR/system_ext/app || true
+rm -rf $FORK_DIR/system_ext/app/QtiTelephonyService || true
 rm -rf $FORK_DIR/system_ext/bin || true
 rm -rf $FORK_DIR/system_ext/etc/permissions/com.qti.dpmframework.xml || true
 rm -rf $FORK_DIR/system_ext/etc/permissions/com.qti.media.secureprocessor.xml || true
@@ -138,4 +139,4 @@ wait
 
 popd
 
-rm -rf ~/dios/device/generic/goldfish/tmp || true
+sudo rm -rf $TMP

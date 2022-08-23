@@ -2,7 +2,7 @@
 set -eu
 
 # --------------------------------------------------------------------------------------------------
-# Copyright © 2022 Marius Kopp
+# Copyright (C) 2022 DEV ICE TECHNOLOGIES
 # THE D!OS BUILD AI IS PROPERTY OF DEV ICE TECHNOLOGIES. A COMPANY OF MARIUS KOPP
 # YOU ARE NOT ALLOWED TO COPY, SHARE OR EDIT THIS WORK WITHOUT PERMISSIONS FROM THE OWNER
 # --------------------------------------------------------------------------------------------------
@@ -27,11 +27,12 @@ _help() {
 # --------------------------------------------------------------------------------------------------
 # VARIABLES
 # --------------------------------------------------------------------------------------------------
-
+# DEVICES;
+# aosp_j8210-userdebug, aosp_j9210-userdebug ,aosp_xqat52-userdebug 1 II, aosp_xqbc52-userdebug 1 III, aosp_xqbq52-userdebug 5 III
 NAME=M1U5T0N3
 USERNAME=miustone
 EMAIL=mariuskopp517@gmail.com
-LUNCH_CHOICE=gsi_arm64-user
+LUNCH_CHOICE=aosp_j9210-userdebug
 
 # --------------------------------------------------------------------------------------------------
 # INITIALIZING
@@ -61,16 +62,32 @@ _initialize() {
     echo 'export CCACHE_EXEC=/usr/bin/ccache' >>~/.bashrc
     echo 'export CCACHE_DIR=/mnt/ccache' >>~/.bashrc
     echo 'export ALLOW_MISSING_DEPENDENCIES=true' >>~/.bashrc
-    wait
+
     source ~/.bashrc
+
+    if [ ! -d ~/dios/device/sony/customization ]; then
+        mkdir -p ~/dios/device/sony/customization
+    fi
+
+    echo ""
+    echo "CREATING DIOS PATH..."
+    echo ""
+    cat <<\EOF >device/sony/customization/customization.mk
+DIOS_PATH := device/sony/dios
+$(call inherit-product-if-exists, $(DIOS_PATH)/dios.mk)
+EOF
 
     if [ ! -d /mnt/ccache ]; then
         sudo mkdir /mnt/ccache
     fi
 
-    sudo mount --bind ~/.ccache /mnt/ccache
+    if [ ! -d ~/.ccache ]; then
+        mkdir ~/.ccache
+    fi
 
     ccache -M 50G -F 0
+
+    sudo mount --bind ~/.ccache /mnt/ccache
 
     git config --global user.email $EMAIL
 
@@ -78,20 +95,29 @@ _initialize() {
 
     repo init -u https://android.googlesource.com/platform/manifest -b android-12.1.0_r11
 
-    bash ./DIOS_MANIFEST_XML.sh
-    wait
-    bash ./DIOS_GAPPS_XML.sh
-    wait
+    cd .repo
 
-    if [ ! -d ~/dios/device/generic/goldfish ]; then
-        mkdir -p ~/dios/device/generic/goldfish
+    if [ ! -d ~/dios/.repo/local_manifests ]; then
+        git clone https://github.com/sonyxperiadev/local_manifests
     fi
 
-    pushd ~/dios/device/generic/goldfish
+    cd local_manifests
+
+    git checkout
+
+    cd ../..
+
+    bash ./DIOS_MANIFEST_XML.sh
+
+    if [ ! -d ~/dios/device/sony/dios ]; then
+        mkdir -p ~/dios/device/sony/dios
+    fi
+
+    pushd ~/dios/device/sony/dios
     git clone https://github.com/DEV-ICE-TECHNOLOGIES/ACDB
     popd
 
-    repo sync -j$(nproc)
+    repo sync -j$(nproc) && ./repo_update.sh -j$(nproc)
 
     echo ""
     echo "PREPARED! RESTART THE SCRIPT TO START BUILDING..."
@@ -110,6 +136,14 @@ _preparing() {
     wait
     bash ./DIOS_ANDROID_MK.sh
     wait
+    bash ./DIOS_ANDROID_BP.sh
+    wait
+    bash ./DIOS_COMMON_PROPS_MK.sh
+    wait
+    bash ./DIOS_SAGAMI_PLATFORM_MK.sh
+    wait
+    bash ./DIOS_SYSPROP_MK.sh
+    wait
     bash ./DIOS_VENDOR_MK.sh
 
 }
@@ -121,12 +155,10 @@ _preparing() {
 _cleaning() {
     if $_clean; then
         echo ""
-        echo "CLEANING /out"
+        echo "CLEANING TARGETS..."
         echo ""
         wait
         make installclean -j$(nproc)
-        rm -rf ~/dios/device/generic/goldfish/fork || true
-        rm -rf ~/dios/device/generic/goldfish/tmp || true
         echo ""
         echo "D!OS OUTPUT CLEANED..."
         echo ""
@@ -142,6 +174,9 @@ _forking() {
     if $_fork; then
         wait
         bash ./DIOS_PIXEL_FORK.sh
+        wait
+        bash ./DIOS_OPEN_CAMERA.sh
+        wait
         #bash ./DIOS_XPERIA_FORK.sh
         wait
     fi
@@ -156,7 +191,7 @@ _repo_update() {
         echo ""
         echo "REPO SYNC AND REPO UPDATE..."
         echo ""
-        repo sync -j$(nproc)
+        ./repo_update.sh -j$(nproc)
     fi
 }
 
@@ -170,9 +205,9 @@ _patching() {
         echo "PATCHING FILES..."
         echo ""
         wait
-        #bash ./DIOS_APPS_SETTINGS_XML.sh
+        bash ./DIOS_APPS_SETTINGS_XML.sh
         wait
-        #bash ./DIOS_FRAMEWORK_XML.sh
+        bash ./DIOS_FRAMEWORK_XML.sh
         wait
         #bash ./DIOS_PRODUCT_BUILD_PROP.sh
         wait
@@ -199,6 +234,13 @@ _make() {
     sudo mount --bind ~/.ccache /mnt/ccache
     wait
     make -j$(nproc)
+    wait
+    read -p "DO YOU WANT TO FLASH DIOS VIA FASTBOOT?" -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        bash ./DIOS_FASTBOOT_FLASH.sh
+    fi
+    wait
 }
 
 # --------------------------------------------------------------------------------------------------
@@ -215,21 +257,14 @@ _zip() {
             mkdir -p ~/dios/dist_output
         fi
         make dist DIST_DIR=dist_output -j$(nproc)
+        wait
+        read -p "DO YOU WANT TO FLASH DIOS VIA ADB?" -n 1 -r
+        echo
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            bash ./DIOS_ADB_FLASH.sh
+        fi
+        wait
     fi
-}
-
-# --------------------------------------------------------------------------------------------------
-# FLASH
-# --------------------------------------------------------------------------------------------------
-
-_flash() {
-    wait
-    read -p "DO YOU WANT TO FLASH DIOS?" -n 1 -r
-    echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        bash ./DIOS_FASTBOOT_FLASH.sh
-    fi
-    wait
 }
 
 # --------------------------------------------------------------------------------------------------
@@ -244,7 +279,6 @@ _build() {
     _patching
     _make
     _zip
-    _flash
 }
 
 # --------------------------------------------------------------------------------------------------
