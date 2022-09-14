@@ -2,7 +2,7 @@
 set -eu
 
 # --------------------------------------------------------------------------------------------------
-# Copyright (C) 2022 DEV ICE TECHNOLOGIES
+# Copyright (c) 2022 DEV-ICE-TECHNOLOGIES
 # THE D!OS BUILD AI IS PROPERTY OF DEV ICE TECHNOLOGIES. A COMPANY OF MARIUS KOPP
 # YOU ARE NOT ALLOWED TO COPY, SHARE OR EDIT THIS WORK WITHOUT PERMISSIONS FROM THE OWNER
 # --------------------------------------------------------------------------------------------------
@@ -32,7 +32,7 @@ _help() {
 NAME=M1U5T0N3
 USERNAME=miustone
 EMAIL=mariuskopp517@gmail.com
-LUNCH_CHOICE=aosp_j9210-userdebug
+#LUNCH_CHOICE=aosp_j9210-userdebug
 
 # --------------------------------------------------------------------------------------------------
 # INITIALIZING
@@ -97,11 +97,11 @@ EOF
 
     cd .repo
 
-    if [ ! -d ~/dios/.repo/local_manifests ]; then
-        git clone https://github.com/sonyxperiadev/local_manifests
+    if [ ! -d ~/dios/.repo/DIOS_MOTHER_TREE ]; then
+        git clone https://github.com/DEV-ICE-TECHNOLOGIES/DIOS_MOTHER_TREE
     fi
 
-    cd local_manifests
+    cd DIOS_MOTHER_TREE
 
     git checkout
 
