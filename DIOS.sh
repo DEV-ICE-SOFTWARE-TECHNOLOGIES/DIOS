@@ -2,7 +2,7 @@
 set -eu
 
 # --------------------------------------------------------------------------------------------------
-# Copyright (c) 2022 DEV-ICE-TECHNOLOGIES
+# Copyright (c) 2022 DEV ICE TECHNOLOGIES
 # THE D!OS BUILD AI IS PROPERTY OF DEV ICE TECHNOLOGIES. A COMPANY OF MARIUS KOPP
 # YOU ARE NOT ALLOWED TO COPY, SHARE OR EDIT THIS WORK WITHOUT PERMISSIONS FROM THE OWNER
 # --------------------------------------------------------------------------------------------------
@@ -27,12 +27,12 @@ _help() {
 # --------------------------------------------------------------------------------------------------
 # VARIABLES
 # --------------------------------------------------------------------------------------------------
-# DEVICES;
-# aosp_j8210-userdebug, aosp_j9210-userdebug ,aosp_xqat52-userdebug 1 II, aosp_xqbc52-userdebug 1 III, aosp_xqbq52-userdebug 5 III
+
+BRANCH=android-13.0.0_r4
 NAME=M1U5T0N3
 USERNAME=miustone
 EMAIL=mariuskopp517@gmail.com
-#LUNCH_CHOICE=aosp_j9210-userdebug
+LUNCH_CHOICE=aosp_xqbc52-user
 
 # --------------------------------------------------------------------------------------------------
 # INITIALIZING
@@ -44,6 +44,7 @@ _initialize() {
     echo ""
     echo "INSTALLING DEPENDENCIES..."
     echo ""
+
     sudo apt-get purge openjdk-* icedtea-* icedtea6-* || true
     sudo apt-get update
     sudo apt-get install -y openjdk-11-jdk
@@ -85,23 +86,23 @@ EOF
         mkdir ~/.ccache
     fi
 
-    ccache -M 50G -F 0
-
     sudo mount --bind ~/.ccache /mnt/ccache
+
+    ccache -M 50G -F 0
 
     git config --global user.email $EMAIL
 
     git config --global user.name $NAME
 
-    repo init -u https://android.googlesource.com/platform/manifest -b android-12.1.0_r11
+    repo init -u https://android.googlesource.com/platform/manifest -b $BRANCH
 
     cd .repo
 
-    if [ ! -d ~/dios/.repo/DIOS_MOTHER_TREE ]; then
-        git clone https://github.com/DEV-ICE-TECHNOLOGIES/DIOS_MOTHER_TREE
+    if [ ! -d ~/dios/.repo/local_manifests ]; then
+        git clone https://github.com/sonyxperiadev/local_manifests -b $BRANCH
     fi
 
-    cd DIOS_MOTHER_TREE
+    cd local_manifests
 
     git checkout
 
@@ -113,11 +114,17 @@ EOF
         mkdir -p ~/dios/device/sony/dios
     fi
 
-    pushd ~/dios/device/sony/dios
-    git clone https://github.com/DEV-ICE-TECHNOLOGIES/ACDB
-    popd
+    if [ ! -d ~/dios/device/sony/dios ]; then
+        pushd ~/dios/device/sony/dios
+        git clone https://github.com/DEV-ICE-TECHNOLOGIES/ACDB
+        popd
+    fi
 
-    repo sync -j$(nproc) && ./repo_update.sh -j$(nproc)
+    repo sync -j$(nproc)
+
+    bash ./DIOS_REPO_UPDATE.sh
+
+    bash ./repo_update.sh
 
     echo ""
     echo "PREPARED! RESTART THE SCRIPT TO START BUILDING..."
@@ -133,18 +140,18 @@ _preparing() {
     echo ""
     echo "PREPARING DIOS..."
     echo ""
-    wait
-    bash ./DIOS_ANDROID_MK.sh
-    wait
-    bash ./DIOS_ANDROID_BP.sh
-    wait
-    bash ./DIOS_COMMON_PROPS_MK.sh
-    wait
-    bash ./DIOS_SAGAMI_PLATFORM_MK.sh
-    wait
-    bash ./DIOS_SYSPROP_MK.sh
-    wait
-    bash ./DIOS_VENDOR_MK.sh
+    #wait
+    #bash ./DIOS_ANDROID_MK.sh
+    #wait
+    #bash ./DIOS_ANDROID_BP.sh
+    #wait
+    #bash ./DIOS_COMMON_PROPS_MK.sh
+    #wait
+    #bash ./DIOS_SAGAMI_PLATFORM_MK.sh
+    #wait
+    #bash ./DIOS_SYSPROP_MK.sh
+    #wait
+    #bash ./DIOS_VENDOR_MK.sh
 
 }
 
@@ -191,7 +198,7 @@ _repo_update() {
         echo ""
         echo "REPO SYNC AND REPO UPDATE..."
         echo ""
-        ./repo_update.sh -j$(nproc)
+        bash ./repo_update.sh
     fi
 }
 

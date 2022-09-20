@@ -11,7 +11,7 @@ set -eu
 
 DOWNLOAD_DIR=~/dios/device/sony/dios/pixel
 FORK_DIR=~/dios/device/sony/dios/fork/pixel
-IMAGE_NAME=coral-sp2a.220505.002-factory-165116a1.zip
+IMAGE_NAME=coral-tp1a.220905.004-factory-8e79a64d.zip
 IMAGE_FILE=$DOWNLOAD_DIR/$IMAGE_NAME
 PRODUCT=~/dios/device/sony/dios/tmp/$(basename $IMAGE_NAME .zip)/product
 SYSTEM_EXT=~/dios/device/sony/dios/tmp/$(basename $IMAGE_NAME .zip)/system_ext
@@ -47,21 +47,17 @@ pushd $TMP
 sudo unzip -p $IMAGE_FILE "*/image*" >image.zip
 sudo unzip image.zip product.img system.img vendor.img system_ext.img
 
-simg2img product.img product.raw
 mkdir product
-sudo mount -o ro product.raw product
+sudo mount -o ro product.img product
 
-simg2img system.img system.raw
 mkdir system
-sudo mount -o ro system.raw system
+sudo mount -o ro system.img system
 
-simg2img vendor.img vendor.raw
 mkdir vendor
-sudo mount -o ro vendor.raw vendor
+sudo mount -o ro vendor.img vendor
 
-simg2img system_ext.img system_ext.raw
 mkdir system_ext
-sudo mount -o ro system_ext.raw system_ext
+sudo mount -o ro system_ext.img system_ext
 
 wait
 
