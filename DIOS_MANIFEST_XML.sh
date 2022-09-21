@@ -12,7 +12,7 @@ fi
 echo ""
 echo "D!OS MANIFEST XML..."
 echo ""
-cat <<\EOF >~/dios/.repo/local_manifests/dios.xml
+cat <<\EOF >../dios/.repo/local_manifests/dios.xml
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
 

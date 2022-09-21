@@ -3,8 +3,9 @@ set -eu
 
 # --------------------------------------------------------------------------------------------------
 # Copyright (c) 2022 DEV ICE TECHNOLOGIES
-# THE D!OS BUILD AI IS PROPERTY OF DEV ICE TECHNOLOGIES. A COMPANY OF MARIUS KOPP
-# YOU ARE NOT ALLOWED TO COPY, SHARE OR EDIT THIS WORK WITHOUT PERMISSIONS FROM THE OWNER
+# THE D!OS BUILD AI IS PROPERTY OF DEV ICE TECHNOLOGIES. A COMPANY OF MARIUS KOPP.
+# YOU ARE NOT ALLOWED TO COPY, SHARE OR EDIT THIS WORK WITHOUT PERMISSIONS FROM THE OWNER.
+# THE A.I. USES EXTERNAL ANDROID DEVICE TREES. WE DON'T MAKE OWN TREES OR CHANGE THEM. BUT WE EDIT.
 # --------------------------------------------------------------------------------------------------
 
 echo ""
@@ -21,7 +22,21 @@ echo ""
 # --------------------------------------------------------------------------------------------------
 
 _help() {
-    echo "NOOOOOOOOOOOOOOOOOOOOOOOB!"
+    echo "Insert:"
+    echo "sudo bash DIOS.sh"
+    echo " "
+    echo "With:"
+    echo "-c | --clean / Making everything clean"
+    echo "-f | --fork / Forking Firmwares"
+    echo "-h | --help / Showing this Message"
+    echo "-i | --init / Run this as first Option"
+    echo "-p | --patch / Apply DIOS Patches"
+    echo "-u | --update / Repo Sync & Update"
+    echo "-z | --zipping / Making an Update Zip"
+    echo " "
+    echo "Like:"
+    echo "sudo bash DIOS.sh -u to init a Repo Sync"
+    echo " "
 }
 
 # --------------------------------------------------------------------------------------------------
@@ -29,10 +44,10 @@ _help() {
 # --------------------------------------------------------------------------------------------------
 
 BRANCH=android-13.0.0_r4
+EMAIL=mariuskopp517@gmail.com
+LUNCH_CHOICE=aosp_xqbc52-userdebug
 NAME=M1U5T0N3
 USERNAME=miustone
-EMAIL=mariuskopp517@gmail.com
-LUNCH_CHOICE=aosp_xqbc52-user
 
 # --------------------------------------------------------------------------------------------------
 # INITIALIZING
@@ -48,7 +63,7 @@ _initialize() {
     sudo apt-get purge openjdk-* icedtea-* icedtea6-* || true
     sudo apt-get update
     sudo apt-get install -y openjdk-11-jdk
-    sudo apt-get install -y bison g++-multilib git gperf libxml2-utils make zlib1g-dev zip liblz4-tool libncurses5 libssl-dev bc flex curl python-is-python3 ccache simg2img aapt
+    sudo apt-get install -y bison g++-multilib git gperf libxml2-utils make zlib1g-dev zip liblz4-tool libncurses5 libssl-dev bc flex curl python-is-python3 ccache simg2img aapt repo
 
     if [ ! -d ~/bin ]; then
         mkdir -p ~/bin
@@ -64,7 +79,7 @@ _initialize() {
     echo 'export CCACHE_DIR=/mnt/ccache' >>~/.bashrc
     echo 'export ALLOW_MISSING_DEPENDENCIES=true' >>~/.bashrc
 
-    source ~/.bashrc
+    #source ~/.bashrc
 
     if [ ! -d ~/dios/device/sony/customization ]; then
         mkdir -p ~/dios/device/sony/customization
@@ -86,7 +101,7 @@ EOF
         mkdir ~/.ccache
     fi
 
-    sudo mount --bind ~/.ccache /mnt/ccache
+    sudo mount --bind /home/$USERNAME/.ccache /mnt/ccache
 
     ccache -M 50G -F 0
 
@@ -99,16 +114,16 @@ EOF
     cd .repo
 
     if [ ! -d ~/dios/.repo/local_manifests ]; then
-        git clone https://github.com/sonyxperiadev/local_manifests -b $BRANCH
+        git clone https://github.com/sonyxperiadev/local_manifests
     fi
 
     cd local_manifests
 
-    git checkout
+    git checkout $BRANCH
 
     cd ../..
 
-    bash ./DIOS_MANIFEST_XML.sh
+    sudo bash DIOS_MANIFEST_XML.sh
 
     if [ ! -d ~/dios/device/sony/dios ]; then
         mkdir -p ~/dios/device/sony/dios
@@ -122,9 +137,9 @@ EOF
 
     repo sync -j$(nproc)
 
-    bash ./DIOS_REPO_UPDATE.sh
+    sudo bash DIOS_REPO_UPDATE.sh
 
-    bash ./repo_update.sh
+    sudo bash repo_update.sh
 
     echo ""
     echo "PREPARED! RESTART THE SCRIPT TO START BUILDING..."
@@ -140,18 +155,18 @@ _preparing() {
     echo ""
     echo "PREPARING DIOS..."
     echo ""
+    wait
+    sudo bash DIOS_ANDROID_MK.sh
+    wait
+    sudo bash DIOS_ANDROID_BP.sh
+    wait
+    sudo bash DIOS_COMMON_PROPS_MK.sh
     #wait
-    #bash ./DIOS_ANDROID_MK.sh
+    #sudo bash DIOS_SAGAMI_PLATFORM_MK.sh
     #wait
-    #bash ./DIOS_ANDROID_BP.sh
-    #wait
-    #bash ./DIOS_COMMON_PROPS_MK.sh
-    #wait
-    #bash ./DIOS_SAGAMI_PLATFORM_MK.sh
-    #wait
-    #bash ./DIOS_SYSPROP_MK.sh
-    #wait
-    #bash ./DIOS_VENDOR_MK.sh
+    #sudo bash DIOS_SYSPROP_MK.sh
+    wait
+    sudo bash DIOS_VENDOR_MK.sh
 
 }
 
@@ -180,11 +195,11 @@ _cleaning() {
 _forking() {
     if $_fork; then
         wait
-        bash ./DIOS_PIXEL_FORK.sh
+        sudo bash DIOS_PIXEL_FORK.sh
         wait
-        bash ./DIOS_OPEN_CAMERA.sh
+        sudo bash DIOS_OPEN_CAMERA.sh
         wait
-        #bash ./DIOS_XPERIA_FORK.sh
+        #sudo bash DIOS_XPERIA_FORK.sh
         wait
     fi
 }
@@ -198,7 +213,7 @@ _repo_update() {
         echo ""
         echo "REPO SYNC AND REPO UPDATE..."
         echo ""
-        bash ./repo_update.sh
+        sudo bash repo_update.sh
     fi
 }
 
@@ -212,19 +227,19 @@ _patching() {
         echo "PATCHING FILES..."
         echo ""
         wait
-        bash ./DIOS_APPS_SETTINGS_XML.sh
+        sudo bash DIOS_APPS_SETTINGS_XML.sh
         wait
-        bash ./DIOS_FRAMEWORK_XML.sh
+        sudo bash DIOS_FRAMEWORK_XML.sh
         wait
-        #bash ./DIOS_PRODUCT_BUILD_PROP.sh
+        #sudo bash DIOS_PRODUCT_BUILD_PROP.sh
         wait
-        #bash ./DIOS_SYSTEM_BUILD_PROP.sh
+        #sudo bash DIOS_SYSTEM_BUILD_PROP.sh
         wait
-        #bash ./DIOS_SYSTEM_EXT_BUILD_PROP.sh
+        #sudo bash DIOS_SYSTEM_EXT_BUILD_PROP.sh
         wait
-        #bash ./DIOS_VENDOR_BUILD_PROP.sh
+        #sudo bash DIOS_VENDOR_BUILD_PROP.sh
         wait
-        bash ./DIOS_PERMISSIONS_XML.sh
+        sudo bash DIOS_PERMISSIONS_XML.sh
         wait
     fi
 }
@@ -238,14 +253,14 @@ _make() {
     echo ""
     echo "START BUILDING DIOS"
     echo ""
-    sudo mount --bind ~/.ccache /mnt/ccache
+    sudo mount --bind /home/$USERNAME/.ccache /mnt/ccache
     wait
     make -j$(nproc)
     wait
     read -p "DO YOU WANT TO FLASH DIOS VIA FASTBOOT?" -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        bash ./DIOS_FASTBOOT_FLASH.sh
+        sudo bash DIOS_FASTBOOT_FLASH.sh
     fi
     wait
 }
@@ -268,7 +283,7 @@ _zip() {
         read -p "DO YOU WANT TO FLASH DIOS VIA ADB?" -n 1 -r
         echo
         if [[ $REPLY =~ ^[Yy]$ ]]; then
-            bash ./DIOS_ADB_FLASH.sh
+            sudo bash DIOS_ADB_FLASH.sh
         fi
         wait
     fi
@@ -347,13 +362,9 @@ if $_init; then
 
 else
 
-    cd ~/dios
-
     set +u
-    . build/envsetup.sh
+    source build/envsetup.sh
     lunch $LUNCH_CHOICE
-    declare _device=$(get_build_var PRODUCT_DEVICE 2>/dev/null)
-    declare _platform=$(get_build_var PRODUCT_PLATFORM 2>/dev/null)
     set -u
 
     _build

@@ -5,14 +5,14 @@ set -eu
 # Copyright © 2022 Marius Kopp
 # --------------------------------------------------------------------------------------------------
 
-if [ ! -d ~/dios/device/sony/common ]; then
-    mkdir -p ~/dios/device/sony/common
+if [ ! -d ../dios/device/sony/common ]; then
+    mkdir -p ..dios/device/sony/common
 fi
 
 echo ""
 echo "D!OS REPO UPDATE SCRIPT..."
 echo ""
-cat <<\EOF >~/dios/repo_update.sh
+cat <<\EOF >../dios/repo_update.sh
 #!/bin/bash
 
 # exit script immediately if a command fails or a variable is unset

@@ -16,6 +16,19 @@ cat <<\EOF >~/dios/device/sony/common/common-prop.mk
 # --------------------------------------------------------------------------------------------------
 # Copyright (C) 2022 DEV ICE TECHNOLOGIES
 # --------------------------------------------------------------------------------------------------
+# Copyright (C) 2014 The Android Open Source Project
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 # librqbalance enablement
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -244,6 +257,18 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.sys.wfd.virtual=0
 
+# Display properties
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.demo.hdmirotationlock=false \
+    persist.sys.sf.color_saturation=1.0 \
+    vendor.display.disable_inline_rotator=1 \
+    vendor.display.enable_null_display=0 \
+    vendor.display.disable_excl_rect=0 \
+    vendor.display.comp_mask=0 \
+    vendor.display.enable_default_color_mode=1 \
+    vendor.display.enable_optimize_refresh=1 \
+    vendor.display.disable_ui_3d_tonemap=1
+
 # Wi-Fi interface name
 PRODUCT_PROPERTY_OVERRIDES += \
     wifi.interface=wlan0
@@ -258,8 +283,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # RILD
 PRODUCT_PROPERTY_OVERRIDES += \
-    vendor.rild.libpath=/odm/lib64/libril-qc-hal-qmi.so \
-    ril.subscription.types=NV,RUIM
+    vendor.rild.svc=qcrilNrd
 
 # OpenGLES version
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -268,6 +292,10 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # Vendor version
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.odm.expect.version=$(PLATFORM_VERSION)_$(SOMC_KERNEL_VERSION)_$(SOMC_PLATFORM)_$(TARGET_VENDOR_VERSION)
+
+# Priv-app permisisons
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.control_privapp_permissions=log
 
 # Perform color transform on the client
 PRODUCT_PROPERTY_OVERRIDES += \
