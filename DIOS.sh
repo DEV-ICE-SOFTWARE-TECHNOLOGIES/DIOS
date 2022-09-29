@@ -1,4 +1,5 @@
 #!/bin/bash
+
 set -eu
 
 # --------------------------------------------------------------------------------------------------
@@ -23,11 +24,16 @@ echo ""
 
 _help() {
     echo "Insert:"
-    echo "sudo bash DIOS.sh"
+    echo "bash ./DIOS.sh"
     echo " "
     echo "With:"
-    echo "-c | --clean / Making everything clean"
-    echo "-f | --fork / Forking Firmwares"
+    echo "-ca | --cleanall / Cleans Output and Firmwares"
+    echo "-cf | --cleanforks / Cleans out Firmwares"
+    echo "-co | --cleanoutput / Cleans the Output"
+    echo "-fa | --forkall / Forking all available Firmwares"
+    echo "-fd | --forkdios / Forking all DIOS Extras"
+    echo "-fp | --forkpixel / Forking Pixel Firmware"
+    echo "-fx | --forkxperia / Forking Xperia Firmware"
     echo "-h | --help / Showing this Message"
     echo "-i | --init / Run this as first Option"
     echo "-p | --patch / Apply DIOS Patches"
@@ -35,7 +41,7 @@ _help() {
     echo "-z | --zipping / Making an Update Zip"
     echo " "
     echo "Like:"
-    echo "sudo bash DIOS.sh -u to init a Repo Sync"
+    echo "bash ./DIOS.sh -u to init a Repo Sync"
     echo " "
 }
 
@@ -60,10 +66,17 @@ _initialize() {
     echo "INSTALLING DEPENDENCIES..."
     echo ""
 
-    sudo apt-get purge openjdk-* icedtea-* icedtea6-* || true
+    if [ ! -d ~/dios ]; then
+        mkdir ~/dios
+    fi
+
+    cd ~/dios
+
     sudo apt-get update
+    sudo apt-get purge openjdk-* icedtea-* icedtea6-* || true
     sudo apt-get install -y openjdk-11-jdk
-    sudo apt-get install -y bison g++-multilib git gperf libxml2-utils make zlib1g-dev zip liblz4-tool libncurses5 libssl-dev bc flex curl python-is-python3 ccache simg2img aapt repo
+    sudo apt-get install -y bison g++-multilib git gperf libxml2-utils make zlib1g-dev zip liblz4-tool libncurses5 libssl-dev bc flex curl python-is-python3 ccache aapt
+    sudo apt-get update
 
     if [ ! -d ~/bin ]; then
         mkdir -p ~/bin
@@ -79,7 +92,7 @@ _initialize() {
     echo 'export CCACHE_DIR=/mnt/ccache' >>~/.bashrc
     echo 'export ALLOW_MISSING_DEPENDENCIES=true' >>~/.bashrc
 
-    #source ~/.bashrc
+    source ~/.bashrc
 
     if [ ! -d ~/dios/device/sony/customization ]; then
         mkdir -p ~/dios/device/sony/customization
@@ -101,13 +114,15 @@ EOF
         mkdir ~/.ccache
     fi
 
-    sudo mount --bind /home/$USERNAME/.ccache /mnt/ccache
+    sudo mount --bind ~/.ccache /mnt/ccache
 
     ccache -M 50G -F 0
 
     git config --global user.email $EMAIL
 
     git config --global user.name $NAME
+
+    cd ~/dios
 
     repo init -u https://android.googlesource.com/platform/manifest -b $BRANCH
 
@@ -121,9 +136,9 @@ EOF
 
     git checkout $BRANCH
 
-    cd ../..
+    cd ~/dios
 
-    sudo bash DIOS_MANIFEST_XML.sh
+    bash ./DIOS_MANIFEST_XML.sh
 
     if [ ! -d ~/dios/device/sony/dios ]; then
         mkdir -p ~/dios/device/sony/dios
@@ -137,9 +152,9 @@ EOF
 
     repo sync -j$(nproc)
 
-    sudo bash DIOS_REPO_UPDATE.sh
+    #bash ./DIOS_REPO_UPDATE.sh
 
-    sudo bash repo_update.sh
+    bash ./repo_update.sh
 
     echo ""
     echo "PREPARED! RESTART THE SCRIPT TO START BUILDING..."
@@ -156,17 +171,17 @@ _preparing() {
     echo "PREPARING DIOS..."
     echo ""
     wait
-    sudo bash DIOS_ANDROID_MK.sh
+    bash ./DIOS_ANDROID_MK.sh
     wait
-    sudo bash DIOS_ANDROID_BP.sh
+    #bash ./DIOS_ANDROID_BP.sh
     wait
-    sudo bash DIOS_COMMON_PROPS_MK.sh
+    bash ./DIOS_COMMON_PROPS_MK.sh
     #wait
-    #sudo bash DIOS_SAGAMI_PLATFORM_MK.sh
+    #bash ./DIOS_SAGAMI_PLATFORM_MK.sh
     #wait
-    #sudo bash DIOS_SYSPROP_MK.sh
+    #bash ./DIOS_SYSPROP_MK.sh
     wait
-    sudo bash DIOS_VENDOR_MK.sh
+    bash ./DIOS_VENDOR_MK.sh
 
 }
 
@@ -175,7 +190,32 @@ _preparing() {
 # --------------------------------------------------------------------------------------------------
 
 _cleaning() {
-    if $_clean; then
+    if $_cleanall; then
+        echo ""
+        echo "CLEANING TARGETS..."
+        echo ""
+        wait
+        make installclean -j$(nproc)
+        rm -rf ~/dios/device/sony/dios/fork
+        echo ""
+        echo "D!OS OUTPUT AND FORKS CLEANED..."
+        echo ""
+        wait
+    fi
+
+    if $_cleanforks; then
+        echo ""
+        echo "CLEANING TARGETS..."
+        echo ""
+        wait
+        rm -rf ~/dios/device/sony/dios/forks
+        echo ""
+        echo "D!OS FORKS CLEANED..."
+        echo ""
+        wait
+    fi
+
+    if $_cleanout; then
         echo ""
         echo "CLEANING TARGETS..."
         echo ""
@@ -193,13 +233,31 @@ _cleaning() {
 # --------------------------------------------------------------------------------------------------
 
 _forking() {
-    if $_fork; then
+    if $_forkall; then
         wait
-        sudo bash DIOS_PIXEL_FORK.sh
+        bash ./DIOS_PIXEL_FORK.sh
         wait
-        sudo bash DIOS_OPEN_CAMERA.sh
+        bash ./DIOS_OPEN_CAMERA.sh
         wait
-        #sudo bash DIOS_XPERIA_FORK.sh
+        #bash ./DIOS_XPERIA_FORK.sh
+        wait
+    fi
+
+    if $_forkdios; then
+        wait
+        bash ./DIOS_OPEN_CAMERA.sh
+        wait
+    fi
+
+    if $_forkpixel; then
+        wait
+        bash ./DIOS_PIXEL_FORK.sh
+        wait
+    fi
+
+    if $_forkxperia; then
+        wait
+        #bash ./DIOS_XPERIA_FORK.sh
         wait
     fi
 }
@@ -213,7 +271,7 @@ _repo_update() {
         echo ""
         echo "REPO SYNC AND REPO UPDATE..."
         echo ""
-        sudo bash repo_update.sh
+        bash ./repo_update.sh
     fi
 }
 
@@ -227,19 +285,19 @@ _patching() {
         echo "PATCHING FILES..."
         echo ""
         wait
-        sudo bash DIOS_APPS_SETTINGS_XML.sh
+        bash ./DIOS_APPS_SETTINGS_XML.sh
         wait
-        sudo bash DIOS_FRAMEWORK_XML.sh
+        bash ./DIOS_FRAMEWORK_XML.sh
         wait
-        #sudo bash DIOS_PRODUCT_BUILD_PROP.sh
+        #bash ./DIOS_PRODUCT_BUILD_PROP.sh
         wait
-        #sudo bash DIOS_SYSTEM_BUILD_PROP.sh
+        #bash ./DIOS_SYSTEM_BUILD_PROP.sh
         wait
-        #sudo bash DIOS_SYSTEM_EXT_BUILD_PROP.sh
+        #bash ./DIOS_SYSTEM_EXT_BUILD_PROP.sh
         wait
-        #sudo bash DIOS_VENDOR_BUILD_PROP.sh
+        #bash ./DIOS_VENDOR_BUILD_PROP.sh
         wait
-        sudo bash DIOS_PERMISSIONS_XML.sh
+        bash ./DIOS_PERMISSIONS_XML.sh
         wait
     fi
 }
@@ -253,14 +311,14 @@ _make() {
     echo ""
     echo "START BUILDING DIOS"
     echo ""
-    sudo mount --bind /home/$USERNAME/.ccache /mnt/ccache
+    sudo mount --bind ~/.ccache /mnt/ccache
     wait
     make -j$(nproc)
     wait
     read -p "DO YOU WANT TO FLASH DIOS VIA FASTBOOT?" -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        sudo bash DIOS_FASTBOOT_FLASH.sh
+        bash ./DIOS_FASTBOOT_FLASH.sh
     fi
     wait
 }
@@ -283,7 +341,7 @@ _zip() {
         read -p "DO YOU WANT TO FLASH DIOS VIA ADB?" -n 1 -r
         echo
         if [[ $REPLY =~ ^[Yy]$ ]]; then
-            sudo bash DIOS_ADB_FLASH.sh
+            bash ./DIOS_ADB_FLASH.sh
         fi
         wait
     fi
@@ -308,8 +366,13 @@ _build() {
 # --------------------------------------------------------------------------------------------------
 
 declare _shell_script=${0##*/}
-declare _clean="false"
-declare _fork="false"
+declare _cleanall="false"
+declare _cleanforks="false"
+declare _cleanout="false"
+declare _forkall="false"
+declare _forkdios="false"
+declare _forkpixel="false"
+declare _forkxperia="false"
 declare _update="false"
 declare _patch="false"
 declare _init="false"
@@ -317,12 +380,32 @@ declare _zipping="false"
 
 while (("$#")); do
     case $1 in
-    -c | --clean)
-        _clean="true"
+    -ca | --cleanall)
+        _cleanall="true"
         shift
         ;;
-    -f | --fork)
-        _fork="true"
+    -cf | --cleanforks)
+        _cleanforks="true"
+        shift
+        ;;
+    -co | --cleanout)
+        _cleanout="true"
+        shift
+        ;;
+    -fa | --forkall)
+        _forkall="true"
+        shift
+        ;;
+    -fd | --forkdios)
+        _forkdios="true"
+        shift
+        ;;
+    -fp | --forkpixel)
+        _forkpixel="true"
+        shift
+        ;;
+    -fx | --forkxperia)
+        _forkxperia="true"
         shift
         ;;
     -u | --update)
