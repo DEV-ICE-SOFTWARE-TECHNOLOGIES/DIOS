@@ -43,6 +43,18 @@ _help() {
     echo "Like:"
     echo "bash ./DIOS.sh -u to init a Repo Sync"
     echo " "
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    echo " "
+    echo "MAKE SURE TO REPLACE/SET THE VARIABLES IN THE DIOS.sh FILE!"
+    echo " "
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    echo " "
+    echo "BRANCH="
+    echo "EMAIL="
+    echo "LUNCH_CHOICE="
+    echo "NAME="
+    echo "USERNAME="
+    echo " "
 }
 
 # --------------------------------------------------------------------------------------------------
