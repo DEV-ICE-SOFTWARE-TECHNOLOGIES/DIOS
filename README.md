@@ -18,13 +18,17 @@ And place the Files from the Repo Folder into the ~/dios Folder (Copy/Paste)!
 
 We don't want to screw our Repos...
 
+Install Fastboot/ADB (optional)
+
+sudo apt install android-tools-adb android-tools-fastboot
+
 Download SDK Platform-Tools for Linux: 
 
 https://developer.android.com/studio/releases/platform-tools
 
 Copy the Content of the Zip to ~/dios
 
-Set:
+Set inside of DIOS.sh:
 
 BRANCH=android-13.0.0_r4
 
@@ -36,7 +40,7 @@ NAME=M1U5T0N3
 
 USERNAME=miustone
 
-To Your needs (Don't use My Identity!)
+The Variables to Your needs (Don't use My Identity!)
 
 Download the Software Binaries and place the Zip Content on ~/dios
 
