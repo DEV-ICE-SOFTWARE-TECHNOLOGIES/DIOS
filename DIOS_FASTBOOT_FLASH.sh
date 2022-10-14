@@ -85,8 +85,8 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     #./fastboot flash vbmeta_system_b $OUT_2021/vbmeta_system.img
     ./fastboot flash vendor_a $OUT_2021/vendor.img
     #./fastboot flash vendor_b $OUT_2021/vendor.img
-    ./fastboot flash oem_a oem_sagami_preview.img
-    ./fastboot flash oem_b oem_sagami_preview.img
+    ./fastboot flash oem_a oem_sagami.img
+    ./fastboot flash oem_b oem_sagami.img
     ./fastboot reboot bootloader
     ./fastboot flash boot_a $OUT_2021/boot.img
     ./fastboot flash boot_b $OUT_2021/boot.img
