@@ -1,7 +1,9 @@
 # D!OS
 
-█▀▄ █ ▄▀▄ ▄▀▀ 
-█▄▀ █ ▀▄▀ ▄█▀ 
+ █▀▄ █ ▄▀▄ ▄▀▀ 
+ █▄▀ █ ▀▄▀ ▄█▀ 
+
+
 BUILD A.I. that makes Android for Humans...
 
 Welcome to the Android Revolution!
