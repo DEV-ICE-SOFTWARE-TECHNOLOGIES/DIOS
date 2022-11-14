@@ -46,6 +46,7 @@ _help() {
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     echo " "
     echo "MAKE SURE TO REPLACE/SET THE VARIABLES IN THE DIOS.sh FILE!"
+    echo "MAKE SURE TO INSTALL AOSP-DEVEL AUR BEFORE INIT!"
     echo " "
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     echo " "
@@ -61,7 +62,7 @@ _help() {
 # VARIABLES
 # --------------------------------------------------------------------------------------------------
 
-BRANCH=android-13.0.0_r4
+BRANCH=android-13.0.0_r12
 EMAIL=mariuskopp517@gmail.com
 LUNCH_CHOICE=aosp_xqbc52-userdebug
 NAME=M1U5T0N3
@@ -84,11 +85,7 @@ _initialize() {
 
     cd ~/dios
 
-    sudo apt-get update
-    sudo apt-get purge openjdk-* icedtea-* icedtea6-* || true
-    sudo apt-get install -y openjdk-11-jdk
-    sudo apt-get install -y bison g++-multilib git gperf libxml2-utils make zlib1g-dev zip liblz4-tool libncurses5 libssl-dev bc flex curl python-is-python3 ccache aapt
-    sudo apt-get update
+    sudo pacman -Syyu
 
     if [ ! -d ~/bin ]; then
         mkdir -p ~/bin
@@ -105,10 +102,6 @@ _initialize() {
     echo 'export ALLOW_MISSING_DEPENDENCIES=true' >>~/.bashrc
 
     source ~/.bashrc
-
-    if [ ! -d ~/dios/device/sony/customization ]; then
-        mkdir -p ~/dios/device/sony/customization
-    fi
 
     echo ""
     echo "CREATING DIOS PATH..."
@@ -138,35 +131,11 @@ EOF
 
     repo init -u https://android.googlesource.com/platform/manifest -b $BRANCH
 
-    cd .repo
-
-    if [ ! -d ~/dios/.repo/local_manifests ]; then
-        git clone https://github.com/sonyxperiadev/local_manifests
-    fi
-
-    cd local_manifests
-
-    git checkout $BRANCH
-
     cd ~/dios
 
     bash ./DIOS_MANIFEST_XML.sh
 
-    if [ ! -d ~/dios/device/sony/dios ]; then
-        mkdir -p ~/dios/device/sony/dios
-    fi
-
-    if [ ! -d ~/dios/device/sony/dios ]; then
-        pushd ~/dios/device/sony/dios
-        git clone https://github.com/DEV-ICE-TECHNOLOGIES/ACDB
-        popd
-    fi
-
     repo sync -j$(nproc)
-
-    #bash ./DIOS_REPO_UPDATE.sh
-
-    bash ./repo_update.sh
 
     echo ""
     echo "PREPARED! RESTART THE SCRIPT TO START BUILDING..."
