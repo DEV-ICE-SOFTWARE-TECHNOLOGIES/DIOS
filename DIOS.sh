@@ -103,14 +103,6 @@ _initialize() {
 
     source ~/.bashrc
 
-    echo ""
-    echo "CREATING DIOS PATH..."
-    echo ""
-    cat <<\EOF >device/sony/customization/customization.mk
-DIOS_PATH := device/sony/dios
-$(call inherit-product-if-exists, $(DIOS_PATH)/dios.mk)
-EOF
-
     if [ ! -d /mnt/ccache ]; then
         sudo mkdir /mnt/ccache
     fi
