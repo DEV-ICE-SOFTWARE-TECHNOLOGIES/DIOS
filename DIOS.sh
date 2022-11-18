@@ -3,10 +3,7 @@
 set -eu
 
 # --------------------------------------------------------------------------------------------------
-# Copyright (c) 2022 DEV ICE TECHNOLOGIES
-# THE D!OS BUILD AI IS PROPERTY OF DEV ICE TECHNOLOGIES. A COMPANY OF MARIUS KOPP.
-# YOU ARE NOT ALLOWED TO COPY, SHARE OR EDIT THIS WORK WITHOUT PERMISSIONS FROM THE OWNER.
-# THE A.I. USES EXTERNAL ANDROID DEVICE TREES. WE DON'T MAKE OWN TREES OR CHANGE THEM. BUT WE EDIT.
+# Copyright (C) 2022 DEV ICE TECHNOLOGIES
 # --------------------------------------------------------------------------------------------------
 
 echo ""
@@ -19,7 +16,7 @@ echo ""
 echo ""
 
 # --------------------------------------------------------------------------------------------------
-# HELP
+# 0. HELP
 # --------------------------------------------------------------------------------------------------
 
 _help() {
@@ -28,15 +25,15 @@ _help() {
     echo " "
     echo "With:"
     echo "-ca | --cleanall / Cleans Output and Firmwares"
-    echo "-cf | --cleanforks / Cleans out Firmwares"
+    echo "-cf | --cleanforks / Cleans out forked Firmwares"
     echo "-co | --cleanoutput / Cleans the Output"
     echo "-fa | --forkall / Forking all available Firmwares"
-    echo "-fd | --forkdios / Forking all DIOS Extras"
+    echo "-fd | --forkdios / Forking all D!OS Extras"
     echo "-fp | --forkpixel / Forking Pixel Firmware"
     echo "-fx | --forkxperia / Forking Xperia Firmware"
     echo "-h | --help / Showing this Message"
     echo "-i | --init / Run this as first Option"
-    echo "-p | --patch / Apply DIOS Patches"
+    echo "-p | --patch / Apply D!OS Patches"
     echo "-u | --update / Repo Sync & Update"
     echo "-z | --zipping / Making an Update Zip"
     echo " "
@@ -51,25 +48,47 @@ _help() {
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     echo " "
     echo "BRANCH="
+    echo "REPO="
+    echo "TREE="
     echo "EMAIL="
     echo "LUNCH_CHOICE="
     echo "NAME="
     echo "USERNAME="
     echo " "
+
 }
 
 # --------------------------------------------------------------------------------------------------
-# VARIABLES
+# 1. VARIABLES
 # --------------------------------------------------------------------------------------------------
 
 BRANCH=android-13.0.0_r12
+REPO=https://android.googlesource.com/platform/manifest
+TREE=https://github.com/sonyxperiadev/local_manifests
 EMAIL=mariuskopp517@gmail.com
 LUNCH_CHOICE=aosp_xqbc52-userdebug
 NAME=M1U5T0N3
 USERNAME=miustone
+BGBLACK='\033[40m'
+BGBLUE='\033[44m'
+BGCYAN='\033[46m'
+BGGREEN='\033[42m'
+BGPURPLE='\033[45m'
+BGRED='\033[41m'
+BGWHITE='\033[47m'
+BGYELLOW='\033[43m'
+BLACK='\033[0;30m'
+BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+GREEN='\033[0;32m'
+NOCOLOR='\033[0m'
+PURPLE='\033[0;35m'
+RED='\033[0;31m'
+WHITE='\033[0;37m'
+YELLOW='\033[0;33m'
 
 # --------------------------------------------------------------------------------------------------
-# INITIALIZING
+# 2. INITIALIZING
 # --------------------------------------------------------------------------------------------------
 
 _initialize() {
@@ -121,88 +140,116 @@ _initialize() {
 
     cd ~/dios
 
-    repo init -u https://android.googlesource.com/platform/manifest -b $BRANCH
+    repo init -u $REPO -b $BRANCH
+
+    cd .repo
+
+    if [ ! -d ~/dios/.repo/local_manifests ]; then
+        git clone $TREE
+    fi
+
+    cd local_manifests
+
+    git checkout $BRANCH
 
     cd ~/dios
+
+    if [ ! -d ~/dios/device/sony/customization ]; then
+        mkdir -p ~/dios/device/sony/customization
+    fi
+
+    echo ""
+    echo "CREATING D!OS PATH..."
+    echo ""
+
+    cat <<\EOF >device/sony/customization/customization.mk
+DIOS_PATH := device/sony/dios
+$(call inherit-product-if-exists, $(DIOS_PATH)/dios.mk)
+EOF
 
     bash ./DIOS_MANIFEST_XML.sh
 
     repo sync -j$(nproc)
 
+    bash ./repo_update.sh
+
     echo ""
-    echo "PREPARED! RESTART THE SCRIPT TO START BUILDING..."
+    echo -e "${RED}PREPARED! RESTART THE SCRIPT TO START BUILDING..."
+    echo -e "${RED}PLEASE RUN: source ~/.bashrc BEFORE YOU START BUILDING!"
+    echo -e "${RED}YOU CAN ALSO ADD THIS TO FSTAB to MAKE CCACHE AUTO MOUNT ON BOOTING:"
+    echo "/etc/fstab: /home/<your_current_path>/.ccache /mnt/ccache none defaults,bind,users,noauto 0"
     exit
 
 }
 
 # --------------------------------------------------------------------------------------------------
-# PREPARE
+# 3. PREPARE
 # --------------------------------------------------------------------------------------------------
 
 _preparing() {
     echo ""
-    echo "PREPARING DIOS..."
+    echo -e "${GREEN}PREPARING D!OS..."
     echo ""
     wait
     bash ./DIOS_ANDROID_MK.sh
     wait
-    #bash ./DIOS_ANDROID_BP.sh
+    bash ./DIOS_ANDROID_BP.sh
     wait
-    bash ./DIOS_COMMON_PROPS_MK.sh
+    #bash ./DIOS_COMMON_PROPS_MK.sh
     #wait
     #bash ./DIOS_SAGAMI_PLATFORM_MK.sh
     #wait
     #bash ./DIOS_SYSPROP_MK.sh
     wait
-    bash ./DIOS_VENDOR_MK.sh
+    #bash ./DIOS_VENDOR_MK.sh
 
 }
 
 # --------------------------------------------------------------------------------------------------
-# CLEAN
+# 4. CLEAN
 # --------------------------------------------------------------------------------------------------
 
 _cleaning() {
     if $_cleanall; then
         echo ""
-        echo "CLEANING TARGETS..."
+        echo -e "${BGWHITE}CLEANING TARGETS..."
         echo ""
         wait
-        make installclean -j$(nproc)
+        make clean -j$(nproc)
         rm -rf ~/dios/device/sony/dios/fork
         echo ""
-        echo "D!OS OUTPUT AND FORKS CLEANED..."
+        echo -e "${GREEN}D!OS OUTPUT AND FORKS CLEANED..."
         echo ""
         wait
     fi
 
     if $_cleanforks; then
         echo ""
-        echo "CLEANING TARGETS..."
+        echo -e "${BGWHITE}CLEANING TARGETS..."
         echo ""
         wait
         rm -rf ~/dios/device/sony/dios/forks
         echo ""
-        echo "D!OS FORKS CLEANED..."
+        echo -e "${GREEN}D!OS FORKS CLEANED..."
         echo ""
         wait
     fi
 
     if $_cleanout; then
         echo ""
-        echo "CLEANING TARGETS..."
+        echo -e "${BGWHITE}CLEANING TARGETS..."
         echo ""
         wait
-        make installclean -j$(nproc)
+        make clean -j$(nproc)
         echo ""
-        echo "D!OS OUTPUT CLEANED..."
+        echo -e "${GREEN}D!OS OUTPUT CLEANED..."
         echo ""
         wait
     fi
 }
 
 # --------------------------------------------------------------------------------------------------
-# PIXEL
+# 5. FORKING
 # --------------------------------------------------------------------------------------------------
 
 _forking() {
@@ -236,31 +283,31 @@ _forking() {
 }
 
 # --------------------------------------------------------------------------------------------------
-# UPDATE
+# 6. UPDATE
 # --------------------------------------------------------------------------------------------------
 
 _repo_update() {
     if $_update; then
         echo ""
-        echo "REPO SYNC AND REPO UPDATE..."
+        echo -e "${BGWHITE}REPO SYNC AND REPO UPDATE..."
         echo ""
         bash ./repo_update.sh
     fi
 }
 
 # --------------------------------------------------------------------------------------------------
-# UPDATE
+# 7. PATCHING
 # --------------------------------------------------------------------------------------------------
 
 _patching() {
     if $_patch; then
         echo ""
-        echo "PATCHING FILES..."
+        echo -e "${GREEN}PATCHING FILES..."
         echo ""
         wait
-        bash ./DIOS_APPS_SETTINGS_XML.sh
+        #bash ./DIOS_APPS_SETTINGS_XML.sh
         wait
-        bash ./DIOS_FRAMEWORK_XML.sh
+        #bash ./DIOS_FRAMEWORK_XML.sh
         wait
         #bash ./DIOS_PRODUCT_BUILD_PROP.sh
         wait
@@ -276,19 +323,19 @@ _patching() {
 }
 
 # --------------------------------------------------------------------------------------------------
-# MAKE
+# 8. BUILDING
 # --------------------------------------------------------------------------------------------------
 
 _make() {
     wait
     echo ""
-    echo "START BUILDING DIOS"
+        echo -e "${BGWHITE}START BUILDING D!OS"
     echo ""
     sudo mount --bind ~/.ccache /mnt/ccache
     wait
     make -j$(nproc)
     wait
-    read -p "DO YOU WANT TO FLASH DIOS VIA FASTBOOT?" -n 1 -r
+    read -p "DO YOU WANT TO FLASH D!OS VIA FASTBOOT?" -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         bash ./DIOS_FASTBOOT_FLASH.sh
@@ -297,13 +344,13 @@ _make() {
 }
 
 # --------------------------------------------------------------------------------------------------
-# MAKE
+# 9. ZIPPING
 # --------------------------------------------------------------------------------------------------
 
 _zip() {
     if $_zipping; then
         echo ""
-        echo "ZIPPING DIOS..."
+        echo -e "${GREEN}ZIPPING D!OS..."
         echo ""
         wait
         if [ ! -d ~/dios/dist_output ]; then
@@ -311,7 +358,7 @@ _zip() {
         fi
         make dist DIST_DIR=dist_output -j$(nproc)
         wait
-        read -p "DO YOU WANT TO FLASH DIOS VIA ADB?" -n 1 -r
+        read -p "DO YOU WANT TO FLASH D!OS VIA ADB?" -n 1 -r
         echo
         if [[ $REPLY =~ ^[Yy]$ ]]; then
             bash ./DIOS_ADB_FLASH.sh
@@ -321,7 +368,7 @@ _zip() {
 }
 
 # --------------------------------------------------------------------------------------------------
-# BUILD
+# 10. BUILD ORDER
 # --------------------------------------------------------------------------------------------------
 
 _build() {
@@ -335,7 +382,7 @@ _build() {
 }
 
 # --------------------------------------------------------------------------------------------------
-# FLAGS
+# 11. A.I. FLAGS
 # --------------------------------------------------------------------------------------------------
 
 declare _shell_script=${0##*/}
@@ -402,14 +449,14 @@ while (("$#")); do
         exit 0
         ;;
     *)
-        echo "OPTION: $1 FAILED! USE: $_shell_script -h FOR HELP..."
+        echo -e "${RED}OPTION: $1 FAILED! USE: $_shell_script -h FOR HELP..."
         exit 1
         ;;
     esac
 done
 
 # --------------------------------------------------------------------------------------------------
-# BUILD OR INIT
+# 12. BUILD OR INIT
 # --------------------------------------------------------------------------------------------------
 
 if $_init; then
