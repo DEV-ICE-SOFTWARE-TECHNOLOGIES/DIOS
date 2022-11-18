@@ -8,6 +8,26 @@ BUILD A.I. that makes Android for Humans with ease...
 
 Welcome to the Android Revolution!
 
+# WHAT DOES IT DO?
+
+Simple. 
+
+It does initialize preferred Android Code and Device Trees
+
+Optimizes Android Build Times
+
+Adds Pixel and Xpiera Firmware Parts
+
+Optimizes Android Code further
+
+Makes DIOS. The OS made by This Project
+
+Builds Android for You with desired Changes
+
+Flashs Android to Your Device
+
+And even more...
+
 
 # QUICK START GUIDE
 
