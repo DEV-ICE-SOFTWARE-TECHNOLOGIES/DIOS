@@ -50,3 +50,10 @@ A usage Description of the DIOS BUILD A.I. can be displayed via:
 ```
 bash ./DIOS.sh -h
 ```
+
+
+# TO-DO
+
+-Cleanup Scripts
+-More Logical Scripts
+-Make ccache Mount at Boot
