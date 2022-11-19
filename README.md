@@ -48,21 +48,21 @@ Install AOSP-DEVL AUR Package to get the needed Build Tools
 
 Inside of DIOS.sh:
 
-BRANCH=android-13.0.0_r12
-REPO=https://android.googlesource.com/platform/manifest
-TREE=https://github.com/sonyxperiadev/local_manifests
-EMAIL=mariuskopp517@gmail.com
-LUNCH_CHOICE=aosp_xqbc52-userdebug
-NAME=M1U5T0N3
-USERNAME=miustone
+-BRANCH=android-13.0.0_r12
+-REPO=https://android.googlesource.com/platform/manifest
+-TREE=https://github.com/sonyxperiadev/local_manifests
+-EMAIL=mariuskopp517@gmail.com
+-LUNCH_CHOICE=aosp_xqbc52-userdebug
+-NAME=M1U5T0N3
+-USERNAME=miustone
 
-These Variables for Your needs (Don't use My Identity!)
+Set these Variables for Your needs (Don't use My Identity)
 
 NAME is what we use on Git while USERNAME is Your OS Username
 
 Download the Sony Xperia Software Binaries and place the Zip Content on ~/dios
 
-Rename the Software Binaries to "oem_sagami" or what the DIOS_FASTBOOT_FLASH.sh uses
+Rename the Software Binaries to "oem_sagami" or the platform You are using
 
 Run the BUILD A.I. from the ./dios Folder...
 
@@ -77,3 +77,4 @@ bash ./DIOS.sh -h
 -Cleanup Scripts
 -More Logical Scripts
 -Make ccache Mount at Boot
+-Give Build Output Infos to the Scripts
