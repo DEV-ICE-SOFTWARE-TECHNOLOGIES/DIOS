@@ -335,7 +335,7 @@ _make() {
     wait
     make -j$(nproc)
     wait
-    read -p "DO YOU WANT TO FLASH D!OS VIA FASTBOOT?" -n 1 -r
+    read -p "DO YOU WANT TO FLASH D!OS VIA FASTBOOT (USE FASTBOOTD)?" -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         bash ./DIOS_FASTBOOT_FLASH.sh

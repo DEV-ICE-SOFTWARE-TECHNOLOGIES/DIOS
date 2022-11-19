@@ -39,22 +39,8 @@ fi
 read -p "FLASHING TO A 2020 XPERIA?" -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-    fastboot flash oem_a oem_edo.img
-    fastboot flash oem_b oem_edo.img
-    fastboot flash boot_a $OUT_2020/boot.img
-    fastboot flash boot_b $OUT_2020/boot.img
-    fastboot flash dtbo_a $OUT_2020/dtbo.img
-    fastboot flash dtbo_b $OUT_2020/dtbo.img
-    fastboot flash recovery_a $OUT_2020/recovery.img
-    fastboot flash recovery_b $OUT_2020/recovery.img
-    fastboot flash vbmeta_a $OUT_2020/vbmeta.img
-    fastboot flash vbmeta_b $OUT_2020/vbmeta.img
-    fastboot flash vendor_boot_a $OUT_2020/vendor_boot.img
-    fastboot flash vendor_boot_b $OUT_2020/vendor_boot.img
-    fastboot erase metadata​
-    fastboot reboot bootloader
-    fastboot flash super $OUT_2020/super_empty.img
     fastboot flash userdata $OUT_2020/userdata.img
+    fastboot flash super $OUT_2020/super_empty.img
     fastboot flash product_a $OUT_2020/product.img
     fastboot flash product_b $OUT_2020/product.img
     fastboot flash system_a $OUT_2020/system.img
@@ -65,6 +51,21 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     fastboot flash vbmeta_system_b $OUT_2020/vbmeta_system.img
     fastboot flash vendor_a $OUT_2020/vendor.img
     fastboot flash vendor_b $OUT_2020/vendor.img
+    fastboot flash oem_a oem_edo.img
+    fastboot flash oem_b oem_edo.img
+    fastboot reboot bootloader
+    fastboot flash boot_a $OUT_2020/boot.img
+    fastboot flash boot_b $OUT_2020/boot.img
+    fastboot flash dtbo_a $OUT_2020/dtbo.img
+    fastboot flash dtbo_b $OUT_2020/dtbo.img
+    fastboot flash recovery_a $OUT_2020/recovery.img || true
+    fastboot flash recovery_b $OUT_2020/recovery.img || true
+    fastboot flash vbmeta_a $OUT_2020/vbmeta.img
+    fastboot flash vbmeta_b $OUT_2020/vbmeta.img
+    fastboot flash vendor_boot_a $OUT_2020/vendor_boot.img
+    fastboot flash vendor_boot_b $OUT_2020/vendor_boot.img
+    sleep 5
+    fastboot reboot
     sleep 5
     fastboot reboot
     exit
