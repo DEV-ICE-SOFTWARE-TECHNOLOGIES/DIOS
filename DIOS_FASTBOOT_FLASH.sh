@@ -9,7 +9,7 @@ set -eu
 # VARIABLES
 # --------------------------------------------------------------------------------------------------
 DEVICE_2019=bahamut
-DEVICE_2020=keineahnung
+DEVICE_2020=edo
 DEVICE_2021=pdx215
 OUT_2019=~/dios/out/target/product/$DEVICE_2019
 OUT_2020=~/dios/out/target/product/$DEVICE_2020
