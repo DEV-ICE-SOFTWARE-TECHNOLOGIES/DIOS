@@ -32,7 +32,6 @@ persist.sys.sf.color_mode=9 \
 persist.sys.sf.color_saturation=1.1 \
 persist.sys.sf.native_mode=2 \
 persist.sys.usb.config=none \
-ro.control_privapp_permissions=log \
 ro.lockscreen.disable.default=0 \
 ro.setupwizard.enterprise_mode=1 \
 ro.setupwizard.esim_cid_ignore=00000001 \

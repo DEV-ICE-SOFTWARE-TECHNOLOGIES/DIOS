@@ -21,7 +21,7 @@ echo ""
 
 _help() {
     echo "Insert:"
-    echo "bash ./DIOS.sh"
+    echo "zsh ./DIOS.sh"
     echo " "
     echo "With:"
     echo "-ca | --cleanall / Cleans Output and Firmwares"
@@ -38,7 +38,7 @@ _help() {
     echo "-z | --zipping / Making an Update Zip"
     echo " "
     echo "Like:"
-    echo "bash ./DIOS.sh -u to init a Repo Sync"
+    echo "zsh ./DIOS.sh -u to init a Repo Sync"
     echo " "
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     echo " "
@@ -174,11 +174,11 @@ DIOS_PATH := device/sony/dios
 $(call inherit-product-if-exists, $(DIOS_PATH)/dios.mk)
 EOF
 
-    bash ./DIOS_MANIFEST_XML.sh
+    zsh ./DIOS_MANIFEST_XML.sh
 
     repo sync -j$(nproc)
 
-    bash ./repo_update.sh
+    zsh ./repo_update.sh
 
     echo ""
     echo -e "${RED}PREPARED! RESTART THE SCRIPT TO START BUILDING..."
@@ -197,17 +197,17 @@ _preparing() {
     echo -e "${GREEN}PREPARING D!OS..."
     echo ""
     wait
-    bash ./DIOS_ANDROID_MK.sh
+    zsh ./DIOS_ANDROID_MK.sh
     wait
-    bash ./DIOS_ANDROID_BP.sh
+    zsh ./DIOS_ANDROID_BP.sh
     wait
-    #bash ./DIOS_COMMON_PROPS_MK.sh
+    #zsh ./DIOS_COMMON_PROPS_MK.sh
     #wait
-    #bash ./DIOS_SAGAMI_PLATFORM_MK.sh
+    #zsh ./DIOS_SAGAMI_PLATFORM_MK.sh
     #wait
-    #bash ./DIOS_SYSPROP_MK.sh
+    zsh ./DIOS_SYSPROP_MK.sh
     wait
-    #bash ./DIOS_VENDOR_MK.sh
+    zsh ./DIOS_VENDOR_MK.sh
 
 }
 
@@ -218,7 +218,7 @@ _preparing() {
 _cleaning() {
     if $_cleanall; then
         echo ""
-        echo -e "${BGWHITE}CLEANING TARGETS..."
+        echo -e "${GREEN}CLEANING TARGETS..."
         echo ""
         wait
         make clean -j$(nproc)
@@ -231,7 +231,7 @@ _cleaning() {
 
     if $_cleanforks; then
         echo ""
-        echo -e "${BGWHITE}CLEANING TARGETS..."
+        echo -e "${GREEN}CLEANING TARGETS..."
         echo ""
         wait
         rm -rf ~/dios/device/sony/dios/forks
@@ -243,7 +243,7 @@ _cleaning() {
 
     if $_cleanout; then
         echo ""
-        echo -e "${BGWHITE}CLEANING TARGETS..."
+        echo -e "${GREEN}CLEANING TARGETS..."
         echo ""
         wait
         make clean -j$(nproc)
@@ -261,29 +261,29 @@ _cleaning() {
 _forking() {
     if $_forkall; then
         wait
-        bash ./DIOS_PIXEL_FORK.sh
+        zsh ./DIOS_PIXEL_FORK.sh
         wait
-        bash ./DIOS_OPEN_CAMERA.sh
+        zsh ./DIOS_OPEN_CAMERA.sh
         wait
-        #bash ./DIOS_XPERIA_FORK.sh
+        #zsh ./DIOS_XPERIA_FORK.sh
         wait
     fi
 
     if $_forkdios; then
         wait
-        bash ./DIOS_OPEN_CAMERA.sh
+        zsh ./DIOS_OPEN_CAMERA.sh
         wait
     fi
 
     if $_forkpixel; then
         wait
-        bash ./DIOS_PIXEL_FORK.sh
+        zsh ./DIOS_PIXEL_FORK.sh
         wait
     fi
 
     if $_forkxperia; then
         wait
-        #bash ./DIOS_XPERIA_FORK.sh
+        #zsh ./DIOS_XPERIA_FORK.sh
         wait
     fi
 }
@@ -297,7 +297,7 @@ _repo_update() {
         echo ""
         echo -e "${BGWHITE}REPO SYNC AND REPO UPDATE..."
         echo ""
-        bash ./repo_update.sh
+        zsh ./repo_update.sh
     fi
 }
 
@@ -311,19 +311,19 @@ _patching() {
         echo -e "${GREEN}PATCHING FILES..."
         echo ""
         wait
-        #bash ./DIOS_APPS_SETTINGS_XML.sh
+        #zsh ./DIOS_APPS_SETTINGS_XML.sh
         wait
-        #bash ./DIOS_FRAMEWORK_XML.sh
+        #zsh ./DIOS_FRAMEWORK_XML.sh
         wait
-        #bash ./DIOS_PRODUCT_BUILD_PROP.sh
+        #zsh ./DIOS_PRODUCT_BUILD_PROP.sh
         wait
-        #bash ./DIOS_SYSTEM_BUILD_PROP.sh
+        #zsh ./DIOS_SYSTEM_BUILD_PROP.sh
         wait
-        #bash ./DIOS_SYSTEM_EXT_BUILD_PROP.sh
+        #zsh ./DIOS_SYSTEM_EXT_BUILD_PROP.sh
         wait
-        #bash ./DIOS_VENDOR_BUILD_PROP.sh
+        #zsh ./DIOS_VENDOR_BUILD_PROP.sh
         wait
-        bash ./DIOS_PERMISSIONS_XML.sh
+        zsh ./DIOS_PERMISSIONS_XML.sh
         wait
     fi
 }
@@ -344,7 +344,7 @@ _make() {
     read -k 1 "fastboot?DO YOU WANT TO FLASH D!OS VIA FASTBOOT?"
     echo
     if [[ "$fastboot" =~ ^[Yy]$ ]]; then
-        bash ./DIOS_FASTBOOT_FLASH.sh
+        zsh ./DIOS_FASTBOOT_FLASH.sh
     fi
     wait
 }
@@ -367,7 +367,7 @@ _zip() {
         read -k 1 "adb?DO YOU WANT TO FLASH D!OS VIA ADB?"
         echo
         if [[ "$adb" =~ ^[Yy]$ ]]; then
-            bash ./DIOS_ADB_FLASH.sh
+            zsh ./DIOS_ADB_FLASH.sh
         fi
         wait
     fi
