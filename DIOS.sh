@@ -1,9 +1,9 @@
-#!/bin/bash
+#!/bin/zsh
 
 set -eu
 
 # --------------------------------------------------------------------------------------------------
-# Copyright (C) 2022 DEV ICE TECHNOLOGIES
+# Copyright (C) 2022 DEV ICE SOFTWARE TECHNOLOGIES
 # --------------------------------------------------------------------------------------------------
 
 echo ""
@@ -106,6 +106,13 @@ _initialize() {
 
     sudo pacman -Syyu
 
+    reqSpace=400000000
+    availSpace=$(df "$HOME" | awk 'NR==2 { print $4 }')
+    if ((availSpace < reqSpace)); then
+    echo -e "${RED}NOT ENOUGH FREE SPACE!" >&2
+        exit 1
+    fi
+
     if [ ! -d ~/bin ]; then
         mkdir -p ~/bin
     fi
@@ -113,14 +120,14 @@ _initialize() {
     curl http://commondatastorage.googleapis.com/git-repo-downloads/repo >~/bin/repo
     chmod a+x ~/bin/repo
 
-    echo '' >>~/.bashrc
-    echo 'export PATH=~/bin:$PATH' >>~/.bashrc
-    echo 'export USE_CCACHE=1' >>~/.bashrc
-    echo 'export CCACHE_EXEC=/usr/bin/ccache' >>~/.bashrc
-    echo 'export CCACHE_DIR=/mnt/ccache' >>~/.bashrc
-    echo 'export ALLOW_MISSING_DEPENDENCIES=true' >>~/.bashrc
+    echo '' >>~/.zshrc
+    echo 'export PATH=~/bin:$PATH' >>~/.zshrc
+    echo 'export USE_CCACHE=1' >>~/.zshrc
+    echo 'export CCACHE_EXEC=/usr/bin/ccache' >>~/.zshrc
+    echo 'export CCACHE_DIR=/mnt/ccache' >>~/.zshrc
+    echo 'export ALLOW_MISSING_DEPENDENCIES=true' >>~/.zshrc
 
-    source ~/.bashrc
+    source ~/.zshrc
 
     if [ ! -d /mnt/ccache ]; then
         sudo mkdir /mnt/ccache
@@ -175,7 +182,6 @@ EOF
 
     echo ""
     echo -e "${RED}PREPARED! RESTART THE SCRIPT TO START BUILDING..."
-    echo -e "${RED}PLEASE RUN: source ~/.bashrc BEFORE YOU START BUILDING!"
     echo -e "${RED}YOU CAN ALSO ADD THIS TO FSTAB to MAKE CCACHE AUTO MOUNT ON BOOTING:"
     echo "/etc/fstab: /home/<your_current_path>/.ccache /mnt/ccache none defaults,bind,users,noauto 0"
     exit
@@ -329,13 +335,13 @@ _patching() {
 _make() {
     wait
     echo ""
-        echo -e "${BGWHITE}START BUILDING D!OS"
+    echo -e "${BGWHITE}START BUILDING D!OS"
     echo ""
     sudo mount --bind ~/.ccache /mnt/ccache
     wait
     make -j$(nproc)
     wait
-    read -p "DO YOU WANT TO FLASH D!OS VIA FASTBOOT (USE FASTBOOTD)?" -n 1 -r
+    read -p "DO YOU WANT TO FLASH D!OS VIA FASTBOOT?" -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         bash ./DIOS_FASTBOOT_FLASH.sh

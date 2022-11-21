@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/zsh
 #
 # Copyright (C) 2016 The CyanogenMod Project
 # Copyright (C) 2017-2021 The LineageOS Project
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-set -e
+set -eu
 
 export FORK=fork/pixel
 export DIOS=dios
