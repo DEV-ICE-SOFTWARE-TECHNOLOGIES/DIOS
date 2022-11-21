@@ -109,7 +109,7 @@ _initialize() {
     reqSpace=400000000
     availSpace=$(df "$HOME" | awk 'NR==2 { print $4 }')
     if ((availSpace < reqSpace)); then
-    echo -e "${RED}NOT ENOUGH FREE SPACE!" >&2
+        echo -e "${RED}NOT ENOUGH FREE SPACE!" >&2
         exit 1
     fi
 
@@ -341,9 +341,9 @@ _make() {
     wait
     make -j$(nproc)
     wait
-    read -p "DO YOU WANT TO FLASH D!OS VIA FASTBOOT?" -n 1 -r
+    read -k 1 "fastboot?DO YOU WANT TO FLASH D!OS VIA FASTBOOT?"
     echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
+    if [[ "$fastboot" =~ ^[Yy]$ ]]; then
         bash ./DIOS_FASTBOOT_FLASH.sh
     fi
     wait
@@ -364,9 +364,9 @@ _zip() {
         fi
         make dist DIST_DIR=dist_output -j$(nproc)
         wait
-        read -p "DO YOU WANT TO FLASH D!OS VIA ADB?" -n 1 -r
+        read -k 1 "adb?DO YOU WANT TO FLASH D!OS VIA ADB?"
         echo
-        if [[ $REPLY =~ ^[Yy]$ ]]; then
+        if [[ "$adb" =~ ^[Yy]$ ]]; then
             bash ./DIOS_ADB_FLASH.sh
         fi
         wait

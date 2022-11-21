@@ -16,9 +16,9 @@ OUT_2019=~/dios/out/target/product/$DEVICE_2019
 OUT_2020=~/dios/out/target/product/$DEVICE_2020
 OUT_2021=~/dios/out/target/product/$DEVICE_2021
 
-read -p "FLASHING TO A 2019 XPERIA?" -n 1 -r
+read -k 1 "flash19?FLASHING TO A 2019 XPERIA?"
 echo
-if [[ $REPLY =~ ^[Yy]$ ]]; then
+if [[ "$flash19" =~ ^[Yy]$ ]] then
     fastboot flash oem_a oem_kumano.img
     fastboot flash oem_b oem_kumano.img
     fastboot flash boot_a $OUT_2019/boot.img
@@ -37,9 +37,9 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     exit
 fi
 
-read -p "FLASHING TO A 2020 XPERIA?" -n 1 -r
+read -k 1 "flash20?FLASHING TO A 2020 XPERIA?"
 echo
-if [[ $REPLY =~ ^[Yy]$ ]]; then
+if [[ "$flash20" =~ ^[Yy]$ ]] then
     fastboot flash oem_a oem_edo.img
     fastboot flash oem_b oem_edo.img
     fastboot flash boot_a $OUT_2020/boot.img
@@ -71,9 +71,9 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     exit
 fi
 
-read -p "FLASHING TO A 2021 XPERIA?" -n 1 -r
+read -k 1 "flash21?FLASHING TO A 2021 XPERIA?"
 echo
-if [[ $REPLY =~ ^[Yy]$ ]]; then
+if [[ "$flash21" =~ ^[Yy]$ ]] then
     fastboot flash userdata $OUT_2021/userdata.img
     fastboot flash super $OUT_2021/super_empty.img
     fastboot flash product_a $OUT_2021/product.img
