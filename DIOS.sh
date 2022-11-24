@@ -178,7 +178,7 @@ EOF
 
     repo sync -j$(nproc)
 
-    zsh ./repo_update.sh
+    bash ./repo_update.sh
 
     echo ""
     echo -e "${RED}PREPARED! RESTART THE SCRIPT TO START BUILDING..."
@@ -297,7 +297,7 @@ _repo_update() {
         echo ""
         echo -e "${BGWHITE}REPO SYNC AND REPO UPDATE..."
         echo ""
-        zsh ./repo_update.sh
+        bash ./repo_update.sh
     fi
 }
 
