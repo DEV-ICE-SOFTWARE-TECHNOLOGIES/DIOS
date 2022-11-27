@@ -174,7 +174,7 @@ DIOS_PATH := device/sony/dios
 $(call inherit-product-if-exists, $(DIOS_PATH)/dios.mk)
 EOF
 
-    zsh ./DIOS_MANIFEST_XML.sh
+    zsh ./DIOS_MANIFEST_XMLS.sh
 
     repo sync -j$(nproc)
 
@@ -207,7 +207,7 @@ _preparing() {
     #wait
     zsh ./DIOS_SYSPROP_MK.sh
     wait
-    zsh ./DIOS_VENDOR_MK.sh
+    zsh ./DIOS_DIOS_MK.sh
 
 }
 
@@ -261,11 +261,11 @@ _cleaning() {
 _forking() {
     if $_forkall; then
         wait
-        zsh ./DIOS_PIXEL_FORK.sh
+        zsh ./DIOS_FORK_PIXEL.sh
         wait
         zsh ./DIOS_OPEN_CAMERA.sh
         wait
-        #zsh ./DIOS_XPERIA_FORK.sh
+        #zsh ./DIOS_FORK_XPERIA.sh
         wait
     fi
 
@@ -295,7 +295,7 @@ _forking() {
 _repo_update() {
     if $_update; then
         echo ""
-        echo -e "${BGWHITE}REPO SYNC AND REPO UPDATE..."
+        echo -e "${GREEN}REPO SYNC AND REPO UPDATE..."
         echo ""
         bash ./repo_update.sh
     fi
@@ -323,8 +323,6 @@ _patching() {
         wait
         #zsh ./DIOS_VENDOR_BUILD_PROP.sh
         wait
-        zsh ./DIOS_PERMISSIONS_XML.sh
-        wait
     fi
 }
 
@@ -335,7 +333,7 @@ _patching() {
 _make() {
     wait
     echo ""
-    echo -e "${BGWHITE}START BUILDING D!OS"
+    echo -e "${GREEN}START BUILDING D!OS"
     echo ""
     sudo mount --bind ~/.ccache /mnt/ccache
     wait
@@ -344,7 +342,7 @@ _make() {
     read -k 1 "fastboot?DO YOU WANT TO FLASH D!OS VIA FASTBOOT?"
     echo
     if [[ "$fastboot" =~ ^[Yy]$ ]]; then
-        zsh ./DIOS_FASTBOOT_FLASH.sh
+        zsh ./DIOS_FLASH_FASTBOOT.sh
     fi
     wait
 }
@@ -367,7 +365,7 @@ _zip() {
         read -k 1 "adb?DO YOU WANT TO FLASH D!OS VIA ADB?"
         echo
         if [[ "$adb" =~ ^[Yy]$ ]]; then
-            zsh ./DIOS_ADB_FLASH.sh
+            zsh ./DIOS_FLASH_ADB.sh
         fi
         wait
     fi

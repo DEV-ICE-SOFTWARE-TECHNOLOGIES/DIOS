@@ -11,7 +11,7 @@ if [ ! -d ~/dios/device/sony/dios ]; then
 fi
 
 echo ""
-echo "D!OS VENDOR MK..."
+echo "D!OS DIOS MK..."
 echo ""
 cat <<\EOF >~/dios/device/sony/dios/dios.mk
 # --------------------------------------------------------------------------------------------------
