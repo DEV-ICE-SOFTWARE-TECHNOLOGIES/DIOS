@@ -82,12 +82,7 @@ rm -rf $FORK_DIR/product/overlay/SettingsOverlayG5NZ6.apk || true
 rm -rf $FORK_DIR/product/overlay/SettingsOverlayGD1YQ.apk || true
 rm -rf $FORK_DIR/product/overlay/SettingsOverlayGTT9Q.apk || true
 rm -rf $FORK_DIR/system_ext/app/com.qualcomm.qti.services.secureui || true
-rm -rf $FORK_DIR/system_ext/app/datastatusnotification || true
-rm -rf $FORK_DIR/system_ext/app/uceShimService || true
-rm -rf $FORK_DIR/system_ext/app/uimremoteclient || true
-rm -rf $FORK_DIR/system_ext/app/uimremoteserver || true
 rm -rf $FORK_DIR/system_ext/app || true
-rm -rf $FORK_DIR/system_ext/app/QtiTelephonyService || true
 rm -rf $FORK_DIR/system_ext/bin || true
 rm -rf $FORK_DIR/system_ext/etc/permissions/com.qti.dpmframework.xml || true
 rm -rf $FORK_DIR/system_ext/etc/permissions/com.qti.media.secureprocessor.xml || true
@@ -96,7 +91,6 @@ rm -rf $FORK_DIR/system_ext/etc/selinux || true
 rm -rf $FORK_DIR/system_ext/etc/vintf || true
 rm -rf $FORK_DIR/system_ext/lost+found || true
 rm -rf $FORK_DIR/system_ext/priv-app/ConnectivityThermalPowerManager || true
-rm -rf $FORK_DIR/system_ext/priv-app/qcrilmsgtunnel || true
 rm -rf $FORK_DIR/system_ext/priv-app/RilConfigService || true
 rm -rf $FORK_DIR/system_ext/priv-app/SystemUIGoogle || true
 rm -rf $FORK_DIR/system_ext/priv-app/SettingsGoogle || true

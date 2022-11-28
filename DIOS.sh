@@ -311,10 +311,6 @@ _patching() {
         echo -e "${GREEN}PATCHING FILES..."
         echo ""
         wait
-        #zsh ./DIOS_APPS_SETTINGS_XML.sh
-        wait
-        #zsh ./DIOS_FRAMEWORK_XML.sh
-        wait
         #zsh ./DIOS_PRODUCT_BUILD_PROP.sh
         wait
         #zsh ./DIOS_SYSTEM_BUILD_PROP.sh
