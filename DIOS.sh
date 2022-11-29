@@ -201,7 +201,7 @@ _preparing() {
     wait
     zsh ./DIOS_ANDROID_BP.sh
     wait
-    #zsh ./DIOS_COMMON_PROPS_MK.sh
+    zsh ./DIOS_COMMON_PROPS_MK.sh
     #wait
     #zsh ./DIOS_SAGAMI_PLATFORM_MK.sh
     #wait
@@ -221,7 +221,7 @@ _cleaning() {
         echo -e "${GREEN}CLEANING TARGETS..."
         echo ""
         wait
-        make clean -j$(nproc)
+        make installclean -j$(nproc)
         rm -rf ~/dios/device/sony/dios/fork
         echo ""
         echo -e "${GREEN}D!OS OUTPUT AND FORKS CLEANED..."
@@ -246,7 +246,7 @@ _cleaning() {
         echo -e "${GREEN}CLEANING TARGETS..."
         echo ""
         wait
-        make clean -j$(nproc)
+        make installclean -j$(nproc)
         echo ""
         echo -e "${GREEN}D!OS OUTPUT CLEANED..."
         echo ""
