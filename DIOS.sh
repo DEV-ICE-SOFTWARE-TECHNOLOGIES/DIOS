@@ -62,11 +62,11 @@ _help() {
 # 1. VARIABLES
 # --------------------------------------------------------------------------------------------------
 
-BRANCH=android-13.0.0_r12
-REPO=https://android.googlesource.com/platform/manifest
-TREE=https://github.com/sonyxperiadev/local_manifests
+BRANCH=lineage-20.0
+REPO=https://github.com/LineageOS/android
+TREE=https://github.com/sony-sagamidev/local_manifests
 EMAIL=mariuskopp517@gmail.com
-LUNCH_CHOICE=aosp_j9210-userdebug
+LUNCH_CHOICE=lineage_pdx215-userdebug
 NAME=M1U5T0N3
 USERNAME=marius
 BGBLACK='\033[40m'
@@ -126,6 +126,7 @@ _initialize() {
     echo 'export CCACHE_EXEC=/usr/bin/ccache' >>~/.zshrc
     echo 'export CCACHE_DIR=/mnt/ccache' >>~/.zshrc
     echo 'export ALLOW_MISSING_DEPENDENCIES=true' >>~/.zshrc
+    wait
 
     source ~/.zshrc
 
@@ -155,35 +156,33 @@ _initialize() {
         git clone $TREE
     fi
 
-    cd local_manifests
-
-    git checkout $BRANCH
-
+    #    cd local_manifests
+    #
+    #    git checkout $BRANCH
+    #
     cd ~/dios
-
-    if [ ! -d ~/dios/device/sony/customization ]; then
-        mkdir -p ~/dios/device/sony/customization
-    fi
-
-    echo ""
-    echo "CREATING D!OS PATH..."
-    echo ""
-
-    cat <<\EOF >device/sony/customization/customization.mk
-DIOS_PATH := device/sony/dios
-$(call inherit-product-if-exists, $(DIOS_PATH)/dios.mk)
-EOF
-
-    zsh ./DIOS_MANIFEST_XMLS.sh
-
+    #
+    #    if [ ! -d ~/dios/device/sony/customization ]; then
+    #        mkdir -p ~/dios/device/sony/customization
+    #    fi
+    #
+    #    echo ""
+    #    echo "CREATING D!OS PATH..."
+    #    echo ""
+    #
+    #    cat <<\EOF >device/sony/customization/customization.mk
+    #DIOS_PATH := device/sony/dios
+    #$(call inherit-product-if-exists, $(DIOS_PATH)/dios.mk)
+    #EOF
+    #
+    #    zsh ./DIOS_MANIFEST_XMLS.sh
+    #
     repo sync -j$(nproc)
-
-    bash ./repo_update.sh
+    #
+    #    bash ./repo_update.sh
 
     echo ""
     echo -e "${RED}PREPARED! RESTART THE SCRIPT TO START BUILDING..."
-    echo -e "${RED}YOU CAN ALSO ADD THIS TO FSTAB to MAKE CCACHE AUTO MOUNT ON BOOTING:"
-    echo "/etc/fstab: /home/<your_current_path>/.ccache /mnt/ccache none defaults,bind,users,noauto 0"
     exit
 
 }
@@ -197,17 +196,17 @@ _preparing() {
     echo -e "${GREEN}PREPARING D!OS..."
     echo ""
     wait
-    zsh ./DIOS_ANDROID_MK.sh
+    #zsh ./DIOS_ANDROID_MK.sh
     wait
-    zsh ./DIOS_ANDROID_BP.sh
+    #zsh ./DIOS_ANDROID_BP.sh
     wait
-    zsh ./DIOS_COMMON_PROPS_MK.sh
+    #zsh ./DIOS_COMMON_PROPS_MK.sh
     #wait
     #zsh ./DIOS_SAGAMI_PLATFORM_MK.sh
     #wait
-    zsh ./DIOS_SYSPROP_MK.sh
+    #zsh ./DIOS_SYSPROP_MK.sh
     wait
-    zsh ./DIOS_DIOS_MK.sh
+    #zsh ./DIOS_DIOS_MK.sh
 
 }
 
@@ -297,6 +296,7 @@ _repo_update() {
         echo ""
         echo -e "${GREEN}REPO SYNC AND REPO UPDATE..."
         echo ""
+        repo sync -j$(nproc)
         bash ./repo_update.sh
     fi
 }
