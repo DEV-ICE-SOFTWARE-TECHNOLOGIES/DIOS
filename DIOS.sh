@@ -62,11 +62,11 @@ _help() {
 # 1. VARIABLES
 # --------------------------------------------------------------------------------------------------
 
-BRANCH=lineage-20.0
-REPO=https://github.com/LineageOS/android
-TREE=https://github.com/xperiaossdev/local_manifests
+BRANCH=android-13.0.0_r16
+REPO=https://android.googlesource.com/platform/manifest
+TREE=https://github.com/sonyxperiadev/local_manifests
 EMAIL=mariuskopp517@gmail.com
-LUNCH_CHOICE=lineage_pdx215-userdebug
+LUNCH_CHOICE=aosp_xqbc52-userdebug
 NAME=M1U5T0N3
 USERNAME=marius
 BGBLACK='\033[40m'
@@ -156,30 +156,28 @@ _initialize() {
         git clone $TREE
     fi
 
-    #    cd local_manifests
-    #
-    #    git checkout $BRANCH
-    #
+    cd local_manifests
+
+    git checkout $BRANCH
+
     cd ~/dios
-    #
-    #    if [ ! -d ~/dios/device/sony/customization ]; then
-    #        mkdir -p ~/dios/device/sony/customization
-    #    fi
-    #
-    #    echo ""
-    #    echo "CREATING D!OS PATH..."
-    #    echo ""
-    #
-    #    cat <<\EOF >device/sony/customization/customization.mk
-    #DIOS_PATH := device/sony/dios
-    #$(call inherit-product-if-exists, $(DIOS_PATH)/dios.mk)
-    #EOF
-    #
-    #    zsh ./DIOS_MANIFEST_XMLS.sh
-    #
-    repo sync -j$(nproc)
-    #
-    #    bash ./repo_update.sh
+
+    if [ ! -d ~/dios/device/sony/customization ]; then
+        mkdir -p ~/dios/device/sony/customization
+    fi
+
+    echo ""
+    echo "CREATING D!OS PATH..."
+    echo ""
+
+    cat <<\EOF >device/sony/customization/customization.mk
+DIOS_PATH := device/sony/dios
+$(call inherit-product-if-exists, $(DIOS_PATH)/dios.mk)
+EOF
+
+    zsh ./DIOS_MANIFEST_XMLS.sh
+
+    _repo_update
 
     echo ""
     echo -e "${RED}PREPARED! RESTART THE SCRIPT TO START BUILDING..."
