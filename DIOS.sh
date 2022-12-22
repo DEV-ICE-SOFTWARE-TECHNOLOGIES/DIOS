@@ -177,7 +177,8 @@ EOF
 
     zsh ./DIOS_MANIFEST_XMLS.sh
 
-    _repo_update
+    repo sync -j$(nproc)
+    bash ./repo_update.sh
 
     echo ""
     echo -e "${RED}PREPARED! RESTART THE SCRIPT TO START BUILDING..."
