@@ -64,7 +64,7 @@ _help() {
 
 BRANCH=lineage-20.0
 REPO=https://github.com/LineageOS/android
-TREE=https://github.com/sony-sagamidev/local_manifests
+TREE=https://github.com/xperiaossdev/local_manifests
 EMAIL=mariuskopp517@gmail.com
 LUNCH_CHOICE=lineage_pdx215-userdebug
 NAME=M1U5T0N3
