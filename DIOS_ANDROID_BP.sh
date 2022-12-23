@@ -31,18 +31,6 @@ android_app_import {
 }
 
 android_app_import {
-	name: "NexusLauncherRelease.apk",
-	owner: "dios",
-	apk: "fork/pixel/system_ext/priv-app/NexusLauncherRelease/NexusLauncherRelease.apk",
-	presigned: true,
-	dex_preopt: {
-		enabled: false,
-	},
-	privileged: true,
-	product_specific: true,
-}
-
-android_app_import {
 	name: "PrebuiltGmsCoreSc.apk",
 	owner: "dios",
 	apk: "fork/pixel/product/priv-app/PrebuiltGmsCore/PrebuiltGmsCoreSc.apk",
