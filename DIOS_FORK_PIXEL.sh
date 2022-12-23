@@ -90,9 +90,10 @@ rm -rf $FORK_DIR/system_ext/etc/security || true
 rm -rf $FORK_DIR/system_ext/etc/selinux || true
 rm -rf $FORK_DIR/system_ext/etc/vintf || true
 rm -rf $FORK_DIR/system_ext/lost+found || true
-rm -rf $FORK_DIR/system_ext/priv-app/SystemUIGoogle || true
 rm -rf $FORK_DIR/system_ext/priv-app/ConnectivityThermalPowerManager || true
+rm -rf $FORK_DIR/system_ext/priv-app/qcrilmsgtunnel || true
 rm -rf $FORK_DIR/system_ext/priv-app/RilConfigService || true
+rm -rf $FORK_DIR/system_ext/priv-app/SystemUIGoogle || true
 rm -rf $FORK_DIR/system/system/apex/com.android.runtime.apex || true
 rm -rf $FORK_DIR/system/system/apex/com.android.vndk.current.apex || true
 rm -rf $FORK_DIR/system/system/etc/init || true

@@ -16,7 +16,7 @@ DEVICE_2022=pdx2xx
 OUT_2019=~/dios/out/target/product/$DEVICE_2019
 OUT_2020=~/dios/out/target/product/$DEVICE_2020
 OUT_2021=~/dios/out/target/product/$DEVICE_2021
-OUT_2021=~/dios/out/target/product/$DEVICE_2022
+OUT_2022=~/dios/out/target/product/$DEVICE_2022
 
 read -k 1 "flash19?FLASHING TO A 2019 XPERIA?"
 echo
