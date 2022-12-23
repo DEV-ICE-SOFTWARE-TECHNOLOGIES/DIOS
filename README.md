@@ -1,6 +1,6 @@
 # D!OS
 
-![DIOS IMAGE](https://github.com/DEV-ICE-SOFTWARE-TECHNOLOGIES/DIOS/DIOS.png)
+![DIOS IMAGE](https://github.com/DEV-ICE-SOFTWARE-TECHNOLOGIES/DIOS/blob/main/DIOS.png)
 
 
 BUILD A.I. that makes Android for Humans with ease...
