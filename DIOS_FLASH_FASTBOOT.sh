@@ -42,6 +42,7 @@ fi
 read -k 1 "flash20?FLASHING TO A 2020 XPERIA?"
 echo
 if [[ "$flash20" =~ ^[Yy]$ ]] then
+    fastboot reboot fastboot
     fastboot erase metadata​ || true
     fastboot flash userdata $OUT_2020/userdata.img || true
     fastboot flash super $OUT_2020/super_empty.img || true
@@ -57,7 +58,7 @@ if [[ "$flash20" =~ ^[Yy]$ ]] then
     fastboot flash vendor_b $OUT_2020/vendor.img || true
     fastboot flash oem_a oem_edo.img || true
     fastboot flash oem_b oem_edo.img || true
-    fastboot reboot bootloader
+    fastboot reboot fastboot
     fastboot erase metadata​ || true
     fastboot flash boot_a $OUT_2020/boot.img || true
     fastboot flash boot_b $OUT_2020/boot.img || true
@@ -77,6 +78,7 @@ fi
 read -k 1 "flash21?FLASHING TO A 2021 XPERIA?"
 echo
 if [[ "$flash21" =~ ^[Yy]$ ]] then
+    fastboot reboot fastboot
     fastboot erase metadata​ || true
     fastboot flash userdata $OUT_2021/userdata.img || true
     fastboot flash super $OUT_2021/super_empty.img || true
@@ -92,7 +94,7 @@ if [[ "$flash21" =~ ^[Yy]$ ]] then
     fastboot flash vendor_b $OUT_2021/vendor.img || true
     fastboot flash oem_a oem_sagami.img || true
     fastboot flash oem_b oem_sagami.img || true
-    fastboot reboot bootloader
+    fastboot reboot fastboot
     fastboot erase metadata​ || true
     fastboot flash boot_a $OUT_2021/boot.img || true
     fastboot flash boot_b $OUT_2021/boot.img || true

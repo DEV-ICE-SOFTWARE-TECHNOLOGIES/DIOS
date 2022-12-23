@@ -195,17 +195,17 @@ _preparing() {
     echo -e "${GREEN}PREPARING D!OS..."
     echo ""
     wait
-    zsh ./DIOS_ANDROID_MK.sh
+    #zsh ./DIOS_ANDROID_MK.sh
     wait
-    zsh ./DIOS_ANDROID_BP.sh
+    #zsh ./DIOS_ANDROID_BP.sh
     wait
-    zsh ./DIOS_COMMON_PROPS_MK.sh
+    #zsh ./DIOS_COMMON_PROPS_MK.sh
     wait
     #zsh ./DIOS_SAGAMI_PLATFORM_MK.sh
     wait
     #zsh ./DIOS_SYSPROP_MK.sh
     wait
-    zsh ./DIOS_DIOS_MK.sh
+    #zsh ./DIOS_DIOS_MK.sh
 
 }
 
@@ -330,16 +330,23 @@ _make() {
     echo ""
     echo -e "${GREEN}START BUILDING D!OS"
     echo ""
+    if $_aospbuild; then
+        mv ~/dios/device/sony/dios ~/dios/dios
+    fi
     sudo mount --bind ~/.ccache /mnt/ccache
     wait
     make -j$(nproc)
+    wait
+    if $_aospbuild; then
+        wait
+        mv ~/dios/dios ~/dios/device/sony/dios
+    fi
     wait
     read -k 1 "fastboot?DO YOU WANT TO FLASH D!OS VIA FASTBOOT?"
     echo
     if [[ "$fastboot" =~ ^[Yy]$ ]]; then
         zsh ./DIOS_FLASH_FASTBOOT.sh
     fi
-    wait
 }
 
 # --------------------------------------------------------------------------------------------------
@@ -351,11 +358,20 @@ _zip() {
         echo ""
         echo -e "${GREEN}ZIPPING D!OS..."
         echo ""
+        if $_aospbuild; then
+            mv ~/dios/device/sony/dios ~/dios/dios
+        fi
+        sudo mount --bind ~/.ccache /mnt/ccache
         wait
         if [ ! -d ~/dios/dist_output ]; then
             mkdir -p ~/dios/dist_output
         fi
         make dist DIST_DIR=dist_output -j$(nproc)
+        wait
+        if $_aospbuild; then
+            wait
+            mv ~/dios/dios ~/dios/device/sony/dios
+        fi
         wait
         read -k 1 "adb?DO YOU WANT TO FLASH D!OS VIA ADB?"
         echo
@@ -385,6 +401,7 @@ _build() {
 # --------------------------------------------------------------------------------------------------
 
 declare _shell_script=${0##*/}
+declare _aospbuild="false"
 declare _cleanall="false"
 declare _cleanforks="false"
 declare _cleanout="false"
@@ -399,6 +416,10 @@ declare _zipping="false"
 
 while (("$#")); do
     case $1 in
+    -ab | --aospbuild)
+        _aospbuild="true"
+        shift
+        ;;
     -ca | --cleanall)
         _cleanall="true"
         shift

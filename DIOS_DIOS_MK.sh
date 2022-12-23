@@ -165,12 +165,14 @@ PRODUCT_PACKAGES += \
     GooglePartnerSetup \
     GoogleRestore \
     GoogleServicesFramework \
+    GoogleSettings \
     MarkupGoogle \
     Phonesky \
     PixelSetupWizard \
     PrebuiltExchange3Google \
     PrebuiltGmsCoreSc \
     talkback \
+    SystemUIGoogle \
     Velvet 
 
 #PRODUCT_SYSTEM_EXT_PROPERTIES += ro.lockscreen.disable.default=1
