@@ -1,9 +1,11 @@
+<p align="center">
+
 # D!OS
 
-<p align="center">
 ![DIOS IMAGE](https://github.com/DEV-ICE-SOFTWARE-TECHNOLOGIES/DIOS/blob/main/DIOS.png)
 
 ANDROID BUILD A.I.
+
 </p>
 
 # WHAT DOES IT DO?
