@@ -12,7 +12,7 @@ set -eu
 
 DOWNLOAD_DIR=~/dios/device/sony/dios/pixel
 FORK_DIR=~/dios/device/sony/dios/fork/pixel
-IMAGE_NAME=redfin-tp1a.221105.002-factory-c13cf32a.zip
+IMAGE_NAME=redfin-tq1a.221205.011-factory-20783ab0.zip
 IMAGE_FILE=$DOWNLOAD_DIR/$IMAGE_NAME
 PRODUCT=~/dios/device/sony/dios/tmp/$(basename $IMAGE_NAME .zip)/product
 SYSTEM_EXT=~/dios/device/sony/dios/tmp/$(basename $IMAGE_NAME .zip)/system_ext
