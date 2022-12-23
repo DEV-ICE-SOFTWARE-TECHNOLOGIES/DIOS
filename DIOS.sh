@@ -195,17 +195,17 @@ _preparing() {
     echo -e "${GREEN}PREPARING D!OS..."
     echo ""
     wait
-    #zsh ./DIOS_ANDROID_MK.sh
+    zsh ./DIOS_ANDROID_MK.sh
     wait
-    #zsh ./DIOS_ANDROID_BP.sh
+    zsh ./DIOS_ANDROID_BP.sh
     wait
     #zsh ./DIOS_COMMON_PROPS_MK.sh
-    #wait
+    wait
     #zsh ./DIOS_SAGAMI_PLATFORM_MK.sh
-    #wait
+    wait
     #zsh ./DIOS_SYSPROP_MK.sh
     wait
-    #zsh ./DIOS_DIOS_MK.sh
+    zsh ./DIOS_DIOS_MK.sh
 
 }
 
@@ -307,7 +307,7 @@ _repo_update() {
 _patching() {
     if $_patch; then
         echo ""
-        echo -e "${GREEN}PATCHING FILES..."
+        echo -e "${GREEN}PATCHING CODE..."
         echo ""
         wait
         #zsh ./DIOS_PRODUCT_BUILD_PROP.sh
