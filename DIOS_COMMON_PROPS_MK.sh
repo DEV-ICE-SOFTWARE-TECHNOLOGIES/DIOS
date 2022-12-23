@@ -14,9 +14,19 @@ echo ""
 echo "D!OS COMMON PROPS MK..."
 echo ""
 cat <<\EOF >~/dios/device/sony/common/common-prop.mk
-# --------------------------------------------------------------------------------------------------
-# Copyright (C) 2022 DEV ICE TECHNOLOGIES
-# --------------------------------------------------------------------------------------------------
+# Copyright (C) 2014 The Android Open Source Project
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 # librqbalance enablement
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -95,6 +105,10 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # Ringer
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.telephony.call_ring.multiple=false
+
+# System props for telephony System prop to turn on CdmaLTEPhone always
+PRODUCT_PROPERTY_OVERRIDES += \
+    telephony.lteOnCdmaDevice=0
 
 # debug.sf.latch_unsignaled
 # - This causes SurfaceFlinger to latch
@@ -244,12 +258,13 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # Display properties
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.demo.hdmirotationlock=false \
+    persist.sys.sf.color_saturation=1.0 \
     vendor.display.disable_inline_rotator=1 \
     vendor.display.enable_null_display=0 \
     vendor.display.disable_excl_rect=0 \
     vendor.display.comp_mask=0 \
     vendor.display.enable_default_color_mode=1 \
-    vendor.display.enable_optimize_refresh=1
+    vendor.display.enable_optimize_refresh=1 
 
 # Wi-Fi interface name
 PRODUCT_PROPERTY_OVERRIDES += \

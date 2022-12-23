@@ -44,7 +44,6 @@ persist.data.tethering_oc=1 \
 persist.data.wda.enable=true \
 persist.demo.hdmirotationlock=false \
 persist.sys.sf.color_mode=9 \
-persist.sys.sf.color_saturation=1.1 \
 persist.sys.sf.native_mode=2 \
 persist.sys.usb.config=none \
 persist.vendor.dbg.ims_volte_enable=1 \
