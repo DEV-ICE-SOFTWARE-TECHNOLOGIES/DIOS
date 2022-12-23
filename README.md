@@ -1,15 +1,12 @@
 # D!OS
 
+<p align="center">
 ![DIOS IMAGE](https://github.com/DEV-ICE-SOFTWARE-TECHNOLOGIES/DIOS/blob/main/DIOS.png)
 
-
-BUILD A.I. that makes Android for Humans with ease...
-
-Welcome to the Android Revolution!
+ANDROID BUILD A.I.
+</p>
 
 # WHAT DOES IT DO?
-
-Simple. 
 
 It does initialize preferred Android Code and Device Trees
 
