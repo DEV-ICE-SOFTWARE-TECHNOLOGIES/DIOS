@@ -24,7 +24,19 @@ android_app_import {
 	apk: "fork/pixel/system_ext/priv-app/SettingsGoogle/SettingsGoogle.apk",
 	presigned: true,
 	dex_preopt: {
-		enabled: false,
+		enabled: true,
+	},
+	privileged: true,
+	product_specific: true,
+}
+
+android_app_import {
+	name: "NexusLauncherRelease.apk",
+	owner: "dios",
+	apk: "fork/pixel/system_ext/priv-app/NexusLauncherRelease/NexusLauncherRelease.apk",
+	presigned: true,
+	dex_preopt: {
+		enabled: true,
 	},
 	privileged: true,
 	product_specific: true,
@@ -36,7 +48,7 @@ android_app_import {
 	apk: "fork/pixel/product/priv-app/PrebuiltGmsCore/PrebuiltGmsCoreSc.apk",
 	presigned: true,
 	dex_preopt: {
-		enabled: false,
+		enabled: true,
 	},
 	privileged: true,
 	product_specific: true,
@@ -48,7 +60,7 @@ android_app_import {
 	apk: "fork/pixel/product/app/GoogleCamera/GoogleCamera.apk",
 	presigned: true,
 	dex_preopt: {
-		enabled: false,
+		enabled: true,
 	},
 	privileged: true,
 	product_specific: true,
@@ -60,7 +72,7 @@ android_app_import {
 	apk: "fork/pixel/product/priv-app/AmbientSensePrebuilt/AmbientSensePrebuilt.apk",
 	presigned: true,
 	dex_preopt: {
-		enabled: false,
+		enabled: true,
 	},
 	privileged: true,
 	product_specific: true,
@@ -72,7 +84,7 @@ android_app_import {
 	apk: "fork/pixel/product/priv-app/Phonesky/Phonesky.apk",
 	presigned: true,
 	dex_preopt: {
-		enabled: false,
+		enabled: true,
 	},
 	privileged: true,
 	product_specific: true,
@@ -84,7 +96,7 @@ android_app_import {
 	apk: "fork/pixel/product/app/MarkupGoogle/MarkupGoogle.apk",
 	presigned: true,
 	dex_preopt: {
-		enabled: false,
+		enabled: true,
 	},
 	product_specific: true,
 }
@@ -95,7 +107,7 @@ android_app_import {
 	apk: "fork/pixel/product/app/talkback/talkback.apk",
 	presigned: true,
 	dex_preopt: {
-		enabled: false,
+		enabled: true,
 	},
 	product_specific: true,
 }
@@ -106,7 +118,7 @@ android_app_import {
 	apk: "fork/pixel/product/priv-app/Velvet/Velvet.apk",
 	presigned: true,
 	dex_preopt: {
-		enabled: false,
+		enabled: true,
 	},
 	privileged: true,
 	product_specific: true,
@@ -119,7 +131,7 @@ android_app_import {
 	overrides: ["Provision"],
 	presigned: true,
 	dex_preopt: {
-		enabled: false,
+		enabled: true,
 	},
 	privileged: true,
 	system_ext_specific: true,
