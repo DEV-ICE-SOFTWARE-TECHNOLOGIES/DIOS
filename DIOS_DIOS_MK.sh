@@ -19,7 +19,6 @@ cat <<\EOF >~/dios/device/sony/dios/dios.mk
 # --------------------------------------------------------------------------------------------------
 include $(CLEAR_VARS)
 
-BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
 DEXPREOPT_GENERATE_APEX_IMAGE := true
 DONT_DEXPREOPT_PREBUILTS := false
 TARGET_INCLUDE_WIFI_EXT := false
