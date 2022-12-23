@@ -106,10 +106,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.telephony.call_ring.multiple=false
 
-# System props for telephony System prop to turn on CdmaLTEPhone always
-PRODUCT_PROPERTY_OVERRIDES += \
-    telephony.lteOnCdmaDevice=0
-
 # debug.sf.latch_unsignaled
 # - This causes SurfaceFlinger to latch
 #   buffers even if their fences haven't signaled
