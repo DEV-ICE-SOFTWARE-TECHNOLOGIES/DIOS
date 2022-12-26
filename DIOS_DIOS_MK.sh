@@ -17,9 +17,9 @@ cat <<\EOF >~/dios/device/dios/dios.mk
 # --------------------------------------------------------------------------------------------------
 # Copyright (C) 2022 DEV ICE TECHNOLOGIES
 # --------------------------------------------------------------------------------------------------
-DIOS_PATH := device/dios
+DIOS_PATH := device/dios/dios
 
-#$(call inherit-product-if-exists, $(DIOS_PATH)/config.mk)
+$(call inherit-product-if-exists, $(DIOS_PATH)/config.mk)
 
 include $(CLEAR_VARS)
 
