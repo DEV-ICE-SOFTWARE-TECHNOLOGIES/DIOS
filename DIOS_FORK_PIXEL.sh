@@ -125,6 +125,6 @@ sudo umount system_ext
 
 wait
 
-popd
-
 sudo rm -rf $TMP
+
+popd
