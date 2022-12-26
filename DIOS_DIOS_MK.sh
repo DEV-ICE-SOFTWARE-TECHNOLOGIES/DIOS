@@ -17,6 +17,10 @@ cat <<\EOF >~/dios/device/dios/dios.mk
 # --------------------------------------------------------------------------------------------------
 # Copyright (C) 2022 DEV ICE TECHNOLOGIES
 # --------------------------------------------------------------------------------------------------
+DIOS_PATH := device/dios
+
+#$(call inherit-product-if-exists, $(DIOS_PATH)/config.mk)
+
 include $(CLEAR_VARS)
 
 DEXPREOPT_GENERATE_APEX_IMAGE := true
@@ -31,137 +35,6 @@ DEVICE_PACKAGE_OVERLAYS += \
 PRODUCT_DEXPREOPT_SPEED_APPS += \
     SystemUIGoogle \
     NexusLauncherRelease
-
-# product/app
-PRODUCT_PACKAGES += \
-    CalculatorGooglePrebuilt \
-    CalendarGooglePrebuilt \
-    CarrierMetrics \
-    Chrome \
-    Chrome-Stub \
-    DevicePolicyPrebuilt \
-    DiagnosticsToolPrebuilt \
-    GoogleCamera \
-    GoogleContacts \
-    GoogleContactsSyncAdapter \
-    GoogleTTS \
-    LatinIMEGooglePrebuilt \
-    LocationHistoryPrebuilt \
-    MarkupGoogle \
-    Photos \
-    PixelThemesStub \
-    PixelWallpapers2021 \
-    PrebuiltBugle \
-    PrebuiltDeskClockGoogle \
-    PrebuiltGoogleTelemetryTvp \
-    SoundAmplifierPrebuilt \
-    SoundPickerPrebuilt \
-    TrichromeLibrary \
-    TrichromeLibrary-Stub \
-    Tycho \
-    VZWAPNLib \
-    WebViewGoogle \
-    WebViewGoogle-Stub \
-    talkback
-
-# product/priv-app
-PRODUCT_PACKAGES += \
-    AmbientSensePrebuilt \
-    AndroidAutoStubPrebuilt \
-    AppDirectedSMSService \
-    BetterBug \
-    CarrierLocation \
-    CarrierServices \
-    CarrierWifi \
-    CbrsNetworkMonitor \
-    ConfigUpdater \
-    DCMO \
-    ConnMO \
-    DeviceIntelligenceNetworkPrebuilt \
-    DMService \
-    FilesPrebuilt \
-    GCS \
-    GoogleDialer \
-    GoogleOneTimeInitializer \
-    GoogleRestorePrebuilt \
-    HelpRtcPrebuilt \
-    ImsServiceEntitlement \
-    MaestroPrebuilt \
-    DevicePersonalizationPrebuiltPixel2021 \
-    MyVerizonServices \
-    OdadPrebuilt \
-    PartnerSetupPrebuilt \
-    Phonesky \
-    PrebuiltBugle \
-    PrebuiltGmsCoreSc \
-    SCONE \
-    SafetyHubPrebuilt \
-    ScribePrebuilt \
-    SecurityHubPrebuilt \
-    SettingsIntelligenceGooglePrebuilt \
-    SetupWizardPrebuilt \
-    Showcase \
-    SprintDM \
-    SprintHM \
-    TetheringEntitlement \
-    TurboPrebuilt \
-    USCCDM \
-    Velvet \
-    VzwOmaTrigger \
-    WellbeingPrebuilt \
-    WfcActivation
-
-# system/app
-PRODUCT_PACKAGES += \
-    GoogleExtShared \
-    GooglePrintRecommendationService
-
-# system/priv-app
-PRODUCT_PACKAGES += \
-    DocumentsUIGoogle \
-    GooglePackageInstaller \
-    TagGoogle
-
-# system_ext/app
-PRODUCT_PACKAGES += \
-    EmergencyInfoGoogleNoUi \
-    Flipendo
-
-# system_ext/priv-app
-PRODUCT_PACKAGES += \
-    CarrierSetup \
-    GoogleFeedback \
-    GoogleServicesFramework \
-    grilservice \
-    NexusLauncherRelease \
-    OBDM_Permissions \
-    obdm_stub \
-    PixelSetupWizard \
-    RilConfigService \
-    QuickAccessWallet \
-    StorageManagerGoogle \
-    TurboAdapter \
-    WallpaperPickerGoogleRelease
-
-PRODUCT_ENFORCE_RRO_TARGETS := *
-PRODUCT_PACKAGES += \
-    PixelDocumentsUIGoogleOverlay \
-    WifiOverlay \
-    GooglePermissionControllerOverlay \
-    GoogleWebViewOverlay \
-    PixelConfigOverlayCommon \
-    PixelConnectivityOverlay2020 \
-    PixelSetupWizard__auto_generated_rro_product \
-    PixelSetupWizardOverlay \
-    PixelSetupWizardOverlay2019 \
-    PixelTetheringOverlay \
-    SafetyRegulatoryInfo__auto_generated_rro_product \
-    SettingsGoogle__auto_generated_rro_product \
-    SettingsProvider__auto_generated_rro_product \
-    SimAppDialog__auto_generated_rro_product  \
-    StorageManagerGoogle__auto_generated_rro_product \
-    SystemUIGoogle__auto_generated_rro_product \
-    SystemUIGXOverlay 
     
 PRODUCT_PROPERTY_OVERRIDES += \
 persist.data.df.agg.dl_pkt=10 \

@@ -11,7 +11,7 @@ set -eu
 # --------------------------------------------------------------------------------------------------
 
 DOWNLOAD_DIR=~/dios/device/dios/pixel
-FORK_DIR=~/dios/device/dios/fork/pixel
+FORK_DIR=~/dios/device/dios/dios
 IMAGE_NAME=redfin-tq1a.221205.011-factory-20783ab0.zip
 IMAGE_FILE=$DOWNLOAD_DIR/$IMAGE_NAME
 PRODUCT=~/dios/device/dios/tmp/$(basename $IMAGE_NAME .zip)/product
@@ -23,8 +23,6 @@ TMP=~/dios/device/dios/tmp/$(basename $IMAGE_NAME .zip)
 echo ""
 echo "D!OS PIXEL FORK..."
 echo ""
-
-rm -rf ~/dios/device/dios/fork/ || true
 
 for dir in $FORK_DIR $DOWNLOAD_DIR; do
     if [ ! -d $dir ]; then
@@ -73,7 +71,6 @@ cp -rf $VENDOR $FORK_DIR || true
 rm -rf $FORK_DIR/product/app/SSRestartDetector || true
 rm -rf $FORK_DIR/product/priv-app/SprintDM || true
 rm -rf $FORK_DIR/product/priv-app/SprintHM || true
-rm -rf $FORK_DIR/product/etc/security || true
 rm -rf $FORK_DIR/product/etc/selinux || true
 rm -rf $FORK_DIR/product/etc/vintf || true
 rm -rf $FORK_DIR/product/media/audio/ui || true

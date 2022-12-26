@@ -195,9 +195,7 @@ _preparing() {
     echo -e "${GREEN}PREPARING D!OS..."
     echo ""
     wait
-    #zsh ./DIOS_ANDROID_MK.sh
-    wait
-    #zsh ./DIOS_ANDROID_BP.sh
+    zsh ./DIOS_ANDROID_MK.sh
     wait
     #zsh ./DIOS_COMMON_PROPS_MK.sh
     wait
@@ -205,7 +203,7 @@ _preparing() {
     wait
     #zsh ./DIOS_SYSPROP_MK.sh
     wait
-    #zsh ./DIOS_DIOS_MK.sh
+    zsh ./DIOS_DIOS_MK.sh
 
 }
 
@@ -220,7 +218,13 @@ _cleaning() {
         echo ""
         wait
         make installclean -j$(nproc)
-        rm -rf ~/dios/device/dios/fork
+        rm -rf ~/dios/device/dios/dios/product
+        rm -rf ~/dios/device/dios/dios/system
+        rm -rf ~/dios/device/dios/dios/system_ext
+        rm -rf ~/dios/device/dios/dios/vendor
+        cd ~/dios/device/dios/dios
+        git pull
+        cd ~/dios
         echo ""
         echo -e "${GREEN}D!OS OUTPUT AND FORKS CLEANED..."
         echo ""
@@ -232,7 +236,13 @@ _cleaning() {
         echo -e "${GREEN}CLEANING TARGETS..."
         echo ""
         wait
-        rm -rf ~/dios/device/dios/forks
+        rm -rf ~/dios/device/dios/dios/product
+        rm -rf ~/dios/device/dios/dios/system
+        rm -rf ~/dios/device/dios/dios/system_ext
+        rm -rf ~/dios/device/dios/dios/vendor
+        cd ~/dios/device/dios/dios
+        git pull
+        cd ~/dios
         echo ""
         echo -e "${GREEN}D!OS FORKS CLEANED..."
         echo ""
