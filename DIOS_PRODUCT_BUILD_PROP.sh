@@ -6,14 +6,14 @@ set -eu
 # Copyright © 2022 Marius Kopp
 # --------------------------------------------------------------------------------------------------
 
-if [ ! -d ~/dios/device/sony/dios/dios/product/etc ]; then
-    mkdir -p ~/dios/device/sony/dios/dios/product/etc
+if [ ! -d ~/dios/device/dios/dios/product/etc ]; then
+    mkdir -p ~/dios/device/dios/dios/product/etc
 fi
 
 echo ""
 echo "D!OS PRODUCT BUILD PROP..."
 echo ""
-cat <<\EOF >~/dios/device/sony/dios/dios/product/etc/build.prop
+cat <<\EOF >~/dios/device/dios/dios/product/etc/build.prop
 # D!OS
 ro.postinstall.fstab.prefix=/product
 ro.product.product.brand=google

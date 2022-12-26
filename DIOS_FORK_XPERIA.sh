@@ -10,16 +10,16 @@ set -eu
 # VARIABLES
 # --------------------------------------------------------------------------------------------------
 
-DOWNLOAD_DIR=~/dios/device/sony/dios/xperia
-FORK_DIR=~/dios/device/sony/dios/fork/xperia
+DOWNLOAD_DIR=~/dios/device/dios/xperia
+FORK_DIR=~/dios/device/dios/fork/xperia
 IMAGE_NAME=xperia.zip
 IMAGE_FILE=$DOWNLOAD_DIR/$IMAGE_NAME
-PRODUCT_A=~/dios/device/sony/dios/tmp/$(basename $IMAGE_NAME .zip)/product_a
-SYSTEM_EXT_A=~/dios/device/sony/dios/tmp/$(basename $IMAGE_NAME .zip)/system_ext_a
-SYSTEM_A=~/dios/device/sony/dios/tmp/$(basename $IMAGE_NAME .zip)/system_a
-SYSTEM_B=~/dios/device/sony/dios/tmp/$(basename $IMAGE_NAME .zip)/system_b
-VENDOR_A=~/dios/device/sony/dios/tmp/$(basename $IMAGE_NAME .zip)/vendor_a
-TMP=~/dios/device/sony/dios/tmp/$(basename $IMAGE_NAME .zip)
+PRODUCT_A=~/dios/device/dios/tmp/$(basename $IMAGE_NAME .zip)/product_a
+SYSTEM_EXT_A=~/dios/device/dios/tmp/$(basename $IMAGE_NAME .zip)/system_ext_a
+SYSTEM_A=~/dios/device/dios/tmp/$(basename $IMAGE_NAME .zip)/system_a
+SYSTEM_B=~/dios/device/dios/tmp/$(basename $IMAGE_NAME .zip)/system_b
+VENDOR_A=~/dios/device/dios/tmp/$(basename $IMAGE_NAME .zip)/vendor_a
+TMP=~/dios/device/dios/tmp/$(basename $IMAGE_NAME .zip)
 
 echo ""
 echo "D!OS XPERIA FORK..."

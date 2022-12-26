@@ -10,7 +10,7 @@ set -eu
 # VARIABLES
 # --------------------------------------------------------------------------------------------------
 
-DOWNLOAD_DIR=~/dios/device/sony/dios/dios/product/app/OpenCamera
+DOWNLOAD_DIR=~/dios/device/dios/dios/product/app/OpenCamera
 APP_NAME=opencamera/files/v_1_50_1/OpenCamera.apk
 APP_FILE=$DOWNLOAD_DIR/$APP_NAME
 

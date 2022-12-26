@@ -6,14 +6,14 @@ set -eu
 # Copyright © 2022 Marius Kopp
 # --------------------------------------------------------------------------------------------------
 
-if [ ! -d ~/dios/device/sony/dios/dios/system_ext/etc ]; then
-    mkdir -p ~/dios/device/sony/dios/dios/system_ext/etc
+if [ ! -d ~/dios/device/dios/dios/system_ext/etc ]; then
+    mkdir -p ~/dios/device/dios/dios/system_ext/etc
 fi
 
 echo ""
 echo "D!OS SYSTEM_EXT BUILD PROP..."
 echo ""
-cat <<\EOF >~/dios/device/sony/dios/dios/system_ext/etc/build.prop
+cat <<\EOF >~/dios/device/dios/dios/system_ext/etc/build.prop
 # D!OS
 ro.product.system_ext.brand=google
 ro.product.system_ext.device=coral

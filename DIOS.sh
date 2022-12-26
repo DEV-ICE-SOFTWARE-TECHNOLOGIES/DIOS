@@ -171,7 +171,7 @@ _initialize() {
     echo ""
 
     cat <<\EOF >device/sony/customization/customization.mk
-DIOS_PATH := device/sony/dios
+DIOS_PATH := device/dios
 $(call inherit-product-if-exists, $(DIOS_PATH)/dios.mk)
 EOF
 
@@ -220,7 +220,7 @@ _cleaning() {
         echo ""
         wait
         make installclean -j$(nproc)
-        rm -rf ~/dios/device/sony/dios/fork
+        rm -rf ~/dios/device/dios/fork
         echo ""
         echo -e "${GREEN}D!OS OUTPUT AND FORKS CLEANED..."
         echo ""
@@ -232,7 +232,7 @@ _cleaning() {
         echo -e "${GREEN}CLEANING TARGETS..."
         echo ""
         wait
-        rm -rf ~/dios/device/sony/dios/forks
+        rm -rf ~/dios/device/dios/forks
         echo ""
         echo -e "${GREEN}D!OS FORKS CLEANED..."
         echo ""
@@ -328,62 +328,50 @@ _patching() {
 _make() {
     wait
     echo ""
-    echo -e "${GREEN}START BUILDING D!OS"
+    echo -e "${GREEN}START BUILDING..."
     echo ""
     if $_aospbuild; then
-        mv ~/dios/device/sony/dios ~/dios/dios
+        wait
+        echo "AOSP..."
+        mv ~/dios/dios ~/dios/device/dios
+    else
+        echo "D!OS..."
     fi
     sudo mount --bind ~/.ccache /mnt/ccache
     wait
     make -j$(nproc)
     wait
+    if [ ! -d ~/dios/dist_output ]; then
+        mkdir -p ~/dios/dist_output
+    fi
+    make dist DIST_DIR=dist_output -j$(nproc) || true
+    wait
+    echo -e "${GREEN}FINISHED BUILDING..."
     if $_aospbuild; then
         wait
-        mv ~/dios/dios ~/dios/device/sony/dios
+        echo "AOSP..."
+        mv ~/dios/dios ~/dios/device/dios
+    else
+        echo "D!OS..."
     fi
     wait
+    echo ""
     read -k 1 "fastboot?DO YOU WANT TO FLASH D!OS VIA FASTBOOT?"
     echo
     if [[ "$fastboot" =~ ^[Yy]$ ]]; then
         zsh ./DIOS_FLASH_FASTBOOT.sh
     fi
-}
-
-# --------------------------------------------------------------------------------------------------
-# 9. ZIPPING
-# --------------------------------------------------------------------------------------------------
-
-_zip() {
-    if $_zipping; then
-        echo ""
-        echo -e "${GREEN}ZIPPING D!OS..."
-        echo ""
-        if $_aospbuild; then
-            mv ~/dios/device/sony/dios ~/dios/dios
-        fi
-        sudo mount --bind ~/.ccache /mnt/ccache
-        wait
-        if [ ! -d ~/dios/dist_output ]; then
-            mkdir -p ~/dios/dist_output
-        fi
-        make dist DIST_DIR=dist_output -j$(nproc)
-        wait
-        if $_aospbuild; then
-            wait
-            mv ~/dios/dios ~/dios/device/sony/dios
-        fi
-        wait
-        read -k 1 "adb?DO YOU WANT TO FLASH D!OS VIA ADB?"
-        echo
-        if [[ "$adb" =~ ^[Yy]$ ]]; then
-            zsh ./DIOS_FLASH_ADB.sh
-        fi
-        wait
+    wait
+    read -k 1 "adb?DO YOU WANT TO FLASH D!OS VIA ADB?"
+    echo
+    if [[ "$adb" =~ ^[Yy]$ ]]; then
+        zsh ./DIOS_FLASH_ADB.sh
     fi
+    wait
 }
 
 # --------------------------------------------------------------------------------------------------
-# 10. BUILD ORDER
+# 9. BUILD ORDER
 # --------------------------------------------------------------------------------------------------
 
 _build() {
@@ -393,11 +381,10 @@ _build() {
     _repo_update
     _patching
     _make
-    _zip
 }
 
 # --------------------------------------------------------------------------------------------------
-# 11. A.I. FLAGS
+# 10. A.I. FLAGS
 # --------------------------------------------------------------------------------------------------
 
 declare _shell_script=${0##*/}
@@ -412,7 +399,6 @@ declare _forkxperia="false"
 declare _update="false"
 declare _patch="false"
 declare _init="false"
-declare _zipping="false"
 
 while (("$#")); do
     case $1 in
@@ -460,10 +446,6 @@ while (("$#")); do
         _init="true"
         shift
         ;;
-    -z | --zipping)
-        _zipping="true"
-        shift
-        ;;
     -h | --help)
         _help
         exit 0
@@ -476,7 +458,7 @@ while (("$#")); do
 done
 
 # --------------------------------------------------------------------------------------------------
-# 12. BUILD OR INIT
+# 11. BUILD OR INIT
 # --------------------------------------------------------------------------------------------------
 
 if $_init; then

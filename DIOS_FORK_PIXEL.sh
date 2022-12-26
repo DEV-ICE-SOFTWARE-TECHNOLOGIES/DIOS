@@ -10,21 +10,21 @@ set -eu
 # VARIABLES
 # --------------------------------------------------------------------------------------------------
 
-DOWNLOAD_DIR=~/dios/device/sony/dios/pixel
-FORK_DIR=~/dios/device/sony/dios/fork/pixel
+DOWNLOAD_DIR=~/dios/device/dios/pixel
+FORK_DIR=~/dios/device/dios/fork/pixel
 IMAGE_NAME=redfin-tq1a.221205.011-factory-20783ab0.zip
 IMAGE_FILE=$DOWNLOAD_DIR/$IMAGE_NAME
-PRODUCT=~/dios/device/sony/dios/tmp/$(basename $IMAGE_NAME .zip)/product
-SYSTEM_EXT=~/dios/device/sony/dios/tmp/$(basename $IMAGE_NAME .zip)/system_ext
-SYSTEM=~/dios/device/sony/dios/tmp/$(basename $IMAGE_NAME .zip)/system
-VENDOR=~/dios/device/sony/dios/tmp/$(basename $IMAGE_NAME .zip)/vendor
-TMP=~/dios/device/sony/dios/tmp/$(basename $IMAGE_NAME .zip)
+PRODUCT=~/dios/device/dios/tmp/$(basename $IMAGE_NAME .zip)/product
+SYSTEM_EXT=~/dios/device/dios/tmp/$(basename $IMAGE_NAME .zip)/system_ext
+SYSTEM=~/dios/device/dios/tmp/$(basename $IMAGE_NAME .zip)/system
+VENDOR=~/dios/device/dios/tmp/$(basename $IMAGE_NAME .zip)/vendor
+TMP=~/dios/device/dios/tmp/$(basename $IMAGE_NAME .zip)
 
 echo ""
 echo "D!OS PIXEL FORK..."
 echo ""
 
-rm -rf ~/dios/device/sony/dios/fork/ || true
+rm -rf ~/dios/device/dios/fork/ || true
 
 for dir in $FORK_DIR $DOWNLOAD_DIR; do
     if [ ! -d $dir ]; then

@@ -6,14 +6,14 @@ set -eu
 # Copyright © 2022 Marius Kopp
 # --------------------------------------------------------------------------------------------------
 
-if [ ! -d ~/dios/device/sony/dios/dios/vendor ]; then
-    mkdir -p ~/dios/device/sony/dios/dios/vendor
+if [ ! -d ~/dios/device/dios/dios/vendor ]; then
+    mkdir -p ~/dios/device/dios/dios/vendor
 fi
 
 echo ""
 echo "D!OS VENDOR BUILD PROP..."
 echo ""
-cat <<\EOF >~/dios/device/sony/dios/dios/vendor/dios.prop
+cat <<\EOF >~/dios/device/dios/dios/vendor/dios.prop
 # D!OS
 ro.product.vendor.brand=google
 ro.product.vendor.device=coral

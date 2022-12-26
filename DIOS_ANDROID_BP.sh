@@ -6,14 +6,14 @@ set -eu
 # Copyright (C) 2022 DEV ICE TECHNOLOGIES
 # --------------------------------------------------------------------------------------------------
 
-if [ ! -d ~/dios/device/sony/dios ]; then
-    mkdir -p ~/dios/device/sony/dios
+if [ ! -d ~/dios/device/dios ]; then
+    mkdir -p ~/dios/device/dios
 fi
 
 echo ""
 echo "D!OS ANDROID BP..."
 echo ""
-cat <<\EOF >~/dios/device/sony/dios/Android.bp
+cat <<\EOF >~/dios/device/dios/Android.bp
 /*
  * Copyright (C) 2022 DEV ICE TECHNOLOGIES
  */

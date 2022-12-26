@@ -52,16 +52,7 @@ cat <<\EOF >../dios/.repo/local_manifests/dios_add.xml
 <manifest>
 <remote name="DIOS" fetch="https://github.com/DEV-ICE-SOFTWARE-TECHNOLOGIES/" />
 
-<project path="device/sony/dios/dios" name="DIOS-ESSENTIALS" groups="device" remote="DIOS" revision="main" />
-<project path="device/sony/dios/overlay" name="DIOS-OVERLAY" groups="device" remote="DIOS" revision="main" />
-</manifest>
-EOF
-
-cat <<\EOF >../dios/.repo/local_manifests/dios_external.xml
-<?xml version="1.0" encoding="UTF-8"?>
-<manifest>
-<remote name="qcom" fetch="https://github.com/LineageOS/" />
-
-<project path="vendor/qcom/opensource/data-ipacfg-mgr" name="android_vendor_qcom_opensource_data-ipa-cfg-mgr" groups="device" remote="qcom" revision="lineage-20.0" />
+<project path="device/dios/dios" name="DIOS-ESSENTIALS" groups="device" remote="DIOS" revision="main" />
+<project path="device/dios/overlay" name="DIOS-OVERLAY" groups="device" remote="DIOS" revision="main" />
 </manifest>
 EOF
