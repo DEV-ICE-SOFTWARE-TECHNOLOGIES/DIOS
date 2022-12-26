@@ -26,6 +26,7 @@ WITH_DEXPREOPT := true
 
 PRODUCT_DEXPREOPT_SPEED_APPS += \
     SystemUI \
+    SystemUIGoogle \
     NexusLauncherRelease
     
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -149,32 +150,6 @@ vendor.display.enable_default_color_mode=1 \
 vendor.display.enable_null_display=0 \
 vendor.display.enable_optimize_refresh=1 \
 masterclear.allow_retain_esim_profiles_after_fdr=true \
-ro.boot.vendor.overlay.theme=com.android.internal.systemui.navbar.twobutton;com.google.android.systemui.gxoverlay 
-
-DEVICE_PACKAGE_OVERLAYS += \
-    device/sony/dios/overlay
-
-PRODUCT_PACKAGES += \
-    AmbientSensePrebuilt \
-    AndroidAutoStub \
-    com.google.android.dialer.support \
-    GoogleCalendarSyncAdapter \
-    GoogleCamera \
-    GoogleContactsSyncAdapter \
-    GoogleFeedback \
-    GooglePartnerSetup \
-    GoogleRestore \
-    GoogleServicesFramework \
-    GoogleSettings \
-    MarkupGoogle \
-    Phonesky \
-    PixelSetupWizard \
-    PrebuiltExchange3Google \
-    PrebuiltGmsCoreSc \
-    talkback \
-    SystemUIGoogle \
-    Velvet 
-
-#PRODUCT_SYSTEM_EXT_PROPERTIES += ro.lockscreen.disable.default=1
+ro.boot.vendor.overlay.theme=com.android.internal.systemui.navbar.twobutton;com.google.android.systemui.gxoverlay
 
 EOF
