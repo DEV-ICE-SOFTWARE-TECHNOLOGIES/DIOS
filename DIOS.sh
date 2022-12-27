@@ -257,7 +257,21 @@ _cleaning() {
 }
 
 # --------------------------------------------------------------------------------------------------
-# 5. FORKING
+# 5. UPDATE
+# --------------------------------------------------------------------------------------------------
+
+_repo_update() {
+    if $_update; then
+        echo ""
+        echo -e "${GREEN}REPO SYNC AND REPO UPDATE..."
+        echo ""
+        repo sync -j$(nproc)
+        bash ./repo_update.sh
+    fi
+}
+
+# --------------------------------------------------------------------------------------------------
+# 6. FORKING
 # --------------------------------------------------------------------------------------------------
 
 _forking() {
@@ -287,20 +301,6 @@ _forking() {
         wait
         #zsh ./DIOS_XPERIA_FORK.sh
         wait
-    fi
-}
-
-# --------------------------------------------------------------------------------------------------
-# 6. UPDATE
-# --------------------------------------------------------------------------------------------------
-
-_repo_update() {
-    if $_update; then
-        echo ""
-        echo -e "${GREEN}REPO SYNC AND REPO UPDATE..."
-        echo ""
-        repo sync -j$(nproc)
-        bash ./repo_update.sh
     fi
 }
 
@@ -337,7 +337,10 @@ _make() {
     if $_aospbuild; then
         wait
         echo "AOSP..."
-        mv ~/dios/dios ~/dios/device/dios
+    cat <<\EOF >device/sony/customization/customization.mk
+DIOS_PATH := device/dios
+#$(call inherit-product-if-exists, $(DIOS_PATH)/DIOS.mk)
+EOF
     else
         echo "D!OS..."
     fi
@@ -354,7 +357,10 @@ _make() {
     if $_aospbuild; then
         wait
         echo "AOSP..."
-        mv ~/dios/dios ~/dios/device/dios
+    cat <<\EOF >device/sony/customization/customization.mk
+DIOS_PATH := device/dios
+$(call inherit-product-if-exists, $(DIOS_PATH)/DIOS.mk)
+EOF
     else
         echo "D!OS..."
     fi
@@ -381,8 +387,8 @@ _make() {
 _build() {
     _preparing
     _cleaning
-    _forking
     _repo_update
+    _forking
     _patching
     _make
 }
@@ -400,9 +406,9 @@ declare _forkall="false"
 declare _forkdios="false"
 declare _forkpixel="false"
 declare _forkxperia="false"
-declare _update="false"
-declare _patch="false"
 declare _init="false"
+declare _patch="false"
+declare _update="false"
 
 while (("$#")); do
     case $1 in
@@ -438,16 +444,16 @@ while (("$#")); do
         _forkxperia="true"
         shift
         ;;
-    -u | --update)
-        _update="true"
+    -i | --init)
+        _init="true"
         shift
         ;;
     -p | --patch)
         _patch="true"
         shift
         ;;
-    -i | --init)
-        _init="true"
+    -u | --update)
+        _update="true"
         shift
         ;;
     -h | --help)
