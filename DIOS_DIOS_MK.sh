@@ -13,13 +13,13 @@ fi
 echo ""
 echo "D!OS DIOS MK..."
 echo ""
-cat <<\EOF >~/dios/device/dios/dios.mk
+cat <<\EOF >~/dios/device/dios/DIOS.mk
 # --------------------------------------------------------------------------------------------------
 # Copyright (C) 2022 DEV ICE TECHNOLOGIES
 # --------------------------------------------------------------------------------------------------
 DIOS_PATH := device/dios/dios
 
-$(call inherit-product-if-exists, $(DIOS_PATH)/config.mk)
+$(call inherit-product-if-exists, $(DIOS_PATH)/fork.mk)
 
 include $(CLEAR_VARS)
 

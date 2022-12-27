@@ -172,7 +172,7 @@ _initialize() {
 
     cat <<\EOF >device/sony/customization/customization.mk
 DIOS_PATH := device/dios
-$(call inherit-product-if-exists, $(DIOS_PATH)/dios.mk)
+$(call inherit-product-if-exists, $(DIOS_PATH)/DIOS.mk)
 EOF
 
     zsh ./DIOS_MANIFEST_XMLS.sh
