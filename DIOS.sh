@@ -195,15 +195,14 @@ _preparing() {
     echo -e "${GREEN}PREPARING D!OS..."
     echo ""
     wait
-    zsh ./DIOS_ANDROID_MK.sh
+    zsh ./DIOS_DIOS_MK.sh
     wait
     zsh ./DIOS_COMMON_PROPS_MK.sh
     wait
     #zsh ./DIOS_SAGAMI_PLATFORM_MK.sh
     wait
     #zsh ./DIOS_SYSPROP_MK.sh
-    wait
-    zsh ./DIOS_DIOS_MK.sh
+
 
 }
 
