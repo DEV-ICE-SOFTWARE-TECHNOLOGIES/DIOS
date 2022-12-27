@@ -222,9 +222,6 @@ _cleaning() {
         rm -rf ~/dios/device/dios/dios/system
         rm -rf ~/dios/device/dios/dios/system_ext
         rm -rf ~/dios/device/dios/dios/vendor
-        cd ~/dios/device/dios/dios
-        git pull
-        cd ~/dios
         echo ""
         echo -e "${GREEN}D!OS OUTPUT AND FORKS CLEANED..."
         echo ""
@@ -240,9 +237,6 @@ _cleaning() {
         rm -rf ~/dios/device/dios/dios/system
         rm -rf ~/dios/device/dios/dios/system_ext
         rm -rf ~/dios/device/dios/dios/vendor
-        cd ~/dios/device/dios/dios
-        git pull
-        cd ~/dios
         echo ""
         echo -e "${GREEN}D!OS FORKS CLEANED..."
         echo ""
