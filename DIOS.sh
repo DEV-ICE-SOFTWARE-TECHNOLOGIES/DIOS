@@ -197,7 +197,7 @@ _preparing() {
     wait
     zsh ./DIOS_ANDROID_MK.sh
     wait
-    #zsh ./DIOS_COMMON_PROPS_MK.sh
+    zsh ./DIOS_COMMON_PROPS_MK.sh
     wait
     #zsh ./DIOS_SAGAMI_PLATFORM_MK.sh
     wait
