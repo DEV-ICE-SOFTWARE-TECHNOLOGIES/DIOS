@@ -19,9 +19,9 @@ cat <<\EOF >~/dios/device/dios/DIOS.mk
 # --------------------------------------------------------------------------------------------------
 DIOS_PATH := device/dios/dios
 
-$(call inherit-product-if-exists, $(DIOS_PATH)/fork.mk)
-
 include $(CLEAR_VARS)
+
+$(call inherit-product-if-exists, $(DIOS_PATH)/fork.mk)
 
 DEXPREOPT_GENERATE_APEX_IMAGE := true
 DONT_DEXPREOPT_PREBUILTS := false
