@@ -1,6 +1,6 @@
-#!/bin/zsh
+#!/usr/bin/env bash
 
-set -eu
+set -euv
 
 # --------------------------------------------------------------------------------------------------
 # Copyright (C) 2022 DEV ICE TECHNOLOGIES
