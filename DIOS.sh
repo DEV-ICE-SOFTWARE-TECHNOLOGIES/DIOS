@@ -2,14 +2,22 @@
 
 set -euv
 
-_help() {
-    echo "Visit the DIOS ReadMe on GitHub!"
-    echo " "
-}
+  echo -e "${BGWHITE}"
+  echo " █▀▄ █ ▄▀▄ ▄▀▀    ██▄ █ █ █ █   █▀▄    ▄▀▄ █ "
+  echo " █▄▀ █ ▀▄▀ ▄█▀    █▄█ ▀▄█ █ █▄▄ █▄▀    █▀█ █ "
+  echo -e "${NOCOLOR}"
+  echo "INSTALLER"
+  echo ""
 
 img2txt ~/dios/dios.png
 
 source ./config.cfg
+
+_help() {
+    echo "Visit the DIOS ReadMe on GitHub!"
+    xdg-open https://github.com/DEV-ICE-SOFTWARE-TECHNOLOGIES/DIOS/blob/main/README.md
+    echo " "
+}
 
 _initialize() {
     # Read the value of the variable from the config file
