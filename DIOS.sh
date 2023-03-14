@@ -1,10 +1,12 @@
-#!/usr/bin/env bash
+#!/usr/bin/env bash -i
 
 set -euv
 
 source ./config.cfg
 
-img2txt ~/dios/DIOS.png
+DIOS_PATH=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+img2txt $DIOS_PATH/DIOS.png
 
 echo -e "${BGBLACK}"
 echo " █▀▄ █ ▄▀▄ ▄▀▀    ██▄ █ █ █ █   █▀▄    ▄▀▄ █ "
@@ -31,18 +33,12 @@ _initialize() {
         echo "INSTALLING DEPENDENCIES..."
         echo ""
         
-        if [ ! -d ~/dios ]; then
-            mkdir ~/dios
-        fi
-        
-        cd ~/dios
-        
         sudo apt-get install git-core gnupg flex bison build-essential zip curl zlib1g-dev gcc-multilib g++-multilib libc6-dev-i386 libncurses5 lib32ncurses5-dev x11proto-core-dev libx11-dev lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc unzip fontconfig python-is-python3 ccache
         
         sudo apt update
         
         reqSpace=400000000
-        availSpace=$(df "$HOME" | awk 'NR==2 { print $4 }')
+        availSpace=$(df "$DIOS_PATH" | awk 'NR==2 { print $4 }')
         if ((availSpace < reqSpace)); then
             echo -e "${RED}NOT ENOUGH FREE SPACE!" >&2
             exit 1
@@ -94,8 +90,6 @@ _initialize() {
         
         git config --global user.name $NAME
         
-        cd ~/dios
-        
         repo init -u $REPO -b $BRANCH
         
         bash ./DIOS_MANIFEST_XMLS.sh
@@ -134,7 +128,7 @@ _cleaning() {
         echo ""
         wait
         make installclean -j$(nproc)
-        rm -rf $FORK_DIR
+        rm -rf $DIOS_FORKS
         echo ""
         echo -e "${GREEN}D!OS OUTPUT AND FORKS CLEANED..."
         echo ""
@@ -146,7 +140,7 @@ _cleaning() {
         echo -e "${GREEN}CLEANING TARGETS..."
         echo ""
         wait
-        rm -rf $FORK_DIR
+        rm -rf $DIOS_FORKS
         echo ""
         echo -e "${GREEN}D!OS FORKS CLEANED..."
         echo ""
@@ -233,8 +227,8 @@ _make() {
     wait
     make -j$(nproc)
     wait
-    if [ ! -d ~/dios/dist_output ]; then
-        mkdir -p ~/dios/dist_output
+    if [ ! -d $DIOS_PATH/dist_output ]; then
+        mkdir -p $DIOS_PATH/dist_output
     fi
     make dist DIST_DIR=dist_output -j$(nproc) || true
     wait
