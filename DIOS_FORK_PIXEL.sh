@@ -1,48 +1,39 @@
-#!/usr/bin/env bash
+#!/usr/bin/env bash -i
+##################################
+## Copyright © 2023 Marius Kopp ##
+##################################
 
-set -euv
+set -eu
 
-DOWNLOAD_DIR=~/dios/device/dios/pixel
-FORK_DIR=~/dios/device/dios/dios
-IMAGE_NAME=
-PRODUCT=~/dios/device/dios/tmp/$(basename $IMAGE_NAME .zip)/product
-SYSTEM_EXT=~/dios/device/dios/tmp/$(basename $IMAGE_NAME .zip)/system_ext
-SYSTEM=~/dios/device/dios/tmp/$(basename $IMAGE_NAME .zip)/system
-VENDOR=~/dios/device/dios/tmp/$(basename $IMAGE_NAME .zip)/vendor
-TMP=~/dios/device/dios/tmp/$(basename $IMAGE_NAME .zip)
+source ./ADIOS.cfg
 
 echo ""
 echo "D!OS PIXEL FORK..."
 echo ""
 
-# List available downloads
-echo "Available downloads:"
-wget -qO- https://developers.google.com/android/images | grep -E 'a href=".+factory.*\.zip"' | cut -d '"' -f 2 | sort -r | while read -r url; do
-    filename=$(basename "$url")
-    echo " - $filename"
-done
-echo ""
+if [ ! -d $PIXEL_FORKS ]; then
+    mkdir -p $PIXEL_FORKS
+fi
 
-# Prompt user to choose from the available downloads
-echo "Choose a firmware to download and extract:"
-read -r filename
-IMAGE_NAME=$filename
-
-# Download firmware if not already downloaded
-if [ ! -f "$DOWNLOAD_DIR/$IMAGE_NAME" ]; then
-    echo "Downloading firmware..."
-    pushd "$DOWNLOAD_DIR" >/dev/null
-    wget -q "https://dl.google.com/dl/android/aosp/$IMAGE_NAME"
+if [ ! -f $IMAGE_FILE ]; then
+    kdialog --title "DIOS A.I. FORK" --yesno "DO YOU WANT TO DOWNLOAD $PIXEL_IMAGE ?"
+    if [[ $? -ne 0 ]]; then
+        exit 1
+    fi
+    pushd "$PIXEL_FORKS" >/dev/null
+    wget "https://dl.google.com/dl/android/aosp/$PIXEL_IMAGE"
     popd >/dev/null
 fi
 
-# Extract firmware to temporary directory
 if [ -d "$TMP" ]; then
+kdialog --title "DIOS A.I. FORK" --passivepopup "DIOS A.I. REQUIRES ROOT!"
     sudo rm -rf "$TMP"
 fi
+
 mkdir -p "$TMP"
 pushd "$TMP" >/dev/null
-sudo unzip -p "$DOWNLOAD_DIR/$IMAGE_NAME" "*/image*" >image.zip
+kdialog --title "DIOS A.I. FORK" --passivepopup "DIOS A.I. REQUIRES ROOT!"
+sudo unzip -p "$PIXEL_FORKS/$PIXEL_IMAGE" "*/image*" >image.zip
 sudo unzip -qq image.zip product.img system.img vendor.img system_ext.img
 mkdir product
 sudo mount -o ro product.img product
@@ -54,22 +45,18 @@ mkdir system_ext
 sudo mount -o ro system_ext.img system_ext
 popd >/dev/null
 
-# Copy firmware files to fork directory
-echo ""
-echo "Preparing firmware for forking..."
-echo ""
-cp -rf "$PRODUCT" "$FORK_DIR" || true
-cp -rf "$SYSTEM" "$FORK_DIR" || true
-cp -rf "$SYSTEM_EXT" "$FORK_DIR" || true
-cp -rf "$VENDOR" "$FORK_DIR" || true
+wait
 
-# Clean up temporary directory and unmount partitions
+echo ""
+echo "PREPARING PIXEL FIRMWARE..."
+echo ""
+cp -rf "$PRODUCT" "$PIXEL_FORKS" || true
+cp -rf "$SYSTEM" "$PIXEL_FORKS" || true
+cp -rf "$SYSTEM_EXT" "$PIXEL_FORKS" || true
+cp -rf "$VENDOR" "$PIXEL_FORKS" || true
+
 sudo umount product
 sudo umount system
 sudo umount vendor
 sudo umount system_ext
 sudo rm -rf "$TMP"
-
-echo ""
-echo "Firmware forking complete."
-echo ""

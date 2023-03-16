@@ -2,14 +2,16 @@
 
 set -euv
 
-if [ ! -d ~/dios/.repo/local_manifests ]; then
-    mkdir -p ~/dios/.repo/local_manifests
+DIOS_PATH=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+if [ ! -d $DIOS_PATH/.repo/local_manifests ]; then
+    mkdir -p $DIOS_PATH/.repo/local_manifests
 fi
 
 echo ""
 echo "D!OS MANIFEST XMLS..."
 echo ""
-cat <<\EOF >../dios/.repo/local_manifests/dios_clean.xml
+cat <<\EOF >$DIOS_PATH/.repo/local_manifests/dios_clean.xml
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
 
@@ -43,7 +45,7 @@ cat <<\EOF >../dios/.repo/local_manifests/dios_clean.xml
 </manifest>
 EOF
 
-cat <<\EOF >../dios/.repo/local_manifests/dios_add.xml
+cat <<\EOF >$DIOS_PATH/.repo/local_manifests/dios_add.xml
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
 <remote name="DIOS" fetch="https://github.com/DEV-ICE-SOFTWARE-TECHNOLOGIES/" />

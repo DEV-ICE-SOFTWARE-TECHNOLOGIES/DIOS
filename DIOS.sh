@@ -1,10 +1,11 @@
 #!/usr/bin/env bash -i
+##################################
+## Copyright © 2023 Marius Kopp ##
+##################################
 
-set -euv
+set -eu
 
 source ./ADIOS.cfg
-
-DIOS_PATH=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 img2txt $DIOS_PATH/DIOS.png
 
@@ -12,7 +13,6 @@ echo -e "${BGBLACK}"
 echo " █▀▄ █ ▄▀▄ ▄▀▀    ██▄ █ █ █ █   █▀▄    ▄▀▄ █ "
 echo " █▄▀ █ ▀▄▀ ▄█▀    █▄█ ▀▄█ █ █▄▄ █▄▀    █▀█ █ "
 echo -e "${NOCOLOR}"
-echo "INSTALLER"
 echo ""
 
 _help() {
@@ -23,34 +23,35 @@ _help() {
 
 _initialize() {
     # Read the value of the variable from the config file
-    INITIALIZED=$(grep "^INITIALIZED=" config.cfg)
-    
+    INITIALIZED=$(grep "^INITIALIZED=" $DIOS_PATH/ADIOS.cfg)
+
     # If the variable is not set or set to false, set it to true after the init
     if [ -z "$INITIALIZED" ] || [ "$INITIALIZED" = "INITIALIZED=false" ]; then
-        
+
         echo ""
         echo ""
         echo "INSTALLING DEPENDENCIES..."
         echo ""
-        
+
+        kdialog --title "DIOS A.I. INIT" --passivepopup "DIOS A.I. REQUIRES ROOT!"
         sudo apt-get install git-core gnupg flex bison build-essential zip curl zlib1g-dev gcc-multilib g++-multilib libc6-dev-i386 libncurses5 lib32ncurses5-dev x11proto-core-dev libx11-dev lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc unzip fontconfig python-is-python3 ccache
-        
+
         sudo apt update
-        
+
         reqSpace=400000000
         availSpace=$(df "$DIOS_PATH" | awk 'NR==2 { print $4 }')
         if ((availSpace < reqSpace)); then
             echo -e "${RED}NOT ENOUGH FREE SPACE!" >&2
             exit 1
         fi
-        
+
         if [ ! -d ~/bin ]; then
             mkdir -p ~/bin
         fi
-        
+
         curl http://commondatastorage.googleapis.com/git-repo-downloads/repo >~/bin/repo
         chmod a+x ~/bin/repo
-        
+
         # Add Flags to .bashrc if they doesn't already exist
         if ! grep -qxF '# DIOS' ~/.bashrc; then
             echo '' >>~/.bashrc
@@ -62,54 +63,54 @@ _initialize() {
             echo 'export ALLOW_MISSING_DEPENDENCIES=true' >>~/.bashrc
         fi
         wait
-        
+
         source ~/.bashrc
-        
+
         # Check if /mnt/ccache exists, create if it doesn't
         if [ ! -d /mnt/ccache ]; then
             sudo mkdir /mnt/ccache
         fi
-        
+
         # Check if ~/.ccache exists, create if it doesn't
         if [ ! -d ~/.ccache ]; then
             mkdir ~/.ccache
         fi
-        
+
         # Add mount command to /etc/fstab if it doesn't already exist
         if ! grep -qxF '~/.ccache /mnt/ccache none defaults,bind,users,noauto 0' /etc/fstab; then
             echo '~/.ccache /mnt/ccache none defaults,bind,users,noauto 0' | sudo tee -a /etc/fstab >/dev/null
             echo '' >>~/.profile
             echo 'export mount /mnt/ccache' >>~/.profile
         fi
-        
+
         sudo mount -a
-        
+
         sudo ccache -M 50G -F 0
-        
+
         git config --global user.email $EMAIL
-        
+
         git config --global user.name $NAME
-        
+
         repo init -u $REPO -b $BRANCH
-        
+
         bash ./DIOS_MANIFEST_XMLS.sh
-        
+
         repo sync -j$(nproc)
-        
+
         echo ""
         echo -e "${RED}PREPARED! RESTART THE SCRIPT TO START BUILDING..."
-        
+
         # Set the variable to true in the config file
-        sed -i 's/^INITIALIZED=.*/INITIALIZED=true/' config.cfg
-        
+        sed -i 's/^INITIALIZED=.*/INITIALIZED=true/' $DIOS_PATH/ADIOS.cfg
+
         exit
-        
+
     else
-        
+
         exit
-        
+
     fi
-    
+
 }
 
 _preparing() {
@@ -117,8 +118,13 @@ _preparing() {
     echo -e "${GREEN}PREPARING D!OS..."
     echo ""
     wait
-    #bash ./DIOS_SYSPROP_MK.sh
-    
+    if $_aospbuild; then
+        # Default Build IDs
+        sed -i 's/^BUILD_DESC :=.*/BUILD_DESC := $(TARGET_PRODUCT)-$(TARGET_BUILD_VARIANT) $(PLATFORM_VERSION) $(BUILD_ID) $(BUILD_NUMBER_FROM_FILE) $(BUILD_VERSION_TAGS)/' $DIOS_PATH/build/core/sysprop.mk
+    else
+        # DIOS Build IDs
+        sed -i 's/^BUILD_DESC :=.*/BUILD_DESC := DIOS - $(TARGET_PRODUCT)-$(TARGET_BUILD_VARIANT) $(PLATFORM_VERSION) $(BUILD_ID) $(BUILD_NUMBER_FROM_FILE) $(BUILD_VERSION_TAGS)/' $DIOS_PATH/build/core/sysprop.mk
+    fi
 }
 
 _cleaning() {
@@ -128,13 +134,13 @@ _cleaning() {
         echo ""
         wait
         make installclean -j$(nproc)
-        rm -rf $DIOS_FORKS
+        rm -rf $DIOS_PATH/$DIOS_FORKS
         echo ""
         echo -e "${GREEN}D!OS OUTPUT AND FORKS CLEANED..."
         echo ""
         wait
     fi
-    
+
     if $_cleanforks; then
         echo ""
         echo -e "${GREEN}CLEANING TARGETS..."
@@ -146,7 +152,7 @@ _cleaning() {
         echo ""
         wait
     fi
-    
+
     if $_cleanout; then
         echo ""
         echo -e "${GREEN}CLEANING TARGETS..."
@@ -179,19 +185,19 @@ _forking() {
         #bash ./DIOS_FORK_XPERIA.sh
         wait
     fi
-    
+
     if $_forkdios; then
         wait
         bash ./DIOS_OPEN_CAMERA.sh
         wait
     fi
-    
+
     if $_forkpixel; then
         wait
-        bash ./DIOS_PIXEL_FORK.sh
+        bash ./DIOS_FORK_PIXEL.sh
         wait
     fi
-    
+
     if $_forkxperia; then
         wait
         #bash ./DIOS_XPERIA_FORK.sh
@@ -222,8 +228,7 @@ _make() {
     echo -e "${GREEN}START BUILDING..."
     echo ""
     echo "D!OS..."
-    
-    sudo mount --bind ~/.ccache /mnt/ccache
+
     wait
     make -j$(nproc)
     wait
@@ -290,25 +295,25 @@ _usage() {
 
 while [[ $# -gt 0 ]]; do
     case $1 in
-        -ab | --aospbuild) _aospbuild=true ;;
-        -ca | --cleanall) _cleanall=true ;;
-        -cf | --cleanforks) _cleanforks=true ;;
-        -co | --cleanout) _cleanout=true ;;
-        -fa | --forkall) _forkall=true ;;
-        -fd | --forkdios) _forkdios=true ;;
-        -fp | --forkpixel) _forkpixel=true ;;
-        -fx | --forkxperia) _forkxperia=true ;;
-        -i | --init) _init=true ;;
-        -p | --patch) _patch=true ;;
-        -u | --update) _update=true ;;
-        -h | --help)
-            _usage
-            exit 0
+    -ab | --aospbuild) _aospbuild=true ;;
+    -ca | --cleanall) _cleanall=true ;;
+    -cf | --cleanforks) _cleanforks=true ;;
+    -co | --cleanout) _cleanout=true ;;
+    -fa | --forkall) _forkall=true ;;
+    -fd | --forkdios) _forkdios=true ;;
+    -fp | --forkpixel) _forkpixel=true ;;
+    -fx | --forkxperia) _forkxperia=true ;;
+    -i | --init) _init=true ;;
+    -p | --patch) _patch=true ;;
+    -u | --update) _update=true ;;
+    -h | --help)
+        _usage
+        exit 0
         ;;
-        *)
-            echo "Invalid option: $1" >&2
-            _usage
-            exit 1
+    *)
+        echo "Invalid option: $1" >&2
+        _usage
+        exit 1
         ;;
     esac
     shift
