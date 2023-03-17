@@ -15,12 +15,6 @@ echo " █▄▀ █ ▀▄▀ ▄█▀    █▄█ ▀▄█ █ █▄▄ �
 echo -e "${NOCOLOR}"
 echo ""
 
-_help() {
-    echo "Visit the DIOS ReadMe on GitHub!"
-    xdg-open https://github.com/DEV-ICE-SOFTWARE-TECHNOLOGIES/DIOS/blob/main/README.md
-    echo " "
-}
-
 _initialize() {
     # Read the value of the variable from the config file
     INITIALIZED=$(grep "^INITIALIZED=" $DIOS_PATH/ADIOS.cfg)
@@ -240,15 +234,13 @@ _make() {
     echo -e "${GREEN}FINISHED BUILDING..."
     wait
     echo ""
-    read -k 1 "fastboot?DO YOU WANT TO FLASH D!OS VIA FASTBOOT?"
-    echo
-    if [[ "$fastboot" =~ ^[Yy]$ ]]; then
+ kdialog --title "DIOS A.I. FLASH" --yesno "DO YOU WANT TO FLASH THE LATEST BUILD FOR $LUNCH_DEVICE OVER FASTBOOT?"
+if [ $? = 0 ]; then
         bash ./DIOS_FLASH_FASTBOOT.sh
     fi
     wait
-    read -k 1 "adb?DO YOU WANT TO FLASH D!OS VIA ADB?"
-    echo
-    if [[ "$adb" =~ ^[Yy]$ ]]; then
+kdialog --title "DIOS A.I. FLASH" --yesno "DO YOU WANT TO FLASH THE LATEST BUILD FOR $LUNCH_DEVICE OVER ADB?"
+if [ $? = 0 ]; then
         bash ./DIOS_FLASH_ADB.sh
     fi
     wait
@@ -276,9 +268,9 @@ _patch=false
 _update=false
 
 _usage() {
-    echo "Usage: $(basename "$0") [OPTIONS]"
+    echo "Usage: bash ./$(basename "$0") [OPTIONS]"
     echo ""
-    echo "Options:"
+    echo "OPTIONS:"
     echo "  -ab, --aospbuild   Enable AOSP build"
     echo "  -ca, --cleanall    Clean all"
     echo "  -cf, --cleanforks  Clean forks"
@@ -291,6 +283,13 @@ _usage() {
     echo "  -p,  --patch       Apply patch"
     echo "  -u,  --update      Update"
     echo "  -h,  --help        Display this help and exit"
+    echo ""
+    echo "Example: bash ./$(basename "$0") -ab -ca -fa -p -u
+    echo "Which does aospbuild, cleanall, forkall, patch, update "
+    echo ""
+    echo "Visit the DIOS A.I. ReadMe on GitHub for More!"
+    xdg-open https://github.com/DEV-ICE-SOFTWARE-TECHNOLOGIES/DIOS/blob/main/README.md
+    echo " "
 }
 
 while [[ $# -gt 0 ]]; do

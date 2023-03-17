@@ -1,24 +1,17 @@
-#!/usr/bin/env bash
+#!/usr/bin/env bash -i
+##################################
+## Copyright © 2023 Marius Kopp ##
+##################################
 
-set -euv
+set -eu
 
-# --------------------------------------------------------------------------------------------------
-# Copyright (C) 2022 DEV ICE TECHNOLOGIES
-# --------------------------------------------------------------------------------------------------
+source ./ADIOS.cfg
 
-# --------------------------------------------------------------------------------------------------
-# VARIABLES
-# --------------------------------------------------------------------------------------------------
-
-DEVICE=pdx215
-OUT=~/dios/out/target/product/$DEVICE
-FILENAME=aosp_xqbc52-ota-eng.miustone.zip
-
-read -p "FLASHING THE OTA?" -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-    adb sideload $OUT/$FILENAME
+kdialog --title "DIOS A.I. FLASH" --yesno "DO YOU REALLY WANT TO FLASH THE LATEST BUILD FOR $LUNCH_DEVICE OVER ADB?"
+if [ $? = 0 ]; then
+    adb sideload $DIOS_FLASH/$DIOS_FILE
     sleep 5
     exit
 fi
 
+FILENAME=aosp_xqbc52-ota-eng.miustone.zip

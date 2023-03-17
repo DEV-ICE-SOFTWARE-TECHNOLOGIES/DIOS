@@ -25,13 +25,13 @@ if [ ! -f $IMAGE_FILE ]; then
     popd >/dev/null
 fi
 
-if [ -d "$TMP" ]; then
+if [ -d "$PIXEL_TMP" ]; then
 kdialog --title "DIOS A.I. FORK" --passivepopup "DIOS A.I. REQUIRES ROOT!"
-    sudo rm -rf "$TMP"
+    sudo rm -rf "$PIXEL_TMP"
 fi
 
-mkdir -p "$TMP"
-pushd "$TMP" >/dev/null
+mkdir -p "$PIXEL_TMP"
+pushd "$PIXEL_TMP" >/dev/null
 kdialog --title "DIOS A.I. FORK" --passivepopup "DIOS A.I. REQUIRES ROOT!"
 sudo unzip -p "$PIXEL_FORKS/$PIXEL_IMAGE" "*/image*" >image.zip
 sudo unzip -qq image.zip product.img system.img vendor.img system_ext.img
@@ -43,20 +43,21 @@ mkdir vendor
 sudo mount -o ro vendor.img vendor
 mkdir system_ext
 sudo mount -o ro system_ext.img system_ext
-popd >/dev/null
 
 wait
 
 echo ""
 echo "PREPARING PIXEL FIRMWARE..."
 echo ""
-cp -rf "$PRODUCT" "$PIXEL_FORKS" || true
-cp -rf "$SYSTEM" "$PIXEL_FORKS" || true
-cp -rf "$SYSTEM_EXT" "$PIXEL_FORKS" || true
-cp -rf "$VENDOR" "$PIXEL_FORKS" || true
+cp -rf "$PIXEL_PRODUCT" "$PIXEL_FORKS" || true
+cp -rf "$PIXEL_SYSTEM" "$PIXEL_FORKS" || true
+cp -rf "$PIXEL_SYSTEM_EXT" "$PIXEL_FORKS" || true
+cp -rf "$PIXEL_VENDOR" "$PIXEL_FORKS" || true
 
 sudo umount product
 sudo umount system
 sudo umount vendor
 sudo umount system_ext
-sudo rm -rf "$TMP"
+sudo rm -rf "$PIXEL_TMP"
+
+popd >/dev/null
