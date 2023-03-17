@@ -284,8 +284,8 @@ _usage() {
     echo "  -u,  --update      Update"
     echo "  -h,  --help        Display this help and exit"
     echo ""
-    echo "Example: bash ./$(basename "$0") -ab -ca -fa -p -u
-    echo "Which does aospbuild, cleanall, forkall, patch, update "
+    echo "Example: bash ./$(basename "$0") -ab -ca -fa -p -u"
+    echo "Which does aospbuild, cleanall, forkall, patch, update"
     echo ""
     echo "Visit the DIOS A.I. ReadMe on GitHub for More!"
     xdg-open https://github.com/DEV-ICE-SOFTWARE-TECHNOLOGIES/DIOS/blob/main/README.md
