@@ -112,6 +112,8 @@ _preparing() {
     echo -e "${GREEN}PREPARING D!OS..."
     echo ""
     wait
+    bash ./DIOS_DIOS_MK.sh
+    wait
     if $_aospbuild; then
         # Default Build IDs
         sed -i 's/^BUILD_DESC :=.*/BUILD_DESC := $(TARGET_PRODUCT)-$(TARGET_BUILD_VARIANT) $(PLATFORM_VERSION) $(BUILD_ID) $(BUILD_NUMBER_FROM_FILE) $(BUILD_VERSION_TAGS)/' $DIOS_PATH/build/core/sysprop.mk

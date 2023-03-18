@@ -1,20 +1,3 @@
-#!/usr/bin/env bash -i
-##################################
-## Copyright © 2023 Marius Kopp ##
-##################################
-
-set -eu
-
-source ./ADIOS.cfg
-
-if [ ! -d $DIOS_FOLDER ]; then
-    mkdir -p $DIOS_FOLDER
-fi
-
-echo ""
-echo "D!OS DIOS MK..."
-echo ""
-cat <<\EOF >$DIOS_FOLDER/DIOS.mk
 ##################################
 ## Copyright © 2023 Marius Kopp ##
 ##################################
@@ -161,4 +144,3 @@ vendor.display.enable_null_display=0 \
 vendor.display.enable_optimize_refresh=1 \
 masterclear.allow_retain_esim_profiles_after_fdr=true \
 ro.boot.vendor.overlay.theme=com.android.internal.systemui.navbar.twobutton;com.google.android.systemui.gxoverlay
-EOF

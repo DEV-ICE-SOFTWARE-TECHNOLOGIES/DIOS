@@ -15,6 +15,11 @@ if [ ! -d $PIXEL_FORKS ]; then
     mkdir -p $PIXEL_FORKS
 fi
 
+rm -rf "$PIXEL_FORKS/product"
+rm -rf "$PIXEL_FORKS/system"
+rm -rf "$PIXEL_FORKS/system_ext"
+rm -rf "$PIXEL_FORKS/vendor"
+
 if [ ! -f $IMAGE_FILE ]; then
     kdialog --title "DIOS A.I. FORK" --yesno "DO YOU WANT TO DOWNLOAD $PIXEL_IMAGE ?"
     if [[ $? -ne 0 ]]; then
@@ -26,7 +31,7 @@ if [ ! -f $IMAGE_FILE ]; then
 fi
 
 if [ -d "$PIXEL_TMP" ]; then
-kdialog --title "DIOS A.I. FORK" --passivepopup "DIOS A.I. REQUIRES ROOT!"
+    kdialog --title "DIOS A.I. FORK" --passivepopup "DIOS A.I. REQUIRES ROOT!"
     sudo rm -rf "$PIXEL_TMP"
 fi
 
@@ -35,14 +40,14 @@ pushd "$PIXEL_TMP" >/dev/null
 kdialog --title "DIOS A.I. FORK" --passivepopup "DIOS A.I. REQUIRES ROOT!"
 sudo unzip -p "$PIXEL_FORKS/$PIXEL_IMAGE" "*/image*" >image.zip
 sudo unzip -qq image.zip product.img system.img vendor.img system_ext.img
-mkdir product
-sudo mount -o ro product.img product
-mkdir system
-sudo mount -o ro system.img system
-mkdir vendor
-sudo mount -o ro vendor.img vendor
-mkdir system_ext
-sudo mount -o ro system_ext.img system_ext
+mkdir $PIXEL_PRODUCT
+sudo mount -o ro product.img $PIXEL_PRODUCT
+mkdir $PIXEL_SYSTEM
+sudo mount -o ro system.img $PIXEL_SYSTEM
+mkdir $PIXEL_VENDOR
+sudo mount -o ro vendor.img $PIXEL_VENDOR
+mkdir $PIXEL_SYSTEM_EXT
+sudo mount -o ro system_ext.img $PIXEL_SYSTEM_EXT
 
 wait
 
@@ -54,10 +59,10 @@ cp -rf "$PIXEL_SYSTEM" "$PIXEL_FORKS" || true
 cp -rf "$PIXEL_SYSTEM_EXT" "$PIXEL_FORKS" || true
 cp -rf "$PIXEL_VENDOR" "$PIXEL_FORKS" || true
 
-sudo umount product
-sudo umount system
-sudo umount vendor
-sudo umount system_ext
-sudo rm -rf "$PIXEL_TMP"
+sudo umount "$PIXEL_PRODUCT"
+sudo umount "$PIXEL_SYSTEM"
+sudo umount "$PIXEL_SYSTEM_EXT"
+sudo umount "$PIXEL_VENDOR"
+rm -rf "$PIXEL_TMP"
 
 popd >/dev/null
