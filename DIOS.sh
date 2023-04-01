@@ -206,14 +206,12 @@ _patching() {
         echo ""
         echo -e "${GREEN}PATCHING CODE..."
         echo ""
-        wait
-        #bash ./DIOS_PRODUCT_BUILD_PROP.sh
-        wait
-        #bash ./DIOS_SYSTEM_BUILD_PROP.sh
-        wait
-        #bash ./DIOS_SYSTEM_EXT_BUILD_PROP.sh
-        wait
-        #bash ./DIOS_VENDOR_BUILD_PROP.sh
+        # Hook up DIOS MK Files over device/google/gs-common
+        if ! grep -qxF '# DIOS' $DIOS_PATH/device/google/gs-common/device.mk; then
+            echo '' >>$DIOS_PATH/device/google/gs-common/device.mk
+            echo '# DIOS' >>$DIOS_PATH/device/google/gs-common/device.mk
+            echo '-include device/dios/DIOS.mk' >>$DIOS_PATH/device/google/gs-common/device.mk
+        fi
         wait
     fi
 }

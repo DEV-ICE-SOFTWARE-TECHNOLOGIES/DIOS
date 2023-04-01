@@ -18,22 +18,32 @@ cat <<\EOF >$DIOS_FOLDER/DIOS.mk
 ##################################
 ## Copyright © 2023 Marius Kopp ##
 ##################################
-DIOS_PATH2 := device/dios
-
-LOCAL_PATH := $(call my-dir)
+DIOS_PATH := device/dios
 
 include $(CLEAR_VARS)
 
-$(call inherit-product-if-exists, $(DIOS_PATH2)/dios/fork.mk)
+PRODUCT_SOONG_NAMESPACES += \
+	device/dios
+
+$(shell cp -rf $(DIOS_PATH)/dios/product/* `pwd`/$(TARGET_OUT_PRODUCT)/)
+$(shell cp -rf $(DIOS_PATH)/dios/system_ext/* `pwd`/$(TARGET_OUT_SYSTEM_EXT)/)
+$(shell cp -rf $(DIOS_PATH)/dios/system/* `pwd`/$(TARGET_OUT_SYSTEM)/)
+$(shell cp -rf $(DIOS_PATH)/dios/vendor/* `pwd`/$(TARGET_OUT_VENDOR)/)
+$(shell cp -rfn $(DIOS_PATH)/forks/pixel/product/* `pwd`/$(TARGET_OUT_PRODUCT)/)
+$(shell cp -rfn $(DIOS_PATH)/forks/pixel/system_ext/* `pwd`/$(TARGET_OUT_SYSTEM_EXT)/)
+$(shell cp -rfn $(DIOS_PATH)/forks/pixel/system/system/* `pwd`/$(TARGET_OUT_SYSTEM)/)
+$(shell cp -rfn $(DIOS_PATH)/forks/pixel/vendor/* `pwd`/$(TARGET_OUT_VENDOR)/)
+$(shell cp -rfn $(DIOS_PATH)/forks/xperia/product_a/* `pwd`/$(TARGET_OUT_PRODUCT)/)
+$(shell cp -rfn $(DIOS_PATH)/forks/xperia/system_a/system/* `pwd`/$(TARGET_OUT_SYSTEM)/)
+$(shell cp -rfn $(DIOS_PATH)/forks/xperia/system_b/system/* `pwd`/$(TARGET_OUT_SYSTEM)/)
+$(shell cp -rfn $(DIOS_PATH)/forks/xperia/system_ext_a/* `pwd`/$(TARGET_OUT_SYSTEM_EXT)/)
+$(shell cp -rfn $(DIOS_PATH)/forks/xperia/vendor_a/* `pwd`/$(TARGET_OUT_VENDOR)/)
 
 DEXPREOPT_GENERATE_APEX_IMAGE := true
 DONT_DEXPREOPT_PREBUILTS := false
 TARGET_INCLUDE_WIFI_EXT := true
 TARGET_FACE_UNLOCK_SUPPORTED := true
 WITH_DEXPREOPT := true
-
-DEVICE_PACKAGE_OVERLAYS += \
-    $(LOCAL_PATH)/overlay
 
 PRODUCT_DEXPREOPT_SPEED_APPS += \
     SystemUIGoogle \
