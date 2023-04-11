@@ -27,9 +27,9 @@ _initialize() {
         echo "INSTALLING DEPENDENCIES..."
         echo ""
 
-        kdialog --title "DIOS A.I. INIT" --passivepopup "DIOS A.I. REQUIRES ROOT!"
+        kdialog --title "DIOS A.I. INIT" --passivepopup "DIOS A.I. MAY REQUIRE ROOT!"
         sudo apt-get install git-core gnupg flex bison build-essential zip curl zlib1g-dev gcc-multilib g++-multilib libc6-dev-i386 libncurses5 lib32ncurses5-dev x11proto-core-dev libx11-dev lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc unzip fontconfig python-is-python3 ccache
-
+        kdialog --title "DIOS A.I. INIT" --passivepopup "DIOS A.I. MAY REQUIRE ROOT!"
         sudo apt update
 
         reqSpace=400000000
@@ -56,12 +56,14 @@ _initialize() {
             echo 'export CCACHE_DIR=/mnt/ccache' >>~/.bashrc
             echo 'export ALLOW_MISSING_DEPENDENCIES=true' >>~/.bashrc
         fi
+
         wait
 
-        source ~/.bashrc
+        . ~/.bashrc
 
         # Check if /mnt/ccache exists, create if it doesn't
         if [ ! -d /mnt/ccache ]; then
+            kdialog --title "DIOS A.I. INIT" --passivepopup "DIOS A.I. MAY REQUIRE ROOT!"
             sudo mkdir /mnt/ccache
         fi
 
@@ -77,8 +79,13 @@ _initialize() {
             echo 'export mount /mnt/ccache' >>~/.profile
         fi
 
+        kdialog --title "DIOS A.I. INIT" --passivepopup "DIOS A.I. MAY REQUIRE ROOT!"
         sudo mount -a
 
+        kdialog --title "DIOS A.I. INIT" --passivepopup "DIOS A.I. MAY REQUIRE ROOT!"
+        sudo mount --bind ~/.ccache /mnt/ccache
+
+        kdialog --title "DIOS A.I. INIT" --passivepopup "DIOS A.I. MAY REQUIRE ROOT!"
         sudo ccache -M 50G -F 0
 
         git config --global user.email $EMAIL
@@ -111,9 +118,7 @@ _preparing() {
     echo ""
     echo -e "${GREEN}PREPARING D!OS..."
     echo ""
-    wait
     bash ./DIOS_DIOS_MK.sh
-    wait
     if $_aospbuild; then
         # Default Build IDs
         sed -i 's/^BUILD_DESC :=.*/BUILD_DESC := $(TARGET_PRODUCT)-$(TARGET_BUILD_VARIANT) $(PLATFORM_VERSION) $(BUILD_ID) $(BUILD_NUMBER_FROM_FILE) $(BUILD_VERSION_TAGS)/' $DIOS_PATH/build/core/sysprop.mk
@@ -128,37 +133,31 @@ _cleaning() {
         echo ""
         echo -e "${GREEN}CLEANING TARGETS..."
         echo ""
-        wait
         make installclean -j$(nproc)
-        rm -rf $DIOS_PATH/$DIOS_FORKS
+        rm -rf $DIOS_FORKS
         echo ""
         echo -e "${GREEN}D!OS OUTPUT AND FORKS CLEANED..."
         echo ""
-        wait
     fi
 
     if $_cleanforks; then
         echo ""
         echo -e "${GREEN}CLEANING TARGETS..."
         echo ""
-        wait
         rm -rf $DIOS_FORKS
         echo ""
         echo -e "${GREEN}D!OS FORKS CLEANED..."
         echo ""
-        wait
     fi
 
     if $_cleanout; then
         echo ""
         echo -e "${GREEN}CLEANING TARGETS..."
         echo ""
-        wait
         make installclean -j$(nproc)
         echo ""
         echo -e "${GREEN}D!OS OUTPUT CLEANED..."
         echo ""
-        wait
     fi
 }
 
@@ -173,31 +172,21 @@ _repo_update() {
 
 _forking() {
     if $_forkall; then
-        wait
         bash ./DIOS_FORK_PIXEL.sh
-        wait
         bash ./DIOS_OPEN_CAMERA.sh
-        wait
-        #bash ./DIOS_FORK_XPERIA.sh
-        wait
+        bash ./DIOS_FORK_XPERIA.sh
     fi
 
     if $_forkdios; then
-        wait
         bash ./DIOS_OPEN_CAMERA.sh
-        wait
     fi
 
     if $_forkpixel; then
-        wait
         bash ./DIOS_FORK_PIXEL.sh
-        wait
     fi
 
     if $_forkxperia; then
-        wait
-        #bash ./DIOS_XPERIA_FORK.sh
-        wait
+        bash ./DIOS_XPERIA_FORK.sh
     fi
 }
 
@@ -210,40 +199,32 @@ _patching() {
         if ! grep -qxF '# DIOS' $DIOS_PATH/device/google/gs-common/device.mk; then
             echo '' >>$DIOS_PATH/device/google/gs-common/device.mk
             echo '# DIOS' >>$DIOS_PATH/device/google/gs-common/device.mk
-            echo '-include device/dios/DIOS.mk' >>$DIOS_PATH/device/google/gs-common/device.mk
+            echo '-include vendor/dios/DIOS.mk' >>$DIOS_PATH/device/google/gs-common/device.mk
         fi
-        wait
     fi
 }
 
 _make() {
-    wait
     echo ""
     echo -e "${GREEN}START BUILDING..."
     echo ""
     echo "D!OS..."
-
-    wait
     make -j$(nproc)
-    wait
     if [ ! -d $DIOS_PATH/dist_output ]; then
         mkdir -p $DIOS_PATH/dist_output
     fi
     make dist DIST_DIR=dist_output -j$(nproc) || true
-    wait
     echo -e "${GREEN}FINISHED BUILDING..."
-    wait
     echo ""
- kdialog --title "DIOS A.I. FLASH" --yesno "DO YOU WANT TO FLASH THE LATEST BUILD FOR $LUNCH_DEVICE OVER FASTBOOT?"
-if [ $? = 0 ]; then
+    kdialog --title "DIOS A.I. IMAGE FLASH" --yesno "DO YOU WANT TO FLASH THE LATEST BUILD FOR $LUNCH_DEVICE OVER FASTBOOT?"
+    if [ $? = 0 ]; then
         bash ./DIOS_FLASH_FASTBOOT.sh
     fi
     wait
-kdialog --title "DIOS A.I. FLASH" --yesno "DO YOU WANT TO FLASH THE LATEST BUILD FOR $LUNCH_DEVICE OVER ADB?"
-if [ $? = 0 ]; then
+    kdialog --title "DIOS A.I. ZIP FLASH" --yesno "DO YOU WANT TO FLASH THE LATEST BUILD FOR $LUNCH_DEVICE OVER ADB?"
+    if [ $? = 0 ]; then
         bash ./DIOS_FLASH_ADB.sh
     fi
-    wait
 }
 
 _build() {

@@ -50,7 +50,7 @@ cat <<\EOF >$DIOS_PATH/.repo/local_manifests/dios_add.xml
 <manifest>
 <remote name="DIOS" fetch="https://github.com/DEV-ICE-SOFTWARE-TECHNOLOGIES/" />
 
-<project path="device/dios/dios" name="DIOS-ESSENTIALS" groups="device" remote="DIOS" revision="main" />
-<project path="device/dios/overlay" name="DIOS-OVERLAY" groups="device" remote="DIOS" revision="main" />
+<project path="vendor/dios/dios" name="DIOS-ESSENTIALS" groups="vendor" remote="DIOS" revision="main" />
+<project path="vendor/dios/overlay" name="DIOS-OVERLAY" groups="vendor" remote="DIOS" revision="main" />
 </manifest>
 EOF

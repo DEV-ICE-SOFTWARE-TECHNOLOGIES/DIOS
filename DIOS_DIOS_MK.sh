@@ -18,26 +18,31 @@ cat <<\EOF >$DIOS_FOLDER/DIOS.mk
 ##################################
 ## Copyright © 2023 Marius Kopp ##
 ##################################
-DIOS_PATH := device/dios
+LOCAL_PATH := vendor/dios
+
+LOCAL_PRODUCT_MODULE := true
 
 include $(CLEAR_VARS)
+include vendor/gapps/config.mk
 
 PRODUCT_SOONG_NAMESPACES += \
-	device/dios
+	vendor/dios
 
-$(shell cp -rf $(DIOS_PATH)/dios/product/* `pwd`/$(TARGET_OUT_PRODUCT)/)
-$(shell cp -rf $(DIOS_PATH)/dios/system_ext/* `pwd`/$(TARGET_OUT_SYSTEM_EXT)/)
-$(shell cp -rf $(DIOS_PATH)/dios/system/* `pwd`/$(TARGET_OUT_SYSTEM)/)
-$(shell cp -rf $(DIOS_PATH)/dios/vendor/* `pwd`/$(TARGET_OUT_VENDOR)/)
-$(shell cp -rfn $(DIOS_PATH)/forks/pixel/product/* `pwd`/$(TARGET_OUT_PRODUCT)/)
-$(shell cp -rfn $(DIOS_PATH)/forks/pixel/system_ext/* `pwd`/$(TARGET_OUT_SYSTEM_EXT)/)
-$(shell cp -rfn $(DIOS_PATH)/forks/pixel/system/system/* `pwd`/$(TARGET_OUT_SYSTEM)/)
-$(shell cp -rfn $(DIOS_PATH)/forks/pixel/vendor/* `pwd`/$(TARGET_OUT_VENDOR)/)
-$(shell cp -rfn $(DIOS_PATH)/forks/xperia/product_a/* `pwd`/$(TARGET_OUT_PRODUCT)/)
-$(shell cp -rfn $(DIOS_PATH)/forks/xperia/system_a/system/* `pwd`/$(TARGET_OUT_SYSTEM)/)
-$(shell cp -rfn $(DIOS_PATH)/forks/xperia/system_b/system/* `pwd`/$(TARGET_OUT_SYSTEM)/)
-$(shell cp -rfn $(DIOS_PATH)/forks/xperia/system_ext_a/* `pwd`/$(TARGET_OUT_SYSTEM_EXT)/)
-$(shell cp -rfn $(DIOS_PATH)/forks/xperia/vendor_a/* `pwd`/$(TARGET_OUT_VENDOR)/)
+PRODUCT_COPY_FILES += $(LOCAL_PATH)/dios/product/*:$(PRODUCT_OUT_PRODUCT)/
+SYSTEM_EXT_COPY_FILES += $(LOCAL_PATH)/dios/system_ext/*:$(PRODUCT_OUT_SYSTEM_EXT)/
+SYSTEM_COPY_FILES += $(LOCAL_PATH)/dios/system/*:$(PRODUCT_OUT_SYSTEM)/
+VENDOR_COPY_FILES += $(LOCAL_PATH)/dios/vendor/*:$(PRODUCT_OUT_VENDOR)/
+
+PRODUCT_COPY_FILES += $(LOCAL_PATH)/forks/pixel/product/*:$(PRODUCT_OUT_PRODUCT)/
+SYSTEM_EXT_COPY_FILES += $(LOCAL_PATH)/forks/pixel/system_ext/*:$(PRODUCT_OUT_SYSTEM_EXT)/
+#SYSTEM_COPY_FILES += $(LOCAL_PATH)/forks/pixel/system/system/*:$(PRODUCT_OUT_SYSTEM)/
+VENDOR_COPY_FILES += $(LOCAL_PATH)/forks/pixel/vendor/*:$(PRODUCT_OUT_VENDOR)/
+
+PRODUCT_COPY_FILES += $(LOCAL_PATH)/forks/xperia/product_a/*:$(PRODUCT_OUT_PRODUCT)/
+SYSTEM_EXT_COPY_FILES += $(LOCAL_PATH)/forks/xperia/system_ext_a/*:$(PRODUCT_OUT_SYSTEM_EXT)/
+#SYSTEM_COPY_FILES += $(LOCAL_PATH)/forks/xperia/system_a/system/*:$(PRODUCT_OUT_SYSTEM)/
+#SYSTEM_COPY_FILES += $(LOCAL_PATH)/forks/xperia/system_b/system/*:$(PRODUCT_OUT_SYSTEM)/
+VENDOR_COPY_FILES += $(LOCAL_PATH)/forks/xperia/vendor_a/*:$(PRODUCT_OUT_VENDOR)/
 
 DEXPREOPT_GENERATE_APEX_IMAGE := true
 DONT_DEXPREOPT_PREBUILTS := false
