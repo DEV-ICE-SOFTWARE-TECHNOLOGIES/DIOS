@@ -29,7 +29,7 @@ And even more...
 
 # QUICK START GUIDE
 
-1. Use a Distro with KDE Plasma
+1. Use a Distro with KDE Plasma (SWAP is required even on 32G+ RAM)
 
 2. Use Discover to download GitHub Desktop and clone this Repo with it
 
