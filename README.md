@@ -29,52 +29,45 @@ And even more...
 
 # QUICK START GUIDE
 
-1. Install AOSP-DEVL AUR Package to get the needed Build Tools
+1. Use a Distro with KDE Plasma
 
-2. Use ARCH/Manjaro Linux and download Discover to download GitHub Desktop.
+2. Use Discover to download GitHub Desktop and clone this Repo with it
 
-3. Download https://github.com/DEV-ICE-SOFTWARE-TECHNOLOGIES/DIOS_INSTALLER with it. 
+3. mkdir ~/dios
 
-4. You may also like Visual Studio Code as Editor and Flatseal.
+4. cd ~/dios
 
-5. Run the Installer:
-```
-zsh ./INSTALL_DIOS.sh
-```
+5. Move all the DIOS Files You cloned before into ~/dios
 
+6. Inside of ADIOS.cfg:
 
-6. Inside of DIOS.sh:
+- BRANCH=android-13.0.0_r16 (For Example)
 
-- BRANCH=android-13.0.0_r16
+- REPO=https://android.googlesource.com/platform/manifest  (For Example)
 
-- REPO=https://android.googlesource.com/platform/manifest
+- EMAIL=mariuskopp517@gmail.com  (For Example)
 
-- TREE=https://github.com/sonyxperiadev/local_manifests
+- LUNCH_CHOICE=aosp_xqbc52-userdebug  (For Example)
 
-- EMAIL=mariuskopp517@gmail.com
+- NAME=M1U5T0N3  (For Example)
 
-- LUNCH_CHOICE=aosp_xqbc52-userdebug
-
-- NAME=M1U5T0N3
-
-- USERNAME=miustone
 
 Set these Variables for Your needs (Don't use My Identity)
 
-NAME is what we use on Git while USERNAME is Your OS Username
+NAME is which Identity we use on Git
 
-Download the Sony Xperia Software Binaries and place the Zip Content on ~/dios
-
-Rename the Software Binaries to "oem_sagami" or the platform You are using
 
 7. Run the BUILD A.I. from the DIOS Folder...
-
-A usage Description of the DIOS BUILD A.I. can be displayed via:
 ```
 cd ~/dios
-zsh ./DIOS.sh -h
+bash ./DIOS.sh -i
 ```
+8. Restart Your PC once to apply the ccache mounting
 
+9. Run a DIOS build with:
+```
+bash ./DIOS.sh -fp -p
+```
 # DEBUG
 
 adb logcat -v long > DIOS.txt 
@@ -82,6 +75,3 @@ adb logcat -v long > DIOS.txt
 # TO-DO
 
 - Cleanup Scripts
-- More Logical Scripts
-- Make ccache Mount at Boot
-- Give Build Output Infos to the Scripts
