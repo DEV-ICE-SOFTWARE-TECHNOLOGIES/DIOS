@@ -13,8 +13,8 @@ ANDROID BUILD A.I.
 It does initialize preferred Android Code and Device Trees
 
 Optimizes Android Build Times with:
- CCACHE Setup and Mounting
-  SWAP File check and creation
+- CCACHE Setup and Mounting
+-- SWAP File check and creation
 
 Downloads and adds Pixel and Xpiera Firmware Parts
 
@@ -31,7 +31,7 @@ And even more...
 
 # QUICK START GUIDE
 
-1. Use a Distro with KDE Plasma (SWAP is required even on 32G+ RAM)
+1. Use a Distro with KDE Plasma
 
 2. Use Discover to download GitHub Desktop and clone this Repo with it
 
