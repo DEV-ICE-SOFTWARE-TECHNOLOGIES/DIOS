@@ -1,27 +1,28 @@
-#!/usr/bin/env bash
+#!/usr/bin/env bash -i
+##################################
+## Copyright © 2023 Marius Kopp ##
+##################################
 
-set -euv
+set -eu
 
-# --------------------------------------------------------------------------------------------------
-# Copyright (C) 2022 DEV ICE TECHNOLOGIES
-# --------------------------------------------------------------------------------------------------
+source ./ADIOS.cfg
 
-if [ ! -d ~/dios/device/dios ]; then
-    mkdir -p ~/dios/device/dios
+if [ ! -d $DIOS_FOLDER ]; then
+    mkdir -p $DIOS_FOLDER
 fi
 
 echo ""
 echo "D!OS ANDROID BP..."
 echo ""
-cat <<\EOF >~/dios/device/dios/Android.bp
+cat <<\EOF >$DIOS_FOLDER/Android.bp
 /*
- * Copyright (C) 2022 DEV ICE TECHNOLOGIES
+ * Copyright (C) 2023 Marius Kopp
  */
 
 android_app_import {
 	name: "SettingsGoogle.apk",
 	owner: "dios",
-	apk: "fork/pixel/system_ext/priv-app/SettingsGoogle/SettingsGoogle.apk",
+	apk: "FORK/pixel/system_ext/priv-app/SettingsGoogle/SettingsGoogle.apk",
 	presigned: true,
 	dex_preopt: {
 		enabled: true,
@@ -33,7 +34,7 @@ android_app_import {
 android_app_import {
 	name: "NexusLauncherRelease.apk",
 	owner: "dios",
-	apk: "fork/pixel/system_ext/priv-app/NexusLauncherRelease/NexusLauncherRelease.apk",
+	apk: "FORK/pixel/system_ext/priv-app/NexusLauncherRelease/NexusLauncherRelease.apk",
 	presigned: true,
 	dex_preopt: {
 		enabled: true,
@@ -45,7 +46,7 @@ android_app_import {
 android_app_import {
 	name: "PrebuiltGmsCoreSc.apk",
 	owner: "dios",
-	apk: "fork/pixel/product/priv-app/PrebuiltGmsCore/PrebuiltGmsCoreSc.apk",
+	apk: "FORK/pixel/product/priv-app/PrebuiltGmsCore/PrebuiltGmsCoreSc.apk",
 	presigned: true,
 	dex_preopt: {
 		enabled: true,
@@ -55,9 +56,9 @@ android_app_import {
 }
 
 android_app_import {
-	name: "GoogleCamera.apk",
+	name: "PixelCameraServicesC10.apk",
 	owner: "dios",
-	apk: "fork/pixel/product/app/GoogleCamera/GoogleCamera.apk",
+	apk: "FORK/pixel/product/app/PixelCameraServicesC10/PixelCameraServicesC10.apk",
 	presigned: true,
 	dex_preopt: {
 		enabled: true,
@@ -67,9 +68,9 @@ android_app_import {
 }
 
 android_app_import {
-	name: "AmbientSensePrebuilt.apk",
+	name: "AmbientStreaming.apk",
 	owner: "dios",
-	apk: "fork/pixel/product/priv-app/AmbientSensePrebuilt/AmbientSensePrebuilt.apk",
+	apk: "FORK/pixel/product/priv-app/AmbientStreaming/AmbientStreaming.apk",
 	presigned: true,
 	dex_preopt: {
 		enabled: true,
@@ -81,7 +82,7 @@ android_app_import {
 android_app_import {
 	name: "Phonesky",
 	owner: "dios",
-	apk: "fork/pixel/product/priv-app/Phonesky/Phonesky.apk",
+	apk: "FORK/pixel/product/priv-app/Phonesky/Phonesky.apk",
 	presigned: true,
 	dex_preopt: {
 		enabled: true,
@@ -93,7 +94,7 @@ android_app_import {
 android_app_import {
 	name: "MarkupGoogle",
 	owner: "dios",
-	apk: "fork/pixel/product/app/MarkupGoogle/MarkupGoogle.apk",
+	apk: "FORK/pixel/product/app/MarkupGoogle/MarkupGoogle.apk",
 	presigned: true,
 	dex_preopt: {
 		enabled: true,
@@ -104,7 +105,7 @@ android_app_import {
 android_app_import {
 	name: "talkback",
 	owner: "dios",
-	apk: "fork/pixel/product/app/talkback/talkback.apk",
+	apk: "FORK/pixel/product/app/talkback/talkback.apk",
 	presigned: true,
 	dex_preopt: {
 		enabled: true,
@@ -115,7 +116,7 @@ android_app_import {
 android_app_import {
 	name: "Velvet",
 	owner: "dios",
-	apk: "fork/pixel/product/priv-app/Velvet/Velvet.apk",
+	apk: "FORK/pixel/product/priv-app/Velvet/Velvet.apk",
 	presigned: true,
 	dex_preopt: {
 		enabled: true,
@@ -127,7 +128,7 @@ android_app_import {
 android_app_import {
 	name: "PixelSetupWizard",
 	owner: "dios",
-	apk: "fork/pixel/system_ext/priv-app/PixelSetupWizard/PixelSetupWizard.apk",
+	apk: "FORK/pixel/system_ext/priv-app/PixelSetupWizard/PixelSetupWizard.apk",
 	overrides: ["Provision"],
 	presigned: true,
 	dex_preopt: {

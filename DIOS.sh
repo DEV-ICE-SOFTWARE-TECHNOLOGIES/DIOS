@@ -28,7 +28,7 @@ _initialize() {
         echo ""
 
         kdialog --title "DIOS A.I. INIT" --passivepopup "DIOS A.I. MAY REQUIRE ROOT!"
-        sudo apt-get install git-core gnupg flex bison build-essential zip curl zlib1g-dev gcc-multilib g++-multilib libc6-dev-i386 libncurses5 lib32ncurses5-dev x11proto-core-dev libx11-dev lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc unzip fontconfig python-is-python3 ccache
+        sudo apt install git-core gnupg flex bison build-essential zip curl zlib1g-dev gcc-multilib g++-multilib libc6-dev-i386 libncurses5 lib32ncurses5-dev x11proto-core-dev libx11-dev lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc unzip fontconfig python-is-python3 ccache -y
         kdialog --title "DIOS A.I. INIT" --passivepopup "DIOS A.I. MAY REQUIRE ROOT!"
         sudo apt update
 
@@ -48,6 +48,7 @@ _initialize() {
 
         # Add Flags to .bashrc if they doesn't already exist
         if ! grep -qxF '# DIOS' ~/.bashrc; then
+
             echo '' >>~/.bashrc
             echo '# DIOS' >>~/.bashrc
             echo 'export PATH=~/bin:$PATH' >>~/.bashrc
@@ -55,6 +56,7 @@ _initialize() {
             echo 'export CCACHE_EXEC=/usr/bin/ccache' >>~/.bashrc
             echo 'export CCACHE_DIR=/mnt/ccache' >>~/.bashrc
             echo 'export ALLOW_MISSING_DEPENDENCIES=true' >>~/.bashrc
+
         fi
 
         wait
@@ -63,20 +65,26 @@ _initialize() {
 
         # Check if /mnt/ccache exists, create if it doesn't
         if [ ! -d /mnt/ccache ]; then
+
             kdialog --title "DIOS A.I. INIT" --passivepopup "DIOS A.I. MAY REQUIRE ROOT!"
             sudo mkdir /mnt/ccache
+
         fi
 
         # Check if ~/.ccache exists, create if it doesn't
         if [ ! -d ~/.ccache ]; then
+
             mkdir ~/.ccache
+
         fi
 
         # Add mount command to /etc/fstab if it doesn't already exist
         if ! grep -qxF '~/.ccache /mnt/ccache none defaults,bind,users,noauto 0' /etc/fstab; then
+
             echo '~/.ccache /mnt/ccache none defaults,bind,users,noauto 0' | sudo tee -a /etc/fstab >/dev/null
             echo '' >>~/.profile
             echo 'export mount /mnt/ccache' >>~/.profile
+
         fi
 
         kdialog --title "DIOS A.I. INIT" --passivepopup "DIOS A.I. MAY REQUIRE ROOT!"
@@ -87,6 +95,34 @@ _initialize() {
 
         kdialog --title "DIOS A.I. INIT" --passivepopup "DIOS A.I. MAY REQUIRE ROOT!"
         sudo ccache -M 50G -F 0
+
+        # Check if swap file exists
+        if ! swapon --show | grep -q '/swapfile'; then
+
+            echo 'SWAP FILE NOT FOUND. CREATING A 32GB ONE...'
+
+            # Create a new swap file with the specified size
+            sudo fallocate -l $SWAP_SIZE /swapfile
+
+            # Set the correct permissions on the swap file
+            sudo chmod 600 /swapfile
+
+            # Mark the file as swap space
+            sudo mkswap /swapfile
+
+            # Enable the swap file
+            sudo swapon /swapfile
+
+            # Make the swap file permanent
+            echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+
+            echo 'SWAP FILE SUCCESSFULLY CREATED AND ENABLED.'
+
+        else
+
+            echo 'SWAP FILE ALREADY EXISTS. SKIPPING...'
+
+        fi
 
         git config --global user.email $EMAIL
 
@@ -118,23 +154,37 @@ _preparing() {
     echo ""
     echo -e "${GREEN}PREPARING D!OS..."
     echo ""
+
+    bash ./DIOS_ANDROID_MK.sh
+
+    bash ./DIOS_ANDROID_BP.sh
+
     bash ./DIOS_DIOS_MK.sh
+
     if $_aospbuild; then
+
         # Default Build IDs
         sed -i 's/^BUILD_DESC :=.*/BUILD_DESC := $(TARGET_PRODUCT)-$(TARGET_BUILD_VARIANT) $(PLATFORM_VERSION) $(BUILD_ID) $(BUILD_NUMBER_FROM_FILE) $(BUILD_VERSION_TAGS)/' $DIOS_PATH/build/core/sysprop.mk
+
     else
+
         # DIOS Build IDs
         sed -i 's/^BUILD_DESC :=.*/BUILD_DESC := DIOS - $(TARGET_PRODUCT)-$(TARGET_BUILD_VARIANT) $(PLATFORM_VERSION) $(BUILD_ID) $(BUILD_NUMBER_FROM_FILE) $(BUILD_VERSION_TAGS)/' $DIOS_PATH/build/core/sysprop.mk
+
     fi
 }
 
 _cleaning() {
+
     if $_cleanall; then
         echo ""
         echo -e "${GREEN}CLEANING TARGETS..."
         echo ""
+
         make installclean -j$(nproc)
+
         rm -rf $DIOS_FORKS
+
         echo ""
         echo -e "${GREEN}D!OS OUTPUT AND FORKS CLEANED..."
         echo ""
@@ -144,7 +194,9 @@ _cleaning() {
         echo ""
         echo -e "${GREEN}CLEANING TARGETS..."
         echo ""
+
         rm -rf $DIOS_FORKS
+
         echo ""
         echo -e "${GREEN}D!OS FORKS CLEANED..."
         echo ""
@@ -154,7 +206,9 @@ _cleaning() {
         echo ""
         echo -e "${GREEN}CLEANING TARGETS..."
         echo ""
+
         make installclean -j$(nproc)
+
         echo ""
         echo -e "${GREEN}D!OS OUTPUT CLEANED..."
         echo ""
@@ -166,7 +220,9 @@ _repo_update() {
         echo ""
         echo -e "${GREEN}REPO SYNC AND REPO UPDATE..."
         echo ""
+
         repo sync -j$(nproc)
+
     fi
 }
 
@@ -195,11 +251,13 @@ _patching() {
         echo ""
         echo -e "${GREEN}PATCHING CODE..."
         echo ""
+
         # Hook up DIOS MK Files over device/google/gs-common
         if ! grep -qxF '# DIOS' $DIOS_PATH/device/google/gs-common/device.mk; then
             echo '' >>$DIOS_PATH/device/google/gs-common/device.mk
             echo '# DIOS' >>$DIOS_PATH/device/google/gs-common/device.mk
-            echo '-include vendor/dios/DIOS.mk' >>$DIOS_PATH/device/google/gs-common/device.mk
+            echo '$(call inherit-product-if-exists, vendor/dios/Android.mk)' >>$DIOS_PATH/device/google/gs-common/device.mk
+            echo '$(call inherit-product-if-exists, vendor/dios/DIOS.mk)' >>$DIOS_PATH/device/google/gs-common/device.mk
         fi
     fi
 }
@@ -209,22 +267,32 @@ _make() {
     echo -e "${GREEN}START BUILDING..."
     echo ""
     echo "D!OS..."
-    make -j$(nproc)
+
     if [ ! -d $DIOS_PATH/dist_output ]; then
         mkdir -p $DIOS_PATH/dist_output
     fi
+
+    make -j$(nproc)
+
+    wait
+
     make dist DIST_DIR=dist_output -j$(nproc) || true
+
     echo -e "${GREEN}FINISHED BUILDING..."
     echo ""
+
     kdialog --title "DIOS A.I. IMAGE FLASH" --yesno "DO YOU WANT TO FLASH THE LATEST BUILD FOR $LUNCH_DEVICE OVER FASTBOOT?"
     if [ $? = 0 ]; then
         bash ./DIOS_FLASH_FASTBOOT.sh
     fi
-    wait
+
+    sleep 2
+
     kdialog --title "DIOS A.I. ZIP FLASH" --yesno "DO YOU WANT TO FLASH THE LATEST BUILD FOR $LUNCH_DEVICE OVER ADB?"
     if [ $? = 0 ]; then
         bash ./DIOS_FLASH_ADB.sh
     fi
+
 }
 
 _build() {
