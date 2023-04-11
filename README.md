@@ -10,23 +10,23 @@ ANDROID BUILD A.I.
 
 # WHAT DOES IT DO? FULLY AUTOMATED ANDROID BUILDING! ALMOST...
 
-It does initialize preferred Android Code and Device Trees
+- It does initialize preferred Android Code and Device Trees
 
-Optimizes Android Build Times with:
+- Optimizes Android Build Times with:
 - CCACHE Setup and Mounting
--- SWAP File check and creation
+- SWAP File check and creation
 
-Downloads and adds Pixel and Xpiera Firmware Parts
+- Downloads and adds Pixel and Xpiera Firmware Parts
 
-Optimizes Android Code further
+- Optimizes Android Code further
 
-Makes DIOS. The OS made by This Project
+- Makes DIOS. The OS aimed by This Project
 
-Builds Android for You with desired Changes
+- Builds Android for You with desired Changes
 
-Flashs Android to Your Device
+- Flashs Android to Your Device
 
-And even more...
+- And even more...
 
 
 # QUICK START GUIDE
