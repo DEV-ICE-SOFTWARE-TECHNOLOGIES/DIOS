@@ -34,6 +34,7 @@ PRODUCT_DEXPREOPT_SPEED_APPS += \
     NexusLauncherRelease
     
 PRODUCT_PROPERTY_OVERRIDES += \
-    ro.control_privapp_permissions=log
+    ro.control_privapp_permissions=log \
+    ro.boot.vendor.overlay.theme=com.android.internal.systemui.navbar.twobutton;com.google.android.systemui.gxoverlay
     
 EOF

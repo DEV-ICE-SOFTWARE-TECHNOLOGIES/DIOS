@@ -132,7 +132,7 @@ _initialize() {
 
         bash ./DIOS_MANIFEST_XMLS.sh
 
-        repo sync -j$(nproc)
+        repo sync -j$(nproc) -c -q
 
         echo ""
         echo -e "${RED}PREPARED! RESTART THE SCRIPT TO START BUILDING..."
@@ -157,7 +157,7 @@ _preparing() {
 
     bash ./DIOS_ANDROID_MK.sh
 
-    bash ./DIOS_ANDROID_BP.sh
+    #bash ./DIOS_ANDROID_BP.sh
 
     bash ./DIOS_DIOS_MK.sh
 
@@ -183,7 +183,11 @@ _cleaning() {
 
         make installclean -j$(nproc)
 
-        rm -rf $DIOS_FORKS
+        rm -rf $PIXEL_FORKS
+
+        #rm -rf $PIXEL_FORKS
+
+        #rm -rf $OPEN_CAMERA
 
         echo ""
         echo -e "${GREEN}D!OS OUTPUT AND FORKS CLEANED..."
@@ -195,7 +199,11 @@ _cleaning() {
         echo -e "${GREEN}CLEANING TARGETS..."
         echo ""
 
-        rm -rf $DIOS_FORKS
+        rm -rf $PIXEL_FORKS
+
+        #rm -rf $PIXEL_FORKS
+
+        #rm -rf $OPEN_CAMERA
 
         echo ""
         echo -e "${GREEN}D!OS FORKS CLEANED..."
@@ -221,7 +229,7 @@ _repo_update() {
         echo -e "${GREEN}REPO SYNC AND REPO UPDATE..."
         echo ""
 
-        repo sync -j$(nproc)
+        repo sync -j$(nproc) -c -q
 
     fi
 }
@@ -230,7 +238,7 @@ _forking() {
     if $_forkall; then
         bash ./DIOS_FORK_PIXEL.sh
         bash ./DIOS_OPEN_CAMERA.sh
-        bash ./DIOS_FORK_XPERIA.sh
+        #bash ./DIOS_FORK_XPERIA.sh
     fi
 
     if $_forkdios; then
@@ -241,9 +249,9 @@ _forking() {
         bash ./DIOS_FORK_PIXEL.sh
     fi
 
-    if $_forkxperia; then
-        bash ./DIOS_XPERIA_FORK.sh
-    fi
+    #if $_forkxperia; then
+        #bash ./DIOS_XPERIA_FORK.sh
+    #fi
 }
 
 _patching() {
@@ -282,26 +290,34 @@ _make() {
     echo ""
 
     kdialog --title "DIOS A.I. IMAGE FLASH" --yesno "DO YOU WANT TO FLASH THE LATEST BUILD FOR $LUNCH_DEVICE OVER FASTBOOT?"
+
     if [ $? = 0 ]; then
+
         bash ./DIOS_FLASH_FASTBOOT.sh
+
     fi
 
-    sleep 2
+    sleep 5
 
     kdialog --title "DIOS A.I. ZIP FLASH" --yesno "DO YOU WANT TO FLASH THE LATEST BUILD FOR $LUNCH_DEVICE OVER ADB?"
+
     if [ $? = 0 ]; then
+
         bash ./DIOS_FLASH_ADB.sh
+
     fi
 
 }
 
 _build() {
+
     _preparing
     _cleaning
     _repo_update
     _forking
     _patching
     _make
+
 }
 
 _aospbuild=false
@@ -317,6 +333,7 @@ _patch=false
 _update=false
 
 _usage() {
+
     echo "Usage: bash ./$(basename "$0") [OPTIONS]"
     echo ""
     echo "OPTIONS:"
@@ -339,10 +356,13 @@ _usage() {
     echo "Visit the DIOS A.I. ReadMe on GitHub for More!"
     xdg-open https://github.com/DEV-ICE-SOFTWARE-TECHNOLOGIES/DIOS/blob/main/README.md
     echo " "
+
 }
 
 while [[ $# -gt 0 ]]; do
+
     case $1 in
+    
     -ab | --aospbuild) _aospbuild=true ;;
     -ca | --cleanall) _cleanall=true ;;
     -cf | --cleanforks) _cleanforks=true ;;
@@ -376,3 +396,4 @@ else
     set -u
     _build
 fi
+

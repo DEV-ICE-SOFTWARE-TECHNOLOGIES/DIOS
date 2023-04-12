@@ -1,17 +1,14 @@
-#!/usr/bin/env bash
+#!/usr/bin/env bash -i
+##################################
+## Copyright © 2023 Marius Kopp ##
+##################################
 
-set -euv
+set -eu
 
-# --------------------------------------------------------------------------------------------------
-# Copyright © 2022 Marius Kopp
-# --------------------------------------------------------------------------------------------------
+source ./ADIOS.cfg
 
-# --------------------------------------------------------------------------------------------------
-# VARIABLES
-# --------------------------------------------------------------------------------------------------
-
-DOWNLOAD_DIR=~/dios/device/dios/dios/product/app/OpenCamera
-APP_NAME=opencamera/files/v_1_50_1/OpenCamera.apk
+DOWNLOAD_DIR=~/dios/vendor/dios/DIOS/product/app/OpenCamera
+APP_NAME=opencamera/files/v_1_51_1/OpenCamera.apk
 APP_FILE=$DOWNLOAD_DIR/$APP_NAME
 
 echo ""
@@ -31,3 +28,4 @@ if [ ! -f $APP_FILE ]; then
 fi
 
 wait
+
