@@ -31,17 +31,15 @@ ANDROID BUILD A.I.
 
 # QUICK START GUIDE
 
-1. Use a Distro with KDE Plasma
+1. Use a Distro with KDE Plasma (For unified Development and kdialog)
 
 2. Use Discover to download GitHub Desktop and clone this Repo with it
 
-3. mkdir ~/dios
+3. Create the DIOS Directory: mkdir ~/dios
 
-4. cd ~/dios
+4. Move all the DIOS Files You cloned before into ~/dios
 
-5. Move all the DIOS Files You cloned before into ~/dios
-
-6. Inside of ADIOS.cfg:
+5. Inside of ADIOS.cfg:
 
 - BRANCH=android-13.0.0_r16 (For Example)
 
@@ -59,22 +57,23 @@ Set these Variables for Your needs (Don't use My Identity)
 NAME is which Identity we use on Git
 
 
-7. Run the BUILD A.I. from the DIOS Folder...
+6. Run the BUILD A.I. from the DIOS Folder...
 ```
 cd ~/dios
 bash ./DIOS.sh -i
 ```
-8. Restart Your PC once to apply the ccache mounting
 
-9. Run a DIOS build with:
+7. Run a DIOS build with:
 ```
 bash ./DIOS.sh -fp -p
 ```
 # DEBUG
 
 adb logcat -v long > DIOS.txt 
+You can also do "set -euv" on top of the Scripts
 
 # TO-DO
 
-- Including of Google Binary Device File Downloads
+- Including of Google Binary Device File Downloads (WIP)
+- Generate Fork File Lists for the build Process (WIP)
 - Cleanup Scripts
