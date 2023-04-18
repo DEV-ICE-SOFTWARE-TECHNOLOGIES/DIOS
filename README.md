@@ -8,80 +8,74 @@ ANDROID BUILD A.I.
 
 </p>
 
-# WHAT DOES IT DO?
+# WHAT DOES IT DO? FULLY AUTOMATED ANDROID BUILDING! ALMOST...
 
-It does initialize preferred Android Code and Device Trees
+- It does initialize preferred Android Code and Device Trees
 
-Optimizes Android Build Times
+- Optimizes Android Build Times with:
+- CCACHE Setup and Mounting
+- SWAP File check and creation
 
-Adds Pixel and Xpiera Firmware Parts
+- Downloads and adds Pixel and Xpiera Firmware Parts
 
-Optimizes Android Code further
+- Optimizes Android Code further
 
-Makes DIOS. The OS made by This Project
+- Makes DIOS. The OS aimed by This Project
 
-Builds Android for You with desired Changes
+- Builds Android for You with desired Changes
 
-Flashs Android to Your Device
+- Flashs Android to Your Device
 
-And even more...
+- And even more...
 
 
 # QUICK START GUIDE
 
-1. Install AOSP-DEVL AUR Package to get the needed Build Tools
+1. Use a Distro with KDE Plasma (For unified Development and kdialog)
 
-2. Use ARCH/Manjaro Linux and download Discover to download GitHub Desktop.
+2. Use Discover to download GitHub Desktop and clone this Repo with it
 
-3. Download https://github.com/DEV-ICE-SOFTWARE-TECHNOLOGIES/DIOS_INSTALLER with it. 
+3. Create the DIOS Directory: mkdir ~/dios
 
-4. You may also like Visual Studio Code as Editor and Flatseal.
+4. Move all the DIOS Files You cloned before into ~/dios
 
-5. Run the Installer:
-```
-zsh ./INSTALL_DIOS.sh
-```
+5.  Set these Variables for Your needs (Don't use My Identity) inside of ADIOS.cfg:
+
+- BRANCH=$(curl -s "$URL" | grep -o 'Pixel 7 Pro: android-[0-9]\+\.[0-9]\+\.[0-9]\+_r[0-9]\+' | awk '{print $2}' | sort -V | tail -n 1)
+
+- EMAIL=mariuskopp517@gmail.com (GitHub Email example)
+
+- LUNCH_CHOICE=DIOS_cheetah-userdebug (Replace cheetah with Your Device like panther)
+
+- NAME=M1U5T0N3 (GitHub Username example)
+
+- PIXEL_IMAGE=cheetah-tq2a.230405.003.e1-factory-1f04869e.zip (Place another Filename from a Download Link if needed)
+
+- SWAP_SIZE=32G (U need to use a SWAP File with any RAM Size)
+
+- XPERIA_IMAGE=notset (For later Use)
 
 
-6. Inside of DIOS.sh:
+BRANCH can be changed by replacing 'Pixel 7 Pro: with eg. 'Pixel 6 Pro: or 'Pixel 7:
 
-- BRANCH=android-13.0.0_r16
 
-- REPO=https://android.googlesource.com/platform/manifest
-
-- TREE=https://github.com/sonyxperiadev/local_manifests
-
-- EMAIL=mariuskopp517@gmail.com
-
-- LUNCH_CHOICE=aosp_xqbc52-userdebug
-
-- NAME=M1U5T0N3
-
-- USERNAME=miustone
-
-Set these Variables for Your needs (Don't use My Identity)
-
-NAME is what we use on Git while USERNAME is Your OS Username
-
-Download the Sony Xperia Software Binaries and place the Zip Content on ~/dios
-
-Rename the Software Binaries to "oem_sagami" or the platform You are using
-
-7. Run the BUILD A.I. from the DIOS Folder...
-
-A usage Description of the DIOS BUILD A.I. can be displayed via:
+6. Run the BUILD A.I. from the DIOS Folder...
 ```
 cd ~/dios
-zsh ./DIOS.sh -h
+bash ./DIOS.sh -i
 ```
 
+7. Run a DIOS build with:
+```
+bash ./DIOS.sh -fp -p
+```
 # DEBUG
 
 adb logcat -v long > DIOS.txt 
+You can also do "set -euv" on top of the Scripts
 
 # TO-DO
 
+- Including of Google Binary Device File Downloads (WIP)
+- Generate Fork File Lists for the build Process (WIP)
 - Cleanup Scripts
-- More Logical Scripts
-- Make ccache Mount at Boot
-- Give Build Output Infos to the Scripts
