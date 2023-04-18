@@ -150,6 +150,21 @@ _initialize() {
 
 }
 
+_updating() {
+    if $_update; then
+        echo ""
+        echo -e "${GREEN}REPO SYNC AND REPO UPDATE..."
+        echo ""
+
+        bash ./DIOS_MANIFEST_XMLS.sh
+
+        repo init -u $REPO -b $BRANCH
+
+        repo sync -j$(nproc) -c -q
+
+    fi
+}
+
 _preparing() {
     echo ""
     echo -e "${GREEN}PREPARING D!OS..."
@@ -157,19 +172,21 @@ _preparing() {
 
     bash ./DIOS_ANDROID_MK.sh
 
-    #bash ./DIOS_ANDROID_BP.sh
+    bash ./DIOS_ANDROID_BP.sh
 
     bash ./DIOS_DIOS_MK.sh
 
-    if $_aospbuild; then
+    sed -i 's/^BUILD_DESC :=.*/BUILD_DESC := DIOS - $(TARGET_PRODUCT)-$(TARGET_BUILD_VARIANT) $(PLATFORM_VERSION) $(BUILD_ID) $(BUILD_NUMBER_FROM_FILE) $(BUILD_VERSION_TAGS)/' $DIOS_PATH/build/core/sysprop.mk
 
-        # Default Build IDs
-        sed -i 's/^BUILD_DESC :=.*/BUILD_DESC := $(TARGET_PRODUCT)-$(TARGET_BUILD_VARIANT) $(PLATFORM_VERSION) $(BUILD_ID) $(BUILD_NUMBER_FROM_FILE) $(BUILD_VERSION_TAGS)/' $DIOS_PATH/build/core/sysprop.mk
+}
 
-    else
+_patching() {
+    if $_patch; then
+        echo ""
+        echo -e "${GREEN}PATCHING CODE..."
+        echo ""
 
-        # DIOS Build IDs
-        sed -i 's/^BUILD_DESC :=.*/BUILD_DESC := DIOS - $(TARGET_PRODUCT)-$(TARGET_BUILD_VARIANT) $(PLATFORM_VERSION) $(BUILD_ID) $(BUILD_NUMBER_FROM_FILE) $(BUILD_VERSION_TAGS)/' $DIOS_PATH/build/core/sysprop.mk
+        bash ./DIOS_DEVICE_TARGETS.sh
 
     fi
 }
@@ -223,60 +240,42 @@ _cleaning() {
     fi
 }
 
-_repo_update() {
-    if $_update; then
-        echo ""
-        echo -e "${GREEN}REPO SYNC AND REPO UPDATE..."
-        echo ""
-
-        repo init -u $REPO -b $BRANCH
-
-        repo sync -j$(nproc) -c -q
-
-    fi
-}
-
 _forking() {
     if $_forkall; then
+
         bash ./DIOS_FORK_PIXEL.sh
+
         bash ./DIOS_OPEN_CAMERA.sh
+
         #bash ./DIOS_FORK_XPERIA.sh
+
     fi
 
     if $_forkdios; then
+
         bash ./DIOS_OPEN_CAMERA.sh
+
     fi
 
     if $_forkpixel; then
+
         bash ./DIOS_FORK_PIXEL.sh
+
     fi
 
     #if $_forkxperia; then
+
     #bash ./DIOS_XPERIA_FORK.sh
+
     #fi
+
 }
 
-_patching() {
-    if $_patch; then
-        echo ""
-        echo -e "${GREEN}PATCHING CODE..."
-        echo ""
+_making() {
 
-        # Hook up DIOS MK Files over device/google/gs-common
-        if ! grep -qxF '# DIOS' $DIOS_PATH/device/google/gs-common/device.mk; then
-            echo '' >>$DIOS_PATH/device/google/gs-common/device.mk
-            echo '# DIOS' >>$DIOS_PATH/device/google/gs-common/device.mk
-            echo '$(call inherit-product-if-exists, vendor/dios/Android.mk)' >>$DIOS_PATH/device/google/gs-common/device.mk
-            echo '$(call inherit-product-if-exists, vendor/dios/DIOS.mk)' >>$DIOS_PATH/device/google/gs-common/device.mk
-        fi
-    fi
-}
-
-_make() {
     echo ""
-    echo -e "${GREEN}START BUILDING..."
+    echo -e "${GREEN}START BUILDING DIOS..."
     echo ""
-    echo "D!OS..."
 
     if [ ! -d $DIOS_PATH/dist_output ]; then
         mkdir -p $DIOS_PATH/dist_output
@@ -300,13 +299,8 @@ _make() {
 
         bash ./DIOS_FLASH_FASTBOOT.sh
 
-    fi
-
-    sleep 5
-
-    kdialog --title "DIOS A.I. ZIP FLASH" --yesno "DO YOU WANT TO FLASH THE LATEST BUILD FOR $LUNCH_DEVICE OVER ADB?"
-
-    if [ $? = 0 ]; then
+    else
+        [ $? = 0 ]
 
         bash ./DIOS_FLASH_ADB.sh
 
@@ -316,33 +310,20 @@ _make() {
 
 _build() {
 
+    _updating
     _preparing
-    _cleaning
-    _repo_update
-    _forking
     _patching
-    _make
+    _cleaning
+    _forking
+    _making
 
 }
-
-_aospbuild=false
-_cleanall=false
-_cleanforks=false
-_cleanout=false
-_forkall=false
-_forkdios=false
-_forkpixel=false
-_forkxperia=false
-_init=false
-_patch=false
-_update=false
 
 _usage() {
 
     echo "Usage: bash ./$(basename "$0") [OPTIONS]"
     echo ""
     echo "OPTIONS:"
-    echo "  -ab, --aospbuild   Enable AOSP build"
     echo "  -ca, --cleanall    Clean all"
     echo "  -cf, --cleanforks  Clean forks"
     echo "  -co, --cleanout    Clean output"
@@ -364,11 +345,21 @@ _usage() {
 
 }
 
+_init=false
+_update=false
+_patch=false
+_cleanall=false
+_cleanforks=false
+_cleanout=false
+_forkall=false
+_forkdios=false
+_forkpixel=false
+_forkxperia=false
+
 while [[ $# -gt 0 ]]; do
 
     case $1 in
 
-    -ab | --aospbuild) _aospbuild=true ;;
     -ca | --cleanall) _cleanall=true ;;
     -cf | --cleanforks) _cleanforks=true ;;
     -co | --cleanout) _cleanout=true ;;
@@ -380,24 +371,43 @@ while [[ $# -gt 0 ]]; do
     -p | --patch) _patch=true ;;
     -u | --update) _update=true ;;
     -h | --help)
+
         _usage
+
         exit 0
+
         ;;
+
     *)
+
         echo "Invalid option: $1" >&2
+
         _usage
+
         exit 1
+
         ;;
+
     esac
+
     shift
+
 done
 
 if $_init; then
+
     _initialize
+
 else
+
     set +u
+
     source build/envsetup.sh
+
     lunch $LUNCH_CHOICE
+
     set -u
+
     _build
+
 fi
