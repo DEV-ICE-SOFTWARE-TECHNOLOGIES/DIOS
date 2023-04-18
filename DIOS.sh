@@ -185,7 +185,7 @@ _cleaning() {
 
         rm -rf $PIXEL_FORKS
 
-        #rm -rf $PIXEL_FORKS
+        rm -rf $XPERIA_FORKS
 
         #rm -rf $OPEN_CAMERA
 
@@ -201,7 +201,7 @@ _cleaning() {
 
         rm -rf $PIXEL_FORKS
 
-        #rm -rf $PIXEL_FORKS
+        rm -rf $XPERIA_FORKS
 
         #rm -rf $OPEN_CAMERA
 
@@ -229,6 +229,8 @@ _repo_update() {
         echo -e "${GREEN}REPO SYNC AND REPO UPDATE..."
         echo ""
 
+        repo init -u $REPO -b $BRANCH
+
         repo sync -j$(nproc) -c -q
 
     fi
@@ -250,7 +252,7 @@ _forking() {
     fi
 
     #if $_forkxperia; then
-        #bash ./DIOS_XPERIA_FORK.sh
+    #bash ./DIOS_XPERIA_FORK.sh
     #fi
 }
 
@@ -279,6 +281,9 @@ _make() {
     if [ ! -d $DIOS_PATH/dist_output ]; then
         mkdir -p $DIOS_PATH/dist_output
     fi
+
+    kdialog --title "DIOS A.I. INIT" --passivepopup "DIOS A.I. MAY REQUIRE ROOT!"
+    sudo mount --bind ~/.ccache /mnt/ccache
 
     make -j$(nproc)
 
@@ -362,7 +367,7 @@ _usage() {
 while [[ $# -gt 0 ]]; do
 
     case $1 in
-    
+
     -ab | --aospbuild) _aospbuild=true ;;
     -ca | --cleanall) _cleanall=true ;;
     -cf | --cleanforks) _cleanforks=true ;;
@@ -396,4 +401,3 @@ else
     set -u
     _build
 fi
-

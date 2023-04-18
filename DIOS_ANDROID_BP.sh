@@ -19,6 +19,55 @@ cat <<\EOF >$DIOS_FOLDER/Android.bp
  * Copyright (C) 2023 Marius Kopp
  */
 
+prebuilt_etc {
+    name: "com.google.android.dialer.support",
+    product_specific: true,
+    sub_dir: "permissions",
+    src: "FORK/pixel/product/etc/permissions/com.google.android.dialer.support.xml",
+    filename_from_src: true,
+}
+
+prebuilt_etc {
+    name: "com.google.android.apps.dreamliner",
+    product_specific: true,
+    sub_dir: "permissions",
+    src: "FORK/pixel/product/etc/permissions/com.google.android.apps.dreamliner.xml",
+    filename_from_src: true,
+}
+
+
+prebuilt_etc {
+    name: "matcher_tah",
+    product_specific: true,
+    sub_dir: "ambient",
+    src: "FORK/pixel/product/etc/ambient/matcher_tah.leveldb",
+    filename_from_src: true,
+}
+
+prebuilt_etc {
+    name: "privapp-permissions-google-p",
+    product_specific: true,
+    sub_dir: "permissions",
+    src: "FORK/pixel/product/etc/permissions/privapp-permissions-google-p.xml",
+    filename_from_src: true,
+}
+
+prebuilt_etc {
+    name: "split-permissions-google",
+    product_specific: true,
+    sub_dir: "permissions",
+    src: "FORK/pixel/product/etc/permissions/split-permissions-google.xml",
+    filename_from_src: true,
+}
+
+prebuilt_etc {
+    name: "privapp-permissions-google-se",
+    system_ext_specific: true,
+    sub_dir: "permissions",
+    src: "FORK/pixel/system_ext/etc/permissions/privapp-permissions-google-se.xml",
+    filename_from_src: true,
+}
+
 android_app_import {
 	name: "SettingsGoogle.apk",
 	owner: "dios",
