@@ -63,7 +63,6 @@ _initialize() {
 
         . ~/.bashrc
 
-        # Check if /mnt/ccache exists, create if it doesn't
         if [ ! -d /mnt/ccache ]; then
 
             kdialog --title "DIOS A.I. INIT" --passivepopup "DIOS A.I. MAY REQUIRE ROOT!"
@@ -71,17 +70,15 @@ _initialize() {
 
         fi
 
-        # Check if ~/.ccache exists, create if it doesn't
         if [ ! -d ~/.ccache ]; then
 
             mkdir ~/.ccache
 
         fi
 
-        # Add mount command to /etc/fstab if it doesn't already exist
-        if ! grep -qxF '~/.ccache /mnt/ccache none defaults,bind,users,noauto 0' /etc/fstab; then
+        if ! grep -qxF '~/.ccache                                 /mnt/ccache    none    defaults,bind,users,noauto 0 0' /etc/fstab; then
 
-            echo '~/.ccache /mnt/ccache none defaults,bind,users,noauto 0' | sudo tee -a /etc/fstab >/dev/null
+            echo '~/.ccache                                 /mnt/ccache    none    defaults,bind,users,noauto 0 0' | sudo tee -a /etc/fstab >/dev/null
             echo '' >>~/.profile
             echo 'export mount /mnt/ccache' >>~/.profile
 
@@ -96,7 +93,6 @@ _initialize() {
         kdialog --title "DIOS A.I. INIT" --passivepopup "DIOS A.I. MAY REQUIRE ROOT!"
         sudo ccache -M 50G -F 0
 
-        # Check if swap file exists
         if ! swapon --show | grep -q '/swapfile'; then
 
             echo 'SWAP FILE NOT FOUND. CREATING A 32GB ONE...'
@@ -278,11 +274,18 @@ _making() {
     echo ""
 
     if [ ! -d $DIOS_PATH/dist_output ]; then
+
         mkdir -p $DIOS_PATH/dist_output
+
     fi
 
-    kdialog --title "DIOS A.I. INIT" --passivepopup "DIOS A.I. MAY REQUIRE ROOT!"
-    sudo mount --bind ~/.ccache /mnt/ccache
+    if ! grep -qs '/mnt/ccache' /proc/mounts; then
+
+        kdialog --title "DIOS A.I. INIT" --passivepopup "DIOS A.I. REQUIRES ROOT!"
+
+        sudo mount --bind ~/.ccache /mnt/ccache
+
+    fi
 
     make -j$(nproc)
 

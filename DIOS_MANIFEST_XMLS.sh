@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -euv
+set -eu
 
 DIOS_PATH=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
@@ -53,4 +53,5 @@ cat <<\EOF >$DIOS_PATH/.repo/local_manifests/dios_add.xml
 <project path="vendor/dios/DIOS" name="DIOS-ESSENTIALS" groups="vendor" remote="DIOS" revision="main" />
 <project path="vendor/dios/OVERLAY" name="DIOS-OVERLAY" groups="vendor" remote="DIOS" revision="main" />
 </manifest>
+
 EOF

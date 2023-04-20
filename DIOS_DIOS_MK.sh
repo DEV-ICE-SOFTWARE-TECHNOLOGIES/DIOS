@@ -32,7 +32,7 @@ WITH_DEXPREOPT := true
 PRODUCT_DEXPREOPT_SPEED_APPS += \
     SystemUIGoogle \
     NexusLauncherRelease
-    
+
 PRODUCT_PROPERTY_OVERRIDES += \
     bluetooth.device.class_of_device=90,66,12 \
     bluetooth.profile.a2dp.source.enabled=true \
@@ -49,6 +49,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     bluetooth.profile.pan.panu.enabled=true \
     bluetooth.profile.pbap.server.enabled=true \
     bluetooth.profile.sap.server.enabled=true \
+    dev.defaultwallpaper=/product/wallpaper/image/default_wallpaper_HAZ.png \
     euicc.seamless_transfer_enabled_in_non_qs=true \
     masterclear.allow_retain_esim_profiles_after_fdr=true \
     persist.bluetooth.a2dp_aac.vbr_supported=true \
@@ -136,13 +137,32 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.bluetooth.leaudio_switcher.supported=true \
     ro.boot.vendor.overlay.theme=com.android.internal.systemui.navbar.twobutton;com.google.android.systemui.gxoverlay \
     ro.com.android.dataroaming=false \
-    ro.com.android.prov_mobiledata=false \
     ro.com.google.clientidbase=android-google \
     ro.com.google.ime.bs_theme=true \
     ro.com.google.ime.height_ratio=1.2 \
     ro.com.google.ime.kb_pad_port_b=10 \
     ro.com.google.ime.system_lm_dir=/product/usr/share/ime/google/d3_lms \
     ro.com.google.ime.theme_id=5 \
+    ro.com.android.dataroaming=false \
+    ro.com.android.mobiledata=true \
+    ro.com.android.prov_mobiledata=true \
+    ro.com.android.wifi-watchlist=GoogleGuest \
+    ro.com.google.acsa=true \
+    ro.com.google.apphider=true \
+    ro.com.google.clientidbase.am=android-google \
+    ro.com.google.clientidbase.ms=android-google \
+    ro.com.google.clientidbase.yt=android-google \
+    ro.com.google.clientidbase=android-google \
+    ro.com.google.ime.kb_pad_port_l=0 \
+    ro.com.google.ime.kb_pad_port_r=0 \
+    ro.com.google.ime.key_border=false \
+    ro.com.google.ime.secondary_sym=true \
+    ro.com.google.ime.system_lm_dir=/product/usr/share/ime/google/d3_lms \
+    ro.com.google.ime.theme_file=DIOS.zip \
+    ro.com.google.ime.themes_dir=/product/etc/gboard_theme \
+    ro.com.google.locationfeatures=1 \
+    ro.com.google.networklocation=1 \
+    ro.com.google.rlz_ap_whitelist=y0,y5,y6,y7,y8,YH,YG \
     ro.config.hifi_always_on=true \
     ro.config.hifi_enhance_support=1 \
     ro.config.hw_displayeffect_en=true \
@@ -191,7 +211,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
     setupwizard.feature.skip_button_use_mobile_data.carrier1839=true \
     setupwizard.theme=glif_v3_light
 
-# PIXEL FORK APPS
 PRODUCT_PACKAGES += \
     AdaptiveVPNPrebuilt \
     AmbientStreaming \
@@ -209,16 +228,41 @@ PRODUCT_PACKAGES += \
     CarrierWifi \
     Chrome \
     Chrome-Stub \
+    com.android.imsserviceentitlement \
+    com.android.omadm.radioconfig \
+    com.android.sdm.plugins.connmo \
+    com.android.sdm.plugins.dcmo \
+    com.android.sdm.plugins.diagmon \
+    com.customermobile.preload.vzw \
     com.google.android.apps.dialer.call_recording_audio.features \
+    com.google.android.apps.dreamliner \
+    com.google.android.dialer.support \
+    com.google.android.odad \
+    com.google.omadm.trigger \
+    com.verizon.apn \
+    com.verizon.llkagent \
+    com.verizon.services \
+    com.verizon.services \
     ConfigUpdater \
+    default_permissions_allowlist \
+    default-exo-permissions \
     DeviceIntelligenceNetworkPrebuilt \
     DevicePersonalizationPrebuiltPixel2020 \
     DevicePolicyPrebuilt \
     DiagnosticsToolPrebuilt \
     EmergencyInfoGoogleNoUi \
+    features-verizon \
     FilesPrebuilt \
     Flipendo \
+    game_service \
+    game-overlay \
     GCS \
+    gms_fsverity_cert \
+    google \
+    google_build \
+    google-hiddenapi-package-whitelist \
+    google-install-constraints-package-allowlist \
+    google-staged-installer-whitelist \
     GoogleCamera \
     GoogleContacts \
     GoogleDialer \
@@ -235,15 +279,27 @@ PRODUCT_PACKAGES += \
     MarkupGoogle \
     MicropaperPrebuilt \
     MlkitBarcodeUIPrebuilt \
+    nexus \
     NexusLauncherRelease \
+    NgaResources \
+    obdm_permissions \
     PartnerSetupPrebuilt \
     Phonesky \
     Photos \
+    pixel_2016_exclusive \
+    pixel_experience_2017 \
+    pixel_experience_2018 \
+    pixel_experience_2019 \
+    pixel_experience_2019_midyear \
+    pixel_experience_2020 \
+    pixel_experience_2020_midyear \
+    PixelCameraServicesC10 \
     PixelLiveWallpaperPrebuilt \
     PixelSetupWizard \
     PixelThemesStub \
     PixelThemesStub2022_and_newer \
     PixelWallpapers2022 \
+    play_store_fsi_cert \
     PrebuiltBugle \
     PrebuiltBugle \
     PrebuiltDeskClockGoogle \
@@ -258,6 +314,11 @@ PRODUCT_PACKAGES += \
     PrebuiltGmsCoreSc_MeasurementDynamite \
     PrebuiltGoogleAdservicesTvp \
     PrebuiltGoogleTelemetryTvp \
+    preferred_apps_google \
+    preinstalled-packages-product-pixel-2017-and-newer \
+    privapp-permissions-google \
+    privapp-permissions-google-p \
+    privapp-permissions-google-se \
     quick_tap \
     QuickAccessWallet \
     RecorderPrebuilt \
@@ -265,12 +326,15 @@ PRODUCT_PACKAGES += \
     SCONE \
     ScribePrebuilt \
     SecurityHubPrebuilt \
+    SettingsGoogle \
     SettingsIntelligenceGooglePrebuilt \
     SetupWizardPrebuilt \
     Showcase \
     SoundAmplifierPrebuilt \
     SoundPickerPrebuilt \
+    split-permissions-google \
     StorageManagerGoogle \
+    SystemUIGoogle \
     talkback \
     TetheringEntitlement \
     TrichromeLibrary \
@@ -280,12 +344,15 @@ PRODUCT_PACKAGES += \
     Tycho \
     Velvet \
     VisionBarcodePrebuilt \
+    vzw_mvs_permissions \
     WallpaperEffect \
     WallpaperPickerGoogleRelease \
     WebViewGoogle \
     WebViewGoogle-Stub \
     WellbeingPrebuilt \
-    WfcActivation 
+    WfcActivation \
+    YouTube \
+    YouTubeMusicPrebuilt
 
 include $(call all-subdir-makefiles)
     

@@ -23,6 +23,28 @@ soong_namespace {
 }
 
 android_app_import {
+	name: "PixelCameraServicesC10",
+	owner: "DIOS",
+	apk: "FORK/PIXEL/product/app/PixelCameraServicesC10/PixelCameraServicesC10.apk",
+	presigned: true,
+	dex_preopt: {
+		enabled: true,
+	},
+	product_specific: true,
+}
+
+android_app_import {
+	name: "NgaResources",
+	owner: "DIOS",
+	apk: "FORK/PIXEL/product/app/NgaResources/NgaResources.apk",
+	presigned: true,
+	dex_preopt: {
+		enabled: false,
+	},
+	product_specific: true,
+}
+
+android_app_import {
 	name: "CalculatorGooglePrebuilt",
 	owner: "DIOS",
 	apk: "FORK/PIXEL/product/app/CalculatorGooglePrebuilt/CalculatorGooglePrebuilt.apk",
@@ -186,6 +208,17 @@ android_app_import {
 	name: "PixelThemesStub",
 	owner: "DIOS",
 	apk: "FORK/PIXEL/product/app/PixelThemesStub/PixelThemesStub.apk",
+	presigned: true,
+	dex_preopt: {
+		enabled: false,
+	},
+	product_specific: true,
+}
+
+android_app_import {
+	name: "PixelThemesStub2022_and_newer",
+	owner: "DIOS",
+	apk: "FORK/PIXEL/product/app/PixelThemesStub2022_and_newer/PixelThemesStub2022_and_newer.apk",
 	presigned: true,
 	dex_preopt: {
 		enabled: false,
@@ -779,6 +812,28 @@ android_app_import {
 	},
 	privileged: true,
 	system_ext_specific: true,
+}
+
+android_app_import {
+	name: "YouTube",
+	owner: "DIOS",
+	apk: "FORK/PIXEL/product/app/YouTube/YouTube.apk",
+	presigned: true,
+	dex_preopt: {
+		enabled: true,
+	},
+	product_specific: true,
+}
+
+android_app_import {
+	name: "YouTubeMusicPrebuilt",
+	owner: "DIOS",
+	apk: "FORK/PIXEL/product/app/YouTubeMusicPrebuilt/YouTubeMusicPrebuilt.apk",
+	presigned: true,
+	dex_preopt: {
+		enabled: true,
+	},
+	product_specific: true,
 }
 
 dex_import {
