@@ -23,6 +23,41 @@ soong_namespace {
 }
 
 android_app_import {
+	name: "ConnectivityThermalPowerManager",
+	owner: "DIOS",
+	apk: "FORK/PIXEL/system_ext/priv-app/ConnectivityThermalPowerManager/ConnectivityThermalPowerManager.apk",
+	presigned: true,
+	dex_preopt: {
+		enabled: true,
+	},
+	privileged: true,
+	system_ext_specific: true,
+}
+
+android_app_import {
+	name: "CccDkTimeSyncService",
+	owner: "DIOS",
+	apk: "FORK/PIXEL/system_ext/priv-app/CccDkTimeSyncService/CccDkTimeSyncService.apk",
+	presigned: true,
+	dex_preopt: {
+		enabled: true,
+	},
+	privileged: true,
+	system_ext_specific: true,
+}
+
+android_app_import {
+	name: "EmergencyInfoGoogleNoUi",
+	owner: "DIOS",
+	apk: "FORK/PIXEL/system_ext/app/EmergencyInfoGoogleNoUi/EmergencyInfoGoogleNoUi.apk",
+	presigned: true,
+	dex_preopt: {
+		enabled: true,
+	},
+	system_ext_specific: true,
+}
+
+android_app_import {
 	name: "PixelCameraServicesC10",
 	owner: "DIOS",
 	apk: "FORK/PIXEL/product/app/PixelCameraServicesC10/PixelCameraServicesC10.apk",
@@ -99,6 +134,19 @@ android_app_import {
 	dex_preopt: {
 		enabled: false,
 	},
+	privileged: true,
+	product_specific: true,
+}
+
+android_app_import {
+	name: "AdaptiveVPNPrebuilt",
+	owner: "DIOS",
+	apk: "FORK/PIXEL/product/priv-app/AdaptiveVPNPrebuilt/AdaptiveVPNPrebuilt.apk",
+	presigned: true,
+	dex_preopt: {
+		enabled: false,
+	},
+	privileged: true,
 	product_specific: true,
 }
 
@@ -178,6 +226,7 @@ android_app_import {
 	dex_preopt: {
 		enabled: false,
 	},
+	privileged: true,
 	product_specific: true,
 }
 
@@ -246,6 +295,7 @@ android_app_import {
 	dex_preopt: {
 		enabled: true,
 	},
+	privileged: true,
 	product_specific: true,
 }
 
@@ -388,9 +438,33 @@ android_app_import {
 }
 
 android_app_import {
+	name: "ANGLE",
+	owner: "DIOS",
+	apk: "FORK/PIXEL/product/priv-app/ANGLE/ANGLE.apk",
+	presigned: true,
+	dex_preopt: {
+		enabled: true,
+	},
+	privileged: true,
+	product_specific: true,
+}
+
+android_app_import {
 	name: "AppDirectedSMSService",
 	owner: "DIOS",
 	apk: "FORK/PIXEL/product/priv-app/AppDirectedSMSService/AppDirectedSMSService.apk",
+	presigned: true,
+	dex_preopt: {
+		enabled: true,
+	},
+	privileged: true,
+	product_specific: true,
+}
+
+android_app_import {
+	name: "BetterBugStub",
+	owner: "DIOS",
+	apk: "FORK/PIXEL/product/priv-app/BetterBugStub/BetterBugStub.apk",
 	presigned: true,
 	dex_preopt: {
 		enabled: true,
@@ -509,6 +583,19 @@ android_app_import {
 }
 
 android_app_import {
+	name: "GoogleCamera",
+	owner: "DIOS",
+	apk: "FORK/PIXEL/product/priv-app/GoogleCamera/GoogleCamera.apk",
+	presigned: true,
+	overrides: ["Camera"],
+	dex_preopt: {
+		enabled: true,
+	},
+	privileged: true,
+	product_specific: true,
+}
+
+android_app_import {
 	name: "HotwordEnrollmentOKGoogleFUSIONPro",
 	owner: "DIOS",
 	apk: "FORK/PIXEL/product/priv-app/HotwordEnrollmentOKGoogleFUSIONPro/HotwordEnrollmentOKGoogleFUSIONPro.apk",
@@ -552,7 +639,6 @@ android_app_import {
 	dex_preopt: {
 		enabled: true,
 	},
-	privileged: true,
 	product_specific: true,
 }
 
@@ -840,6 +926,13 @@ dex_import {
 	name: "com.google.android.dialer.support",
 	owner: "DIOS",
 	jars: ["FORK/PIXEL/product/framework/com.google.android.dialer.support.jar"],
+	product_specific: true,
+}
+
+dex_import {
+	name: "libhwinfo",
+	owner: "DIOS",
+	jars: ["FORK/PIXEL/product/framework/libhwinfo.jar"],
 	product_specific: true,
 }
 

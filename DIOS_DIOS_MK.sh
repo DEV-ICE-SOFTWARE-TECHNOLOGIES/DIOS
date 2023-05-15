@@ -34,6 +34,7 @@ PRODUCT_DEXPREOPT_SPEED_APPS += \
     NexusLauncherRelease
 
 PRODUCT_PROPERTY_OVERRIDES += \
+    debug.drm.mode.force=2160x3840 \
     bluetooth.device.class_of_device=90,66,12 \
     bluetooth.profile.a2dp.source.enabled=true \
     bluetooth.profile.asha.central.enabled=true \
@@ -140,7 +141,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.com.google.clientidbase=android-google \
     ro.com.google.ime.bs_theme=true \
     ro.com.google.ime.height_ratio=1.2 \
-    ro.com.google.ime.kb_pad_port_b=10 \
+    ro.com.google.ime.kb_pad_port_b=0 \
     ro.com.google.ime.system_lm_dir=/product/usr/share/ime/google/d3_lms \
     ro.com.google.ime.theme_id=5 \
     ro.com.android.dataroaming=false \
@@ -190,12 +191,19 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.setupwizard.suppress_d2d_nfc=true \
     ro.setupwizard.suppress_d2d=true \
     ro.setupwizard.wifi_on_exit=true \
+    ro.sf.compbypass.enable=1 \
+    ro.sf.hwrotation=0 \
+    ro.sf.init.lcd_density=360 \
+    ro.sf.lcd_size=2160x3840 \
+    ro.sf.override_lcd_density=1 \
     ro.support_hide_display_cutout=true \
     ro.support_one_handed_mode=true \
     ro.url.legal.android_privacy=http://www.google.com/intl/%s/mobile/android/basic/privacy.html \
     ro.url.legal=http://www.google.com/intl/%s/mobile/android/basic/phone-legal.html \
     ro.vendor.camera.extensions.package=com.google.android.apps.camera.services \
     ro.vendor.camera.extensions.service=com.google.android.apps.camera.services.extensions.service.PixelExtensions \
+    ro.whitepoint_calibration_enable=true \
+    lockscreen.rot_override=true \
     setupwizard.enable_assist_gesture_training=true \
     setupwizard.feature.baseline_setupwizard_enabled=false \
     setupwizard.feature.day_night_mode_enabled=true \
@@ -209,9 +217,21 @@ PRODUCT_PROPERTY_OVERRIDES += \
     setupwizard.feature.show_pixel_tos=true \
     setupwizard.feature.show_support_link_in_deferred_setup=false \
     setupwizard.feature.skip_button_use_mobile_data.carrier1839=true \
-    setupwizard.theme=glif_v3_light
+    setupwizard.theme=glif_v3_light \
+    sf.display_density=360 \
+    sf.display-size=2160x3840 \
+    sf.lcd_density=360 \
+    sf.lcd_size=2160x3840 \
+    sys.autobrightness_optimize=true \
+    sys.config_orientation=0 \
+    sys.config.activelaunch_enable=true \
+    sys.display-density=360 \
+    sys.display-size=2160x3840 \
+    vendor.sys.display-density=360 \
+    vendor.sys.display-size=2160x3840
 
 PRODUCT_PACKAGES += \
+    ANGLE \
     AdaptiveVPNPrebuilt \
     AmbientStreaming \
     AndroidAutoStubPrebuilt \
@@ -226,8 +246,11 @@ PRODUCT_PACKAGES += \
     CarrierServices \
     CarrierSetup \
     CarrierWifi \
+    CccDkTimeSyncService \
     Chrome \
     Chrome-Stub \
+    PlayAutoInstallConfig \
+    ConnectivityThermalPowerManager \
     com.android.imsserviceentitlement \
     com.android.omadm.radioconfig \
     com.android.sdm.plugins.connmo \
@@ -244,6 +267,7 @@ PRODUCT_PACKAGES += \
     com.verizon.services \
     com.verizon.services \
     ConfigUpdater \
+    libhwinfo \
     default_permissions_allowlist \
     default-exo-permissions \
     DeviceIntelligenceNetworkPrebuilt \
@@ -301,7 +325,7 @@ PRODUCT_PACKAGES += \
     PixelWallpapers2022 \
     play_store_fsi_cert \
     PrebuiltBugle \
-    PrebuiltBugle \
+    PrebuiltGmail \
     PrebuiltDeskClockGoogle \
     PrebuiltGmsCoreSc \
     PrebuiltGmsCoreSc_AdsDynamite \
