@@ -14,7 +14,7 @@ ANDROID BUILD A.I.
 
 - Optimizes Android Build Times with:
 - CCACHE Setup and Mounting
-- SWAP File check and creation
+- SWAP check and creation
 
 - Downloads and adds Pixel and Xpiera Firmware Parts
 
@@ -31,32 +31,33 @@ ANDROID BUILD A.I.
 
 # QUICK START GUIDE
 
-1. Use a Distro with KDE Plasma (For unified Development and kdialog)
+1. Use a Distro based on ARCH like Manjaro / Install the base-devel and aosp-devel AUR Packages
 
-2. Use Discover to download GitHub Desktop and clone this Repo with it
+2. Download / clone this Repo https://github.com/DEV-ICE-SOFTWARE-TECHNOLOGIES/DIOS
 
 3. Create the DIOS Directory: mkdir ~/dios
 
-4. Move all the DIOS Files You cloned before into ~/dios
+4. Move all the DIOS Files You have cloned before into ~/dios
 
 5.  Set these Variables for Your needs (Don't use My Identity) inside of ADIOS.cfg:
 
-- BRANCH=$(curl -s "$URL" | grep -o 'Pixel 7 Pro: android-[0-9]\+\.[0-9]\+\.[0-9]\+_r[0-9]\+' | awk '{print $2}' | sort -V | tail -n 1)
-
-- EMAIL=mariuskopp517@gmail.com (GitHub Email example)
 
 - LUNCH_CHOICE=DIOS_cheetah-userdebug (Replace cheetah with Your Device like panther)
 
-- NAME=M1U5T0N3 (GitHub Username example)
+- BRANCH=android-13.0.0_r43
 
-- PIXEL_IMAGE=cheetah-tq2a.230405.003.e1-factory-1f04869e.zip (Place another Filename from a Download Link if needed)
+- PIXEL_BINARIES=google_devices-cheetah-tq2a.230505.002-e488f4d8.tgz (Replace with another Filename from Google if needed)
 
-- SWAP_SIZE=32G (U need to use a SWAP File with any RAM Size)
+- PIXEL_IMAGE=cheetah-tq2a.230505.002-factory-fe44ced0.zip (Replace with another Filename from Google if needed)
 
-- XPERIA_IMAGE=notset (For later Use)
+- XPERIA_IMAGE=xperia.zip (For later Use)
 
+- EMAIL=mariuskopp517@gmail.com (GitHub Email example)
 
-BRANCH can be changed by replacing 'Pixel 7 Pro: with eg. 'Pixel 6 Pro: or 'Pixel 7:
+- NAME=miustone (GitHub Username example)
+
+- SWAP_SIZE=32G (U need to use SWAP with any RAM Size!)
+
 
 
 6. Run the BUILD A.I. from the DIOS Folder...
