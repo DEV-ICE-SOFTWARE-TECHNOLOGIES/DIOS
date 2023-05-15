@@ -21,7 +21,7 @@ fi
 
 if [ ! -f $PIXEL_FILE ]; then
 
-    kdialog --title "DIOS A.I. FORK" --yesno "DO YOU WANT TO DOWNLOAD $PIXEL_IMAGE ?"
+    notify-send "DO YOU WANT TO DOWNLOAD $PIXEL_IMAGE ?"
 
     if [[ $? -ne 0 ]]; then
 
@@ -47,7 +47,7 @@ mkdir -p "$PIXEL_TMP"
 
 pushd "$PIXEL_TMP" >/dev/null
 
-kdialog --title "DIOS A.I. INIT" --passivepopup "DIOS A.I. MAY REQUIRE ROOT!"
+notify-send "DIOS A.I. MAY REQUIRE ROOT!"
 
 echo ""
 echo "UNZIPPING PIXEL FIRMWARE..."
@@ -88,7 +88,7 @@ cp -rf "$PIXEL_SYSTEM_TMP" "$PIXEL_SYSTEM" || true
 cp -rf "$PIXEL_SYSTEM_EXT_TMP" "$PIXEL_SYSTEM_EXT" || true
 cp -rf "$PIXEL_VENDOR_TMP" "$PIXEL_VENDOR" || true
 
-kdialog --title "DIOS A.I. INIT" --passivepopup "DIOS A.I. MAY REQUIRE ROOT!"
+notify-send "DIOS A.I. MAY REQUIRE ROOT!"
 
 sudo umount "$PIXEL_PRODUCT_TMP"
 sudo umount "$PIXEL_SYSTEM_TMP"

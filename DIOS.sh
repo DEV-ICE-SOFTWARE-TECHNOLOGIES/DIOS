@@ -27,10 +27,8 @@ _initialize() {
         echo "INSTALLING DEPENDENCIES..."
         echo ""
 
-        kdialog --title "DIOS A.I. INIT" --passivepopup "DIOS A.I. MAY REQUIRE ROOT!"
-        sudo apt install git-core gnupg flex bison build-essential zip curl zlib1g-dev gcc-multilib g++-multilib libc6-dev-i386 libncurses5 lib32ncurses5-dev x11proto-core-dev libx11-dev lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc unzip fontconfig python-is-python3 ccache -y
-        kdialog --title "DIOS A.I. INIT" --passivepopup "DIOS A.I. MAY REQUIRE ROOT!"
-        sudo apt update
+        notify-send "DIOS A.I. MAY REQUIRE ROOT!"
+        sudo pacman -Syu
 
         reqSpace=400000000
         availSpace=$(df "$DIOS_PATH" | awk 'NR==2 { print $4 }')
@@ -65,7 +63,7 @@ _initialize() {
 
         if [ ! -d /mnt/ccache ]; then
 
-            kdialog --title "DIOS A.I. INIT" --passivepopup "DIOS A.I. MAY REQUIRE ROOT!"
+            notify-send "DIOS A.I. MAY REQUIRE ROOT!"
             sudo mkdir /mnt/ccache
 
         fi
@@ -84,18 +82,18 @@ _initialize() {
 
         fi
 
-        kdialog --title "DIOS A.I. INIT" --passivepopup "DIOS A.I. MAY REQUIRE ROOT!"
+        notify-send "DIOS A.I. MAY REQUIRE ROOT!"
         sudo mount -a
 
-        kdialog --title "DIOS A.I. INIT" --passivepopup "DIOS A.I. MAY REQUIRE ROOT!"
+        notify-send "DIOS A.I. MAY REQUIRE ROOT!"
         sudo mount --bind ~/.ccache /mnt/ccache
 
-        kdialog --title "DIOS A.I. INIT" --passivepopup "DIOS A.I. MAY REQUIRE ROOT!"
+        notify-send "DIOS A.I. MAY REQUIRE ROOT!"
         sudo ccache -M 50G -F 0
 
-        if ! swapon --show | grep -q '/swapfile'; then
+if ! swapon --show | grep -Eq '/swapfile|/dev/'; then
 
-            echo 'SWAP FILE NOT FOUND. CREATING A 32GB ONE...'
+            echo 'SWAP NOT FOUND. CREATING A 32GB ONE...'
 
             # Create a new swap file with the specified size
             sudo fallocate -l $SWAP_SIZE /swapfile
@@ -116,7 +114,7 @@ _initialize() {
 
         else
 
-            echo 'SWAP FILE ALREADY EXISTS. SKIPPING...'
+            echo 'SWAP ALREADY EXISTS. SKIPPING...'
 
         fi
 
@@ -128,7 +126,11 @@ _initialize() {
 
         bash ./DIOS_MANIFEST_XMLS.sh
 
+        echo 'DOWNLOADING CODE...'
+
         repo sync -j$(nproc) -c -q
+
+        bash ./DIOS_BINARIES.sh
 
         echo ""
         echo -e "${RED}PREPARED! RESTART THE SCRIPT TO START BUILDING..."
@@ -281,7 +283,7 @@ _making() {
 
     if ! grep -qs '/mnt/ccache' /proc/mounts; then
 
-        kdialog --title "DIOS A.I. INIT" --passivepopup "DIOS A.I. REQUIRES ROOT!"
+        notify-send "DIOS A.I. REQUIRES ROOT!"
 
         sudo mount --bind ~/.ccache /mnt/ccache
 
@@ -296,17 +298,28 @@ _making() {
     echo -e "${GREEN}FINISHED BUILDING..."
     echo ""
 
-    kdialog --title "DIOS A.I. IMAGE FLASH" --yesno "DO YOU WANT TO FLASH THE LATEST BUILD FOR $LUNCH_DEVICE OVER FASTBOOT?"
+    read -k 1 "fastboot?DO YOU WANT TO FLASH D!OS FOR $LUNCH_DEVICE VIA FASTBOOT?"
+    echo
 
-    if [ $? = 0 ]; then
+    if [[ "$fastboot" =~ ^[Yy]$ ]]; then
 
-        bash ./DIOS_FLASH_FASTBOOT.sh
+        export ANDROID_PRODUCT_OUT=$DIOS_FLASH
 
-    else
-        [ $? = 0 ]
+        ./fastboot -w update $DIOS_FLASH/$DIOS_IMAGES
 
-        bash ./DIOS_FLASH_ADB.sh
+        sleep 5
+    fi
 
+    read -k 1 "adb?DO YOU WANT TO FLASH D!OS FOR $LUNCH_DEVICE VIA ADB?"
+    echo
+
+    if [[ "$adb" =~ ^[Yy]$ ]]; then
+
+        export ANDROID_PRODUCT_OUT=$DIOS_FLASH
+
+        ./adb sideload $DIOS_FLASH/$DIOS_ZIP
+
+        sleep 5
     fi
 
 }
