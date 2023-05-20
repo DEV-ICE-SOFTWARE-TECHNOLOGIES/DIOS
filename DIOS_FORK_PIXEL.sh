@@ -21,9 +21,10 @@ fi
 
 if [ ! -f $PIXEL_FILE ]; then
 
-    notify-send "DO YOU WANT TO DOWNLOAD $PIXEL_IMAGE ?"
+    read -n 1 -p "DO YOU WANT TO DOWNLOAD $PIXEL_IMAGE (Y/N)?" fork
+    echo
 
-    if [[ $? -ne 0 ]]; then
+    if [[ "$fork" =~ ^[Nn]$ ]]; then
 
         exit 1
 

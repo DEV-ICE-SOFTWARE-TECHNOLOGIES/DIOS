@@ -16,7 +16,7 @@ echo -e "${NOCOLOR}"
 echo ""
 
 _initialize() {
-    # Read the value of the variable from the config file
+
     INITIALIZED=$(grep "^INITIALIZED=" $DIOS_PATH/ADIOS.cfg)
 
     # If the variable is not set or set to false, set it to true after the init
@@ -44,7 +44,6 @@ _initialize() {
         curl http://commondatastorage.googleapis.com/git-repo-downloads/repo >~/bin/repo
         chmod a+x ~/bin/repo
 
-        # Add Flags to .bashrc if they doesn't already exist
         if ! grep -qxF '# DIOS' ~/.bashrc; then
 
             echo '' >>~/.bashrc
@@ -59,7 +58,7 @@ _initialize() {
 
         wait
 
-        . ~/.bashrc
+        source ~/.bashrc
 
         if [ ! -d /mnt/ccache ]; then
 
@@ -91,7 +90,7 @@ _initialize() {
         notify-send "DIOS A.I. MAY REQUIRE ROOT!"
         sudo ccache -M 50G -F 0
 
-if ! swapon --show | grep -Eq '/swapfile|/dev/'; then
+        if ! swapon --show | grep -Eq '/swapfile|/dev/'; then
 
             echo 'SWAP NOT FOUND. CREATING A 32GB ONE...'
 
@@ -128,9 +127,11 @@ if ! swapon --show | grep -Eq '/swapfile|/dev/'; then
 
         echo 'DOWNLOADING CODE...'
 
-        repo sync -j$(nproc) -c -q
+        repo sync -j$(nproc) -c -q || true
 
         bash ./DIOS_BINARIES.sh
+
+        bash ./DIOS_DEVICE_TARGETS.sh
 
         echo ""
         echo -e "${RED}PREPARED! RESTART THE SCRIPT TO START BUILDING..."
@@ -298,7 +299,7 @@ _making() {
     echo -e "${GREEN}FINISHED BUILDING..."
     echo ""
 
-    read -k 1 "fastboot?DO YOU WANT TO FLASH D!OS FOR $LUNCH_DEVICE VIA FASTBOOT?"
+    read -n 1 -p "DO YOU WANT TO FLASH D!OS FOR $LUNCH_DEVICE VIA FASTBOOT? [Y/N]:" fastboot
     echo
 
     if [[ "$fastboot" =~ ^[Yy]$ ]]; then
@@ -310,7 +311,7 @@ _making() {
         sleep 5
     fi
 
-    read -k 1 "adb?DO YOU WANT TO FLASH D!OS FOR $LUNCH_DEVICE VIA ADB?"
+    read -n 1 -p "DO YOU WANT TO FLASH D!OS FOR $LUNCH_DEVICE VIA ADB? [Y/N]:" adb
     echo
 
     if [[ "$adb" =~ ^[Yy]$ ]]; then
