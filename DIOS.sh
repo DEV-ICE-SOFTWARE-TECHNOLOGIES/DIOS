@@ -27,7 +27,6 @@ _initialize() {
         echo "INSTALLING DEPENDENCIES..."
         echo ""
 
-        notify-send "DIOS A.I. MAY REQUIRE ROOT!"
         sudo pacman -Syu
 
         reqSpace=400000000
@@ -56,13 +55,14 @@ _initialize() {
 
         fi
 
-        wait
+        echo ""
+        echo "CREATING CCACHE..."
+        echo ""
 
         source ~/.bashrc
 
         if [ ! -d /mnt/ccache ]; then
 
-            notify-send "DIOS A.I. MAY REQUIRE ROOT!"
             sudo mkdir /mnt/ccache
 
         fi
@@ -81,14 +81,11 @@ _initialize() {
 
         fi
 
-        notify-send "DIOS A.I. MAY REQUIRE ROOT!"
         sudo mount -a
 
-        notify-send "DIOS A.I. MAY REQUIRE ROOT!"
         sudo mount --bind ~/.ccache /mnt/ccache
 
-        notify-send "DIOS A.I. MAY REQUIRE ROOT!"
-        sudo ccache -M 50G -F 0
+        sudo ccache -M $CCACHE_SIZE -F 0
 
         if ! swapon --show | grep -Eq '/swapfile|/dev/'; then
 
@@ -109,11 +106,15 @@ _initialize() {
             # Make the swap file permanent
             echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 
+            echo ""
             echo 'SWAP FILE SUCCESSFULLY CREATED AND ENABLED.'
+            echo ""
 
         else
 
+            echo ""
             echo 'SWAP ALREADY EXISTS. SKIPPING...'
+            echo ""
 
         fi
 
@@ -283,8 +284,6 @@ _making() {
     fi
 
     if ! grep -qs '/mnt/ccache' /proc/mounts; then
-
-        notify-send "DIOS A.I. REQUIRES ROOT!"
 
         sudo mount --bind ~/.ccache /mnt/ccache
 
