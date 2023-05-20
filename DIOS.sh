@@ -17,9 +17,6 @@ echo ""
 
 _initialize() {
 
-    INITIALIZED=$(grep "^INITIALIZED=" $DIOS_PATH/ADIOS.cfg)
-
-    # If the variable is not set or set to false, set it to true after the init
     if [ -z "$INITIALIZED" ] || [ "$INITIALIZED" = "INITIALIZED=false" ]; then
 
         echo ""
@@ -91,19 +88,14 @@ _initialize() {
 
             echo 'SWAP NOT FOUND. CREATING A 32GB ONE...'
 
-            # Create a new swap file with the specified size
             sudo fallocate -l $SWAP_SIZE /swapfile
 
-            # Set the correct permissions on the swap file
             sudo chmod 600 /swapfile
 
-            # Mark the file as swap space
             sudo mkswap /swapfile
 
-            # Enable the swap file
             sudo swapon /swapfile
 
-            # Make the swap file permanent
             echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 
             echo ""
@@ -124,20 +116,19 @@ _initialize() {
 
         repo init -u $REPO -b $BRANCH
 
-        bash ./DIOS_MANIFEST_XMLS.sh
+        sh DIOS_MANIFEST_XMLS.sh
 
         echo 'DOWNLOADING CODE...'
 
-        repo sync -j$(nproc) -c -q || true
+        repo sync -j$(nproc) -c -f -q || true
 
-        bash ./DIOS_BINARIES.sh
+        sh DIOS_BINARIES.sh
 
-        bash ./DIOS_DEVICE_TARGETS.sh
+        sh DIOS_DEVICE_TARGETS.sh
 
         echo ""
         echo -e "${RED}PREPARED! RESTART THE SCRIPT TO START BUILDING..."
 
-        # Set the variable to true in the config file
         sed -i 's/^INITIALIZED=.*/INITIALIZED=true/' $DIOS_PATH/ADIOS.cfg
 
         exit
@@ -156,11 +147,11 @@ _updating() {
         echo -e "${GREEN}REPO SYNC AND REPO UPDATE..."
         echo ""
 
-        bash ./DIOS_MANIFEST_XMLS.sh
+        sh DIOS_MANIFEST_XMLS.sh
 
         repo init -u $REPO -b $BRANCH
 
-        repo sync -j$(nproc) -c -q
+        repo sync -j$(nproc) -c -f
 
     fi
 }
@@ -170,11 +161,11 @@ _preparing() {
     echo -e "${GREEN}PREPARING D!OS..."
     echo ""
 
-    bash ./DIOS_ANDROID_MK.sh
+    sh DIOS_ANDROID_MK.sh
 
-    bash ./DIOS_ANDROID_BP.sh
+    sh DIOS_ANDROID_BP.sh
 
-    bash ./DIOS_DIOS_MK.sh
+    sh DIOS_DIOS_MK.sh
 
     sed -i 's/^BUILD_DESC :=.*/BUILD_DESC := DIOS - $(TARGET_PRODUCT)-$(TARGET_BUILD_VARIANT) $(PLATFORM_VERSION) $(BUILD_ID) $(BUILD_NUMBER_FROM_FILE) $(BUILD_VERSION_TAGS)/' $DIOS_PATH/build/core/sysprop.mk
 
@@ -186,7 +177,7 @@ _patching() {
         echo -e "${GREEN}PATCHING CODE..."
         echo ""
 
-        bash ./DIOS_DEVICE_TARGETS.sh
+        sh DIOS_DEVICE_TARGETS.sh
 
     fi
 }
@@ -204,8 +195,6 @@ _cleaning() {
 
         rm -rf $XPERIA_FORKS
 
-        #rm -rf $OPEN_CAMERA
-
         echo ""
         echo -e "${GREEN}D!OS OUTPUT AND FORKS CLEANED..."
         echo ""
@@ -219,8 +208,6 @@ _cleaning() {
         rm -rf $PIXEL_FORKS
 
         rm -rf $XPERIA_FORKS
-
-        #rm -rf $OPEN_CAMERA
 
         echo ""
         echo -e "${GREEN}D!OS FORKS CLEANED..."
@@ -241,33 +228,32 @@ _cleaning() {
 }
 
 _forking() {
+
     if $_forkall; then
 
-        bash ./DIOS_FORK_PIXEL.sh
+        sh DIOS_FORK_PIXEL.sh
 
-        bash ./DIOS_OPEN_CAMERA.sh
-
-        #bash ./DIOS_FORK_XPERIA.sh
+        sh DIOS_OPEN_CAMERA.sh
 
     fi
 
     if $_forkdios; then
 
-        bash ./DIOS_OPEN_CAMERA.sh
+        sh DIOS_OPEN_CAMERA.sh
 
     fi
 
     if $_forkpixel; then
 
-        bash ./DIOS_FORK_PIXEL.sh
+        sh DIOS_FORK_PIXEL.sh
 
     fi
 
-    #if $_forkxperia; then
+    if $_forkxperia; then
 
-    #bash ./DIOS_XPERIA_FORK.sh
+    sh DIOS_XPERIA_FORK.sh
 
-    #fi
+    fi
 
 }
 
@@ -337,7 +323,7 @@ _build() {
 
 _usage() {
 
-    echo "Usage: bash ./$(basename "$0") [OPTIONS]"
+    echo "Usage: sh $(basename "$0") [OPTIONS]"
     echo ""
     echo "OPTIONS:"
     echo "  -ca, --cleanall    Clean all"
@@ -352,7 +338,7 @@ _usage() {
     echo "  -u,  --update      Update"
     echo "  -h,  --help        Display this help and exit"
     echo ""
-    echo "Example: bash ./$(basename "$0") -ab -ca -fa -p -u"
+    echo "Example: sh $(basename "$0") -ab -ca -fa -p -u"
     echo "Which does aospbuild, cleanall, forkall, patch, update"
     echo ""
     echo "Visit the DIOS A.I. ReadMe on GitHub for More!"

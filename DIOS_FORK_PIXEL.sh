@@ -30,11 +30,13 @@ if [ ! -f $PIXEL_FILE ]; then
 
     fi
 
+    echo ""
+
     pushd "$DIOS_FORKS" >/dev/null
 
     wget "https://dl.google.com/dl/android/aosp/$PIXEL_IMAGE"
 
-    popd >/dev/null
+    popd
 
 fi
 

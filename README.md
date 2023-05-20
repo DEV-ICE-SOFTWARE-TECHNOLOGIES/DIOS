@@ -63,12 +63,12 @@ ANDROID BUILD A.I.
 6. Run the BUILD A.I. from the DIOS Folder...
 ```
 cd ~/dios
-bash ./DIOS.sh -i
+sh DIOS.sh -i
 ```
 
 7. Run a DIOS build with:
 ```
-bash ./DIOS.sh -fp -p
+sh DIOS.sh -fp -p
 ```
 # DEBUG
 
