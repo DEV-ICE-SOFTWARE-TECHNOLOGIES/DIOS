@@ -79,5 +79,6 @@ You can also do "set -euv" on top of the Scripts
 
 - IBM Design Language integration (Android UI Overhaul Overlay)
 - DIOS Settings Entry (Unifying non AOSP UI Options)
+- DIOS OnDevIce A.I. (Offline A.I. Assistant)
 - Generate Fork File Lists for the build Process (WIP)
 - Cleanup Scripts
