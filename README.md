@@ -77,6 +77,7 @@ You can also do "set -euv" on top of the Scripts
 
 # TO-DO
 
-- Including of Google Binary Device File Downloads (WIP)
+- IBM Design Language integration (Android UI Overhaul Overlay)
+- DIOS Settings Entry (Unifying non AOSP UI Options)
 - Generate Fork File Lists for the build Process (WIP)
 - Cleanup Scripts
