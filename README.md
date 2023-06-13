@@ -1,10 +1,10 @@
 <p align="center">
 
-# D!OS
+# DIOS - Dev Ice Operating System
 
 ![DIOS IMAGE](https://github.com/DEV-ICE-SOFTWARE-TECHNOLOGIES/DIOS/blob/main/DIOS.png)
 
-ANDROID BUILD A.I.
+D!OS BUILD A.I.
 
 </p>
 
