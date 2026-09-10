@@ -2,7 +2,7 @@
 
 # DIOS - Dev Ice Operating System
 
-![DIOS IMAGE](https://github.com/DEV-ICE-SOFTWARE-TECHNOLOGIES/DIOS/blob/main/DIOS.png)
+![DIOS IMAGE](https://github.com/DEV-ICE-SOFTWARE-TECHNOLOGIES/DIOS/blob/obsolete/DIOS.png)
 
 D!OS BUILD A.I.
 
