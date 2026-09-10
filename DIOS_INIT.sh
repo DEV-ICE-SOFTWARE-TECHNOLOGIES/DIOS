@@ -1,6 +1,6 @@
 #!/usr/bin/env bash -i
 ##################################
-## Copyright © 2024 Marius Kopp ##
+## Copyright © 2026 Marius Kopp ##
 ##################################
 
 set -eu
@@ -135,10 +135,6 @@ tput smcup
 repo sync -j$(nproc) -c || true
 
 tput rmcup
-
-sh DIOS_BINARIES.sh
-
-sh DIOS_DEVICE_TARGETS.sh
 
 echo ""
 echo -e "${RED}PREPARED! RESTART THE SCRIPT TO START BUILDING..."

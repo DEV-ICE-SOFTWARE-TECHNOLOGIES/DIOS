@@ -1,6 +1,6 @@
 #!/usr/bin/env bash -i
 ##################################
-## Copyright © 2023 Marius Kopp ##
+## Copyright © 2026 Marius Kopp ##
 ##################################
 
 set -eu

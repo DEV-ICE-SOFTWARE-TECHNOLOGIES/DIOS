@@ -83,7 +83,7 @@ _cleaning() {
 
         rm -rf $PIXEL_FORKS
 
-        rm -rf $XPERIA_FORKS
+        rm -rf $XIAOMI_FORKS
 
         echo ""
         echo -e "${GREEN}D!OS OUTPUT AND FORKS CLEANED..."
@@ -97,7 +97,7 @@ _cleaning() {
 
         rm -rf $PIXEL_FORKS
 
-        rm -rf $XPERIA_FORKS
+        rm -rf $XIAOMI_FORKS
 
         echo ""
         echo -e "${GREEN}D!OS FORKS CLEANED..."
@@ -139,9 +139,9 @@ _forking() {
 
     fi
 
-    if $_forkxperia; then
+    if $_forkxiaomi; then
 
-        bash DIOS_XPERIA_FORK.sh
+        bash DIOS_XIAOMI_FORK.sh
 
     fi
 
@@ -222,7 +222,7 @@ _usage() {
     echo "  -fa, --forkall     Fork all"
     echo "  -fd, --forkdios    Fork Dios"
     echo "  -fp, --forkpixel   Fork Pixel"
-    echo "  -fx, --forkxperia  Fork Xperia"
+    echo "  -fx, --forkxiaomi  Fork Xiaomi"
     echo "  -i,  --init        Initialize"
     echo "  -p,  --patch       Apply patch"
     echo "  -u,  --update      Update"
@@ -246,7 +246,7 @@ _cleanout=false
 _forkall=false
 _forkdios=false
 _forkpixel=false
-_forkxperia=false
+_forkxiaomi=false
 
 while [[ $# -gt 0 ]]; do
 
@@ -258,7 +258,7 @@ while [[ $# -gt 0 ]]; do
     -fa | --forkall) _forkall=true ;;
     -fd | --forkdios) _forkdios=true ;;
     -fp | --forkpixel) _forkpixel=true ;;
-    -fx | --forkxperia) _forkxperia=true ;;
+    -fx | --forkxiaomi) _forkxiaomi=true ;;
     -i | --init) _init=true ;;
     -p | --patch) _patch=true ;;
     -u | --update) _update=true ;;
