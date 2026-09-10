@@ -16,54 +16,52 @@ D!OS BUILD A.I.
 - CCACHE Setup and Mounting
 - SWAP check and creation
 
-- Downloads and adds Pixel and Xpiera Firmware Parts
+- Downloads and adds Pixel and Xiaomi Firmware Parts
 
 - Optimizes Android Code further
 
-- Makes DIOS. The OS aimed by This Project
+- Builds DIOS. The OS aimed by This Project
 
 - Builds Android for You with desired Changes
 
-- Flashs Android to Your Device
+- Flashs DIOS/Android to Your Device
 
 - And even more...
 
 
 # QUICK START GUIDE
 
-1. Use a Distro based on ARCH like Manjaro / Install the base-devel and aosp-devel AUR Packages
+1. Use a Distro based on UBUNTU like KUBUNTU
 
 2. Download / clone this Repo https://github.com/DEV-ICE-SOFTWARE-TECHNOLOGIES/DIOS
 
 3. Create the DIOS Directory: mkdir ~/dios
 
-4. Move all the DIOS Files You have cloned before into ~/dios
+4. Move all the DIOS Files You have cloned in Step 2 into ~/dios
 
 5.  Set these Variables for Your needs (Don't use My Identity) inside of ADIOS.cfg:
 
 
-- LUNCH_CHOICE=DIOS_cheetah-userdebug (Replace cheetah with Your Device like panther)
+- LUNCH_CHOICE=DIOS_DEVICE-userdebug (Replace "DEVICE" with Your Target like myron)
 
-- BRANCH=android-13.0.0_r43
-
-- PIXEL_BINARIES=google_devices-cheetah-tq2a.230505.002-e488f4d8.tgz (Replace with another Filename from Google if needed)
+- BRANCH=lineage-24.0
 
 - PIXEL_IMAGE=cheetah-tq2a.230505.002-factory-fe44ced0.zip (Replace with another Filename from Google if needed)
 
-- XPERIA_IMAGE=xperia.zip (For later Use)
+- XIAOMI_IMAGE=myron_images_OS3.0.306.0.WPMCNXM_20260519.0000.00_16.0_cn_142ab138fb.tgz (Important for Trees)
 
-- EMAIL=mariuskopp517@gmail.com (GitHub Email example)
+- EMAIL=mariuskopp517@gmail.com (GitHub Email (My example))
 
-- NAME=miustone (GitHub Username example)
+- NAME=miustone (GitHub Username (My example))
 
-- SWAP_SIZE=32G (U need to use SWAP with any RAM Size!)
+- SWAP_SIZE=32G (32G Minimum!)
 
 
 
 6. Run the BUILD A.I. from the DIOS Folder...
 ```
 cd ~/dios
-sh DIOS.sh -i
+bash DIOS.sh -i
 ```
 
 7. Run a DIOS build with:
@@ -72,8 +70,7 @@ sh DIOS.sh -fp -p
 ```
 # DEBUG
 
-adb logcat -v long > DIOS.txt 
-You can also do "set -euv" on top of the Scripts
+bash -x DIOS.sh
 
 # TO-DO
 
