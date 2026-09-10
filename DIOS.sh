@@ -1,13 +1,15 @@
 #!/usr/bin/env bash -i
 ##################################
-## Copyright © 2024 Marius Kopp ##
+## Copyright © 2026 Marius Kopp ##
 ##################################
 
 set -eu
 
-source ./ADIOS.cfg
+source ADIOS.cfg
 
-img2txt $DIOS_PATH/DIOS.png
+sudo apt update >/dev/null 2>&1 && sudo apt install -y caca-utils >/dev/null 2>&1
+
+img2txt DIOS.png
 
 echo -e "${BGBLACK}"
 echo " █▀▄ █ ▄▀▄ ▄▀▀    ██▄ █ █ █ █   █▀▄    ▄▀▄ █ "
@@ -17,9 +19,9 @@ echo ""
 
 _initialize() {
 
-    if [ -z "$INITIALIZED" ] || [ "$INITIALIZED" = "INITIALIZED=false" ]; then
+    if [ "$INITIALIZED" = "false" ] || [ -z "$INITIALIZED" ]; then
 
-        sh DIOS_INIT.sh
+        bash DIOS_INIT.sh
 
     else
 
@@ -35,9 +37,9 @@ _updating() {
         echo -e "${GREEN}REPO SYNC AND REPO UPDATE..."
         echo ""
 
-        sh DIOS_MANIFEST_XMLS.sh
+        bash DIOS_MANIFEST_XMLS.sh
 
-        repo init -u $REPO -b $BRANCH
+        repo init -u $REPO -b $BRANCH --git-lfs --no-clone-bundle
 
         repo sync -j$(nproc) -c -f
 
@@ -49,11 +51,11 @@ _preparing() {
     echo -e "${GREEN}PREPARING D!OS..."
     echo ""
 
-    sh DIOS_ANDROID_MK.sh
+    bash DIOS_ANDROID_MK.sh
 
-    sh DIOS_ANDROID_BP.sh
+    bash DIOS_ANDROID_BP.sh
 
-    sh DIOS_DIOS_MK.sh
+    bash DIOS_DIOS_MK.sh
 
     sed -i 's/^BUILD_DESC :=.*/BUILD_DESC := DIOS - $(TARGET_PRODUCT)-$(TARGET_BUILD_VARIANT) $(PLATFORM_VERSION) $(BUILD_ID) $(BUILD_NUMBER_FROM_FILE) $(BUILD_VERSION_TAGS)/' $DIOS_PATH/build/core/sysprop.mk
 
@@ -65,7 +67,7 @@ _patching() {
         echo -e "${GREEN}PATCHING CODE..."
         echo ""
 
-        sh DIOS_DEVICE_TARGETS.sh
+        bash DIOS_DEVICE_TARGETS.sh
 
     fi
 }
@@ -119,27 +121,27 @@ _forking() {
 
     if $_forkall; then
 
-        sh DIOS_FORK_PIXEL.sh
+        bash DIOS_FORK_PIXEL.sh
 
-        sh DIOS_OPEN_CAMERA.sh
+        bash DIOS_OPEN_CAMERA.sh
 
     fi
 
     if $_forkdios; then
 
-        sh DIOS_OPEN_CAMERA.sh
+        bash DIOS_OPEN_CAMERA.sh
 
     fi
 
     if $_forkpixel; then
 
-        sh DIOS_FORK_PIXEL.sh
+        bash DIOS_FORK_PIXEL.sh
 
     fi
 
     if $_forkxperia; then
 
-        sh DIOS_XPERIA_FORK.sh
+        bash DIOS_XPERIA_FORK.sh
 
     fi
 
@@ -211,7 +213,7 @@ _build() {
 
 _usage() {
 
-    echo "Usage: sh $(basename "$0") [OPTIONS]"
+    echo "Usage: bash $(basename "$0") [OPTIONS]"
     echo ""
     echo "OPTIONS:"
     echo "  -ca, --cleanall    Clean all"
@@ -226,7 +228,7 @@ _usage() {
     echo "  -u,  --update      Update"
     echo "  -h,  --help        Display this help and exit"
     echo ""
-    echo "Example: sh $(basename "$0") -ab -ca -fa -p -u"
+    echo "Example: bash $(basename "$0") -ab -ca -fa -p -u"
     echo "Which does aospbuild, cleanall, forkall, patch, update"
     echo ""
     echo "Visit the DIOS A.I. ReadMe on GitHub for More!"

@@ -5,7 +5,7 @@
 
 set -eu
 
-source ./ADIOS.cfg
+source ADIOS.cfg
 
 echo ""
 echo "STARTING D!OS INIT..."
@@ -16,9 +16,16 @@ echo ""
 echo "INSTALLING DEPENDENCIES..."
 echo ""
 
-sudo pacman -Syu
+sudo apt update && sudo apt upgrade -y
+sudo apt update && sudo apt install -y \
+    adb fastboot \
+    bc bison build-essential ccache curl flex g++-multilib gcc-multilib \
+    git git-lfs gnupg gperf imagemagick lib32ncurses-dev \
+    lib32z1-dev libelf-dev libgl1-mesa-dev libxml2-dev libxml2-utils \
+    lzop pngcrush rsync schedtool squashfs-tools \
+    xsltproc zip zlib1g-dev python3 python3-pip openjdk-21-jdk
 
-reqSpace=400000000
+reqSpace=300000000
 availSpace=$(df "$DIOS_PATH" | awk 'NR==2 { print $4 }')
 if ((availSpace < reqSpace)); then
     echo -e "${RED}NOT ENOUGH FREE SPACE!" >&2
@@ -123,7 +130,11 @@ sh DIOS_MANIFEST_XMLS.sh
 
 echo 'DOWNLOADING CODE...'
 
-repo sync -j$(nproc) -c -q || true
+tput smcup
+
+repo sync -j$(nproc) -c || true
+
+tput rmcup
 
 sh DIOS_BINARIES.sh
 
