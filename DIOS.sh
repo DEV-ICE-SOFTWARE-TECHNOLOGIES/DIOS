@@ -25,7 +25,7 @@ _initialize() {
 
     else
 
-        exit
+        exit 0
 
     fi
 
@@ -34,7 +34,7 @@ _initialize() {
 _updating() {
     if $_update; then
         echo ""
-        echo -e "${GREEN}REPO SYNC AND REPO UPDATE..."
+        echo -e "${GREEN}REPO SYNC AND REPO UPDATE...${NOCOLOR}"
         echo ""
 
         bash DIOS_MANIFEST_XMLS.sh
@@ -48,7 +48,7 @@ _updating() {
 
 _preparing() {
     echo ""
-    echo -e "${GREEN}PREPARING D!OS..."
+    echo -e "${GREEN}PREPARING D!OS...${NOCOLOR}"
     echo ""
 
     bash DIOS_ANDROID_MK.sh
@@ -57,14 +57,12 @@ _preparing() {
 
     bash DIOS_DIOS_MK.sh
 
-    sed -i 's/^BUILD_DESC :=.*/BUILD_DESC := DIOS - $(TARGET_PRODUCT)-$(TARGET_BUILD_VARIANT) $(PLATFORM_VERSION) $(BUILD_ID) $(BUILD_NUMBER_FROM_FILE) $(BUILD_VERSION_TAGS)/' $DIOS_PATH/build/core/sysprop.mk
-
 }
 
 _patching() {
     if $_patch; then
         echo ""
-        echo -e "${GREEN}PATCHING CODE..."
+        echo -e "${GREEN}PATCHING CODE...${NOCOLOR}"
         echo ""
 
         bash DIOS_DEVICE_TARGETS.sh
@@ -76,7 +74,7 @@ _cleaning() {
 
     if $_cleanall; then
         echo ""
-        echo -e "${GREEN}CLEANING TARGETS..."
+        echo -e "${GREEN}CLEANING TARGETS...${NOCOLOR}"
         echo ""
 
         make installclean -j$(nproc)
@@ -86,13 +84,13 @@ _cleaning() {
         rm -rf $XIAOMI_FORKS
 
         echo ""
-        echo -e "${GREEN}D!OS OUTPUT AND FORKS CLEANED..."
+        echo -e "${GREEN}D!OS OUTPUT AND FORKS CLEANED...${NOCOLOR}"
         echo ""
     fi
 
     if $_cleanforks; then
         echo ""
-        echo -e "${GREEN}CLEANING TARGETS..."
+        echo -e "${GREEN}CLEANING TARGETS...${NOCOLOR}"
         echo ""
 
         rm -rf $PIXEL_FORKS
@@ -100,19 +98,19 @@ _cleaning() {
         rm -rf $XIAOMI_FORKS
 
         echo ""
-        echo -e "${GREEN}D!OS FORKS CLEANED..."
+        echo -e "${GREEN}D!OS FORKS CLEANED...${NOCOLOR}"
         echo ""
     fi
 
     if $_cleanout; then
         echo ""
-        echo -e "${GREEN}CLEANING TARGETS..."
+        echo -e "${GREEN}CLEANING TARGETS...${NOCOLOR}"
         echo ""
 
         make installclean -j$(nproc)
 
         echo ""
-        echo -e "${GREEN}D!OS OUTPUT CLEANED..."
+        echo -e "${GREEN}D!OS OUTPUT CLEANED...${NOCOLOR}"
         echo ""
     fi
 }
@@ -124,6 +122,8 @@ _forking() {
         bash DIOS_FORK_PIXEL.sh
 
         bash DIOS_OPEN_CAMERA.sh
+
+        bash DIOS_FORK_XIAOMI.sh
 
     fi
 
@@ -141,37 +141,24 @@ _forking() {
 
     if $_forkxiaomi; then
 
-        bash DIOS_XIAOMI_FORK.sh
+        bash DIOS_FORK_XIAOMI.sh
 
     fi
 
 }
 
 _making() {
-
     echo ""
-    echo -e "${GREEN}START BUILDING DIOS..."
+    echo -e "${GREEN}START BUILDING DIOS...${NOCOLOR}"
     echo ""
-
-    if [ ! -d $DIOS_PATH/dist_output ]; then
-
-        mkdir -p $DIOS_PATH/dist_output
-
-    fi
 
     if ! grep -qs '/mnt/ccache' /proc/mounts; then
-
-        sudo mount --bind ~/.ccache /mnt/ccache
-
+        sudo mount --bind ~/.ccache /mnt/ccache 2>/dev/null || true
     fi
 
-    make -j$(nproc)
+    mka bacon -j$(nproc)
 
-    wait
-
-    make dist DIST_DIR=dist_output -j$(nproc) || true
-
-    echo -e "${GREEN}FINISHED BUILDING..."
+    echo -e "${GREEN}FINISHED BUILDING...${NOCOLOR}"
     echo ""
 
     read -n 1 -p "DO YOU WANT TO FLASH D!OS FOR $LUNCH_DEVICE VIA FASTBOOT? [Y/N]:" fastboot
@@ -197,17 +184,6 @@ _making() {
 
         sleep 5
     fi
-
-}
-
-_build() {
-
-    _updating
-    _preparing
-    _patching
-    _cleaning
-    _forking
-    _making
 
 }
 
@@ -287,19 +263,28 @@ while [[ $# -gt 0 ]]; do
 done
 
 if $_init; then
-
     _initialize
-
-else
-
-    set +u
-
-    source build/envsetup.sh
-
-    lunch $LUNCH_CHOICE
-
-    set -u
-
-    _build
-
+    exit 0
 fi
+
+_updating
+_cleaning
+_forking
+
+if ! $_patch; then
+    if $_forkxiaomi || $_forkpixel || $_forkall || $_forkdios || $_cleanall || $_cleanforks || $_cleanout || $_update; then
+        echo ""
+        echo -e "${GREEN}TASK(S) FINISHED. NO BUILD (-p) COMPILED. DONE!${NOCOLOR}"
+        echo ""
+        exit 0
+    fi
+fi
+
+set +u
+source build/envsetup.sh
+lunch $LUNCH_CHOICE
+set -u
+
+_preparing
+_patching
+_making

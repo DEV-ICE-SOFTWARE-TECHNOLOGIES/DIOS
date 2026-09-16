@@ -17,13 +17,13 @@ echo "INSTALLING DEPENDENCIES..."
 echo ""
 
 sudo apt update && sudo apt upgrade -y
-sudo apt update && sudo apt install -y \
-    adb fastboot \
+sudo apt install -y \
+    adb fastboot android-sdk-libsparse-utils \
     bc bison build-essential ccache curl flex g++-multilib gcc-multilib \
-    git git-lfs gnupg gperf imagemagick lib32ncurses-dev \
-    lib32z1-dev libelf-dev libgl1-mesa-dev libxml2-dev libxml2-utils \
-    lzop pngcrush rsync schedtool squashfs-tools \
-    xsltproc zip zlib1g-dev python3 python3-pip openjdk-21-jdk
+    git git-lfs gnupg \
+    libelf-dev libgl1-mesa-dev libncurses-dev libssl-dev libxml2-dev libxml2-utils \
+    rsync schedtool squashfs-tools erofs-utils \
+    xsltproc zip zlib1g-dev python3 python3-pip python3-venv
 
 reqSpace=300000000
 availSpace=$(df "$DIOS_PATH" | awk 'NR==2 { print $4 }')
